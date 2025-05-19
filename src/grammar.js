@@ -63,11 +63,61 @@ export default function createGrammar(
         return exp.every((symbol) => nullables.has(symbol));
     }
 
+    /**
+     * @returns {Map<string,Set<string>>}
+     */
+    function calculateFirstSets() {
+        const firstSets = new Map();
+        rules.forEach((rule) => {
+            firstSets.set(rule.LHS, new Set());
+        });
+
+        function calculateFirstCount() {
+            let count = 0;
+            for (const [key, value] of firstSets) {
+                count += value.size;
+            }
+            return count;
+        }
+        let oldCount = 0;
+        while (true) {
+            oldCount = calculateFirstCount();
+            rules.forEach((rule) => {
+                for (let i = 0; i < rule.RHS.length; i++) {
+                    const symbol = rule.RHS[i];
+                    if (_terminals.has(symbol)) {
+                        const oldSet = new Set(firstSets.get(rule.LHS));
+                        oldSet.add(symbol);
+                        firstSets.set(rule.LHS, oldSet);
+                        break;
+                    } else {
+                        const oldSet = new Set(firstSets.get(rule.LHS));
+                        const newSet = new Set([
+                            ...oldSet,
+                            ...firstSets.get(symbol),
+                        ]);
+                        firstSets.set(rule.LHS, newSet);
+                        if (!isNullable([symbol])) {
+                            break;
+                        }
+                    }
+                }
+            });
+            const newCount = calculateFirstCount();
+            if (newCount === oldCount) {
+                break;
+            }
+        }
+        return firstSets;
+    }
+    const firstSets = calculateFirstSets();
+
     return {
         rules: rules.slice(),
         terminals: _terminals,
         nonTerminals: _nonTerminals,
         nullables,
+        firstSets,
         isNullable,
     };
 }
