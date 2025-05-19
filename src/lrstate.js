@@ -14,9 +14,9 @@ export default function createLRState(baseItems, nonBaseItems, actions) {
         actions: actions.slice().map((action) => action.clone()),
         toString(includeLookahead, includeActions) {
             let output = '';
-            const itemsStr = [...this.baseItems, ...this.nonBaseItems].map(
-                (item) => `${item.toString(includeLookahead)}\n`,
-            );
+            const itemsStr = [...this.baseItems, ...this.nonBaseItems]
+                .map((item) => `${item.toString(includeLookahead)}\n`)
+                .join('');
             output += itemsStr;
             if (includeActions) {
                 output += 'Actions:\n';
