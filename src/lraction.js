@@ -1,26 +1,29 @@
 import './types.js';
+import { LRItemsSortFunction } from './lrstate.js';
 
 /**
  *
  * @param {string} type
  * @param {Set<string>} input
- * @param {LRState} targetState
+ * @param {LRItem[]} targetStateBaseItems
  * @returns {LRAction}
  */
-export default function createLRAction(type, input, targetState) {
+export default function createLRAction(type, input, targetStateBaseItems) {
     return {
         type,
         input: new Set([...input]),
-        targetState: targetState ? targetState.clone() : null,
+        targetStateBaseItems: targetStateBaseItems
+            ? [...targetStateBaseItems].map((item) => item.clone())
+            : [],
         toString(includeInputSymbols) {
             const inputSymbolsStr = `{${[...this.input].join()}}`;
-            return `${this.type}${this.targetState.number} ${includeInputSymbols ? inputSymbolsStr : ''}`;
+            return `Action: \n ${this.type}\n Target State Base Items: \n ${this.targetStateBaseItems.map((item) => item.toString(true)).join('\n ')} Inputs: \n ${includeInputSymbols ? inputSymbolsStr : ''}`;
         },
         clone() {
             return createLRAction(
                 this.type,
                 new Set([...this.input]),
-                this.targetState.clone(),
+                [...this.targetStateBaseItems].map((item) => item.clone()),
             );
         },
         /**
@@ -30,12 +33,20 @@ export default function createLRAction(type, input, targetState) {
          * @returns {boolean}
          */
         equals(other, matchTargetState) {
+            const otherBaseItemsSorted = [...other.targetStateBaseItems].sort(
+                LRItemsSortFunction,
+            );
+            const thisBaseItemsSorted = [...this.targetStateBaseItems].sort(
+                LRItemsSortFunction,
+            );
             return [...other.input].every(
                 (sym) =>
                     [...this.input].includes(sym) &&
                     other.type === this.type &&
                     (matchTargetState
-                        ? other.targetState.equals(this.targetState)
+                        ? otherBaseItemsSorted.every((item, index) =>
+                              item.equals(thisBaseItemsSorted[index]),
+                          )
                         : true),
             );
         },
