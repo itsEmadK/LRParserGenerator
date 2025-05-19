@@ -4,13 +4,20 @@ import './types.js';
 
 /**
  *
+ * @param {number} number
  * @param {LRItem[]} baseItems
  * @param {LRItem[]} nonBaseItems
  * @param {LRAction[]} actions
  * @returns {LRState}
  */
-export default function createLRState(baseItems, nonBaseItems, actions) {
+export default function createLRState(
+    number,
+    baseItems,
+    nonBaseItems,
+    actions,
+) {
     return {
+        number,
         baseItems: baseItems.slice().map((item) => item.clone()),
         nonBaseItems: nonBaseItems.slice().map((item) => item.clone()),
         actions: actions.slice().map((action) => action.clone()),
@@ -37,6 +44,7 @@ export default function createLRState(baseItems, nonBaseItems, actions) {
         },
         clone() {
             return createLRState(
+                this.number,
                 this.baseItems,
                 this.nonBaseItems,
                 this.actions,
