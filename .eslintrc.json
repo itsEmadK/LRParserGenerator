@@ -1,0 +1,17 @@
+{
+    "extends": ["airbnb-base", "prettier"],
+    "env": {
+        "browser": true
+    },
+    "rules": {
+        "no-unused-vars": "warn",
+        "prefer-const": "warn",
+        "import/prefer-default-export": "warn",
+        "no-plusplus": "off",
+        "import/extensions": "off"
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    }
+}
