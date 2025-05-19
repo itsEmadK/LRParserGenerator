@@ -18,9 +18,26 @@ export default function createLRItem(rule, dotPosition, lookAhead) {
             const lookAheadString = `{${[...this.lookAhead].join()}}`;
             return `${this.rule.LHS} -> ${dottedRHS.join('')} ${includeLookahead ? lookAheadString : ''}`;
         },
+
+        /**
+         *
+         * @param {LRItem} other
+         * @param {boolean} matchLookahead
+         * @returns {boolean}
+         */
         equals(other, matchLookahead) {
+            const otherLookaheadSorted = [...other.lookAhead].sort();
+            const thisLookaheadSorted = [...this.lookAhead].sort();
             return (
-                other.toString(matchLookahead) === this.toString(matchLookahead)
+                other.dotPosition === this.dotPosition &&
+                other.rule.equals(this.rule) &&
+                (matchLookahead
+                    ? [otherLookaheadSorted].every(
+                          (sym, index) =>
+                              thisLookaheadSorted[index] ===
+                              otherLookaheadSorted[index],
+                      )
+                    : true)
             );
         },
         clone() {

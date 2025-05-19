@@ -1,6 +1,53 @@
+/* eslint-disable no-lonely-if */
+/* eslint-disable no-else-return */
 import createLRAction from './lraction.js';
 import createLRItem from './lritem.js';
 import './types.js';
+
+const LRactionsSortFunction = (a, b) => {
+    if (a.type < b.type) {
+        return -1;
+    } else if (a.type > b.type) {
+        return 1;
+    } else {
+        if ([...a.input].sort().join('') < [...b.input].sort().join()) {
+            return -1;
+        } else if ([...a.input].sort().join('') > [...b.input].sort().join()) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+};
+const LRItemsSortFunction = (a, b) => {
+    if (a.rule.LHS < b.rule.LHS) {
+        return -1;
+    } else if (a.rule.LHS > b.rule.LHS) {
+        return 1;
+    } else {
+        if (a.rule.RHS.join('') < b.rule.RHS.join('')) {
+            return -1;
+        } else if (a.rule.RHS.join('') > b.rule.RHS.join('')) {
+            return 1;
+        } else {
+            if (a.dotPosition < b.dotPosition) {
+                return -1;
+            } else if (a.dotPosition > b.dotPosition) {
+                return 1;
+            } else {
+                const aLookaheadSorted = [...a.lookAhead].sort().join('');
+                const bLookaheadSorted = [...b.lookAhead].sort().join('');
+                if (aLookaheadSorted < bLookaheadSorted) {
+                    return -1;
+                } else if (aLookaheadSorted > bLookaheadSorted) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+    }
+};
 
 /**
  *
@@ -36,10 +83,58 @@ export default function createLRState(
             }
             return output;
         },
-        equals(other, matchLookahead) {
+        /**
+         *
+         * @param {LRState} other
+         * @param {number} matchNumber
+         * @param {boolean} matchNonBaseItems
+         * @param {boolean} matchLookahead
+         * @param {boolean} matchActions
+         * @returns {boolean}
+         */
+        equals(
+            other,
+            matchNumber,
+            matchNonBaseItems,
+            matchLookahead,
+            matchActions,
+        ) {
+            const otherBaseItemsSorted = [...other.baseItems].sort(
+                LRItemsSortFunction,
+            );
+            const thisBaseItemsSorted = [...this.baseItems].sort(
+                LRItemsSortFunction,
+            );
+            const baseItemsMatch = otherBaseItemsSorted.every((item, index) =>
+                item.equals(thisBaseItemsSorted[index], matchLookahead),
+            );
+
+            const otherNonBaseItemsSorted = [...other.nonBaseItems].sort(
+                LRItemsSortFunction,
+            );
+            const thisNonBaseItemsSorted = [...this.nonBaseItems].sort(
+                LRItemsSortFunction,
+            );
+            const nonBaseItemsMatch = otherNonBaseItemsSorted.every(
+                (item, index) =>
+                    item.equals(thisNonBaseItemsSorted[index], matchLookahead),
+            );
+
+            const thisActionsSorted = [...this.actions].sort(
+                LRactionsSortFunction,
+            );
+            const otherActionsSorted = [...other.actions].sort(
+                LRactionsSortFunction,
+            );
+            const actionsMatch = thisActionsSorted.every(
+                (act, index) => act === otherActionsSorted[index],
+            );
+
             return (
-                this.toString(matchLookahead, false) ===
-                other.toString(matchLookahead, false)
+                baseItemsMatch &&
+                (matchNumber ? this.number === other.number : true) &&
+                (matchNonBaseItems ? nonBaseItemsMatch : true) &&
+                (matchActions ? actionsMatch : true)
             );
         },
         clone() {

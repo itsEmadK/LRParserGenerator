@@ -35,7 +35,7 @@
  * @property {Set<string>} input the symbols triggering the action
  * @property {LRState} targetState the symbols triggering the action
  * @property {(includeInputSymbols:boolean)=>string} toString returns a string representation of the action in the format: {{type}{targetStateNumber}, {input}} if the includeLookahead is true. example: S3, {a}. if the includeLookahead is false, the format will be: {{type}{targetStateNumber}}
- * @property {(other:LRAction)=>boolean} equals returns true if the toString results of the objects are the same, false otherwise.
+ * @property {(other:LRAction,matchTargetState:boolean)=>boolean} equals returns true if the toString results of the objects are the same, false otherwise.
  * @property {(matchInputSymbols)=>boolean} clone returns a deep copy of the object.
  *
  */
@@ -50,7 +50,7 @@
  * @property {(grammar:Grammar)=>LRState} calculateStateLookahead
  * @property {()=>LRState} clone
  * @property {(includeLookahead:boolean,includeActions:boolean)=>string} toString
- * @property {(other:LRState,matchLookahead:boolean)=>boolean} equals
+ * @property {(other:LRItem,matchNumber:boolean,matchNonBaseItems:boolean,matchLookahead:boolean,matchActions:boolean,)=>boolean} equals
  * @property {(item:LRItem)=>number} indexOfItem
  * @property {(action:LRAction)=>number} indexOfAction
  */

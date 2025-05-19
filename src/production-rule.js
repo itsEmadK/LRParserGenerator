@@ -18,8 +18,18 @@ export default function createProductionRule(number, LHS, RHS) {
         clone() {
             return createProductionRule(this.number, this.LHS, this.RHS);
         },
-        equals(other) {
-            return this.toString() === other.toString();
+        /**
+         *
+         * @param {ProductionRule} other
+         * @param {boolean} matchNumber
+         * @returns {boolean}
+         */
+        equals(other, matchNumber) {
+            return (
+                this.LHS === other.LHS &&
+                this.RHS.join('') === other.RHS.join('') &&
+                (matchNumber ? this.number === other.number : true)
+            );
         },
     };
 }

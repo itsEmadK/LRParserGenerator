@@ -23,8 +23,20 @@ export default function createLRAction(type, input, targetState) {
                 this.targetState.clone(),
             );
         },
-        equals(other) {
-            return other.toString() === this.toString();
+        /**
+         *
+         * @param {LRAction} other
+         * @returns {boolean}
+         */
+        equals(other, matchTargetState) {
+            return [...other.input].every(
+                (sym) =>
+                    [...this.input].includes(sym) &&
+                    other.type === this.type &&
+                    (matchTargetState
+                        ? other.targetState.equals(this.targetState)
+                        : true),
+            );
         },
     };
 }
