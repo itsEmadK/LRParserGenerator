@@ -15,6 +15,6 @@
  * @property {Set<string>} nonTerminals
  * @property {Map<string,Set<string>>} firstSets
  * @property {(exp:string[])=>Set<string>} getFirstSet
- * @property {Set<string>} nullableSymbols
+ * @property {Set<string>} nullables
  * @property {(exp:string[])=>boolean} isNullable
  */
