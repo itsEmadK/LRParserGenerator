@@ -47,6 +47,7 @@
  * @property {LRItem[]} nonBaseItems
  * @property {LRAction[]} actions
  * @property {(rules:ProductionRule[])=>LRState} calculateClosure
+ * @property {(grammar:Grammar)=>LRState} calculateStateLookahead
  * @property {()=>LRState} clone
  * @property {(includeLookahead:boolean,includeActions:boolean)=>string} toString
  * @property {(other:LRState,matchLookahead:boolean)=>boolean} equals

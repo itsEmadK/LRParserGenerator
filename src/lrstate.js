@@ -55,5 +55,62 @@ export default function createLRState(baseItems, nonBaseItems, actions) {
             }
             return -1;
         },
+
+        /**
+         *
+         * @param {Grammar} grammar
+         * @returns {LRItem} //item with updated lookahead
+         */
+        calculateStateLookahead(grammar) {
+            const newState = this.clone();
+            function calculateItemLookaheadCount() {
+                let count = 0;
+                [...newState.baseItems, ...newState.nonBaseItems].forEach(
+                    (item) => {
+                        count += item.lookAhead.size;
+                    },
+                );
+                return count;
+            }
+            while (true) {
+                const oldCount = calculateItemLookaheadCount();
+
+                [...newState.nonBaseItems].forEach((nbItem, nbIndex) => {
+                    [...newState.baseItems, ...newState.nonBaseItems].forEach(
+                        (item, itemIndex) => {
+                            if (
+                                item.rule.RHS.indexOf(nbItem.rule.LHS) ===
+                                item.dotPosition
+                            ) {
+                                const rest = item.rule.RHS.slice(
+                                    item.dotPosition + 1,
+                                );
+                                const restFirstSet = grammar.getFirstSet(rest);
+                                let lookahead = new Set([...restFirstSet]);
+                                if (grammar.isNullable(rest)) {
+                                    lookahead = new Set([
+                                        ...lookahead,
+                                        ...item.lookAhead,
+                                    ]);
+                                }
+
+                                newState.nonBaseItems[nbIndex].lookAhead =
+                                    new Set([
+                                        ...newState.nonBaseItems[nbIndex]
+                                            .lookAhead,
+                                        ...lookahead,
+                                    ]);
+                            }
+                        },
+                    );
+                });
+
+                const newCount = calculateItemLookaheadCount();
+                if (oldCount === newCount) {
+                    break;
+                }
+            }
+            return newState;
+        },
     };
 }
