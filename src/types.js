@@ -7,3 +7,14 @@
  * @property {()=>ProductionRule} clone returns a deep copy of the ProductionRule object
  * @property {(other:ProductionRule)=>boolean} equals returns true if the string representation of the rules are the same, false otherwise.
  */
+
+/**
+ * @typedef Grammar
+ * @property {ProductionRule[]} rules
+ * @property {Set<string>} terminals
+ * @property {Set<string>} nonTerminals
+ * @property {Map<string,Set<string>>} firstSets
+ * @property {(exp:string[])=>Set<string>} getFirstSet
+ * @property {Set<string>} nullableSymbols
+ * @property {(exp:string[])=>boolean} isNullable
+ */
