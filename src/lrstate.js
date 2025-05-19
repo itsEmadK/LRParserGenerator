@@ -163,21 +163,6 @@ export default function createLRState(
 
         /**
          *
-         * @param {LRAction} action
-         * @returns {number}
-         */
-        indexOfAction(action) {
-            for (let i = 0; i < this.actions.length; i++) {
-                const current = this.actions[i];
-                if (action.toString(true) === current.toString(true)) {
-                    return i;
-                }
-            }
-            return -1;
-        },
-
-        /**
-         *
          * @param {Grammar} grammar
          * @returns {LRItem} //item with updated lookahead
          */
