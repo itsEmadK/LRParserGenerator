@@ -11,7 +11,7 @@ export default function createLRAction(type, input, targetState) {
     return {
         type,
         input: new Set([...input]),
-        targetState: targetState.clone(),
+        targetState: targetState ? targetState.clone() : null,
         toString(includeInputSymbols) {
             const inputSymbolsStr = `{${[...this.input].join()}}`;
             return `${this.type}${this.targetState.number} ${includeInputSymbols ? inputSymbolsStr : ''}`;
@@ -26,6 +26,7 @@ export default function createLRAction(type, input, targetState) {
         /**
          *
          * @param {LRAction} other
+         * @param {boolean} matchTargetState
          * @returns {boolean}
          */
         equals(other, matchTargetState) {
