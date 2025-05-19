@@ -1,3 +1,4 @@
+import createLRAction from './lraction.js';
 import createLRItem from './lritem.js';
 import './types.js';
 
@@ -51,6 +52,21 @@ export default function createLRState(baseItems, nonBaseItems, actions) {
             for (let i = 0; i < allItems.length; i++) {
                 const current = allItems[i];
                 if (item.equals(current)) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+
+        /**
+         *
+         * @param {LRAction} action
+         * @returns {number}
+         */
+        indexOfAction(action) {
+            for (let i = 0; i < this.actions.length; i++) {
+                const current = this.actions[i];
+                if (action.toString(true) === current.toString(true)) {
                     return i;
                 }
             }

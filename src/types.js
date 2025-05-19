@@ -52,4 +52,5 @@
  * @property {(includeLookahead:boolean,includeActions:boolean)=>string} toString
  * @property {(other:LRState,matchLookahead:boolean)=>boolean} equals
  * @property {(item:LRItem)=>number} indexOfItem
+ * @property {(action:LRAction)=>number} indexOfAction
  */
