@@ -18,3 +18,13 @@
  * @property {Set<string>} nullables
  * @property {(exp:string[])=>boolean} isNullable
  */
+
+/**
+ * @typedef LRItem
+ * @property {ProductionRule} rule
+ * @property {number} dotPosition index of the symbol after the dot in the RHS.
+ * @property {Set<string>} lookAhead
+ * @property {(includeLookahead:boolean)=>string} toString returns a string representation of the item in the format {A -> B.CD ,{a,b,c}} if includeLookahead is true; other wise the format is {A -> B.CD}
+ * @property {(other:LRItem)=>boolean} equals returns true if the toString call of the two items are the same, false otherwise.
+ * @property {()=>LRItem} clone returns a deep copy of the item.
+ */
