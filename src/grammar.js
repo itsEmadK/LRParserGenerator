@@ -29,9 +29,42 @@ export default function createGrammar(
             });
         });
     }
+
+    /**
+     * @returns {Set<string>}
+     */
+    function calculateNullables() {
+        const nullables = new Set();
+        rules.forEach((rule) => {
+            if (rule.RHS.length === 0) {
+                nullables.add(rule.LHS);
+            }
+        });
+
+        let oldCount = 0;
+        while (true) {
+            oldCount = nullables.size;
+            rules.forEach((rule) => {
+                const isNullable = rule.RHS.every((symbol) =>
+                    nullables.has(symbol),
+                );
+                if (isNullable) {
+                    nullables.add(rule.LHS);
+                }
+            });
+            const newCount = nullables.size;
+            if (newCount === oldCount) {
+                break;
+            }
+        }
+        return nullables;
+    }
+    const nullables = calculateNullables();
+
     return {
         rules: rules.slice(),
         terminals: _terminals,
         nonTerminals: _nonTerminals,
+        nullables,
     };
 }
