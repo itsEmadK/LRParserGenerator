@@ -8,7 +8,8 @@
         "prefer-const": "warn",
         "import/prefer-default-export": "warn",
         "no-plusplus": "off",
-        "import/extensions": "off"
+        "import/extensions": "off",
+        "no-restricted-syntax": "off"
     },
     "parserOptions": {
         "ecmaVersion": "latest",
