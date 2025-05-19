@@ -28,3 +28,16 @@
  * @property {(other:LRItem)=>boolean} equals returns true if the toString call of the two items are the same, false otherwise.
  * @property {()=>LRItem} clone returns a deep copy of the item.
  */
+
+/**
+ * @typedef LRAction
+ * @property {string} type one of {A, G, S, R}
+ * @property {string[]} input the symbols triggering the action
+ * @property {LRState} targetState the symbols triggering the action
+ * @property {int} targetStateNumber the symbols triggering the action
+ * @property {(includeInputSymbols)=>string} toString returns a string representation of the action in the format: {{type}{targetStateNumber}, {input}} if the includeLookahead is true. example: S3, {a}. if the includeLookahead is false, the format will be: {{type}{targetStateNumber}}
+ * @property {(other, matchInputSymbols)=>boolean} equals returns true if the toString results of the objects are the same, false otherwise.
+ * @property {(matchInputSymbols)=>boolean} clone returns a deep copy of the object.
+ *
+ */
+
