@@ -112,6 +112,27 @@ export default function createGrammar(
     }
     const firstSets = calculateFirstSets();
 
+    /**
+     *
+     * @param {string[]} exp
+     */
+    function getFirstSet(exp) {
+        let first = new Set();
+        for (let i = 0; i < exp.length; i++) {
+            const symbol = exp[i];
+            if (_terminals.has(symbol)) {
+                first = new Set([...first, symbol]);
+                break;
+            } else {
+                first = new Set([...first, ...firstSets.get(symbol)]);
+                if (!isNullable([symbol])) {
+                    break;
+                }
+            }
+        }
+        return first;
+    }
+
     return {
         rules: rules.slice(),
         terminals: _terminals,
@@ -119,5 +140,6 @@ export default function createGrammar(
         nullables,
         firstSets,
         isNullable,
+        getFirstSet,
     };
 }
