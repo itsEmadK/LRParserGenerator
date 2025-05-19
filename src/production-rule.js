@@ -8,5 +8,12 @@ import './types.js';
  * @returns {ProductionRule}
  */
 export default function createProductionRule(number, LHS, RHS) {
-    return { number, LHS: LHS.slice(), RHS: RHS.slice() };
+    return {
+        number,
+        LHS: LHS.slice(),
+        RHS: RHS.slice(),
+        toString() {
+            return `${LHS} ->${number} ${RHS.join('')}`;
+        },
+    };
 }
