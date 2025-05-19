@@ -19,7 +19,7 @@ const LRactionsSortFunction = (a, b) => {
         }
     }
 };
-const LRItemsSortFunction = (a, b) => {
+export const LRItemsSortFunction = (a, b) => {
     if (a.rule.LHS < b.rule.LHS) {
         return -1;
     } else if (a.rule.LHS > b.rule.LHS) {
@@ -267,6 +267,47 @@ export default function createLRState(
                 }
             }
             return newState;
+        },
+
+        /**
+         *
+         * @param {Grammar} grammar
+         * @returns {LRState}
+         */
+        calculateStateActions(grammar) {
+            const actions = [];
+            [...this.baseItems, ...this.nonBaseItems].forEach((item) => {
+                const symbol = item.rule.RHS[item.dotPosition];
+                if (symbol) {
+                    if (symbol === '$') {
+                        const action = createLRAction('A', ['$'], null);
+                        actions.push(action);
+                    } else if (
+                        grammar.terminals.has(symbol) ||
+                        grammar.nonTerminals.has(symbol)
+                    ) {
+                        const baseItem = item.clone();
+                        baseItem.dotPosition++;
+                        const action = createLRAction(
+                            grammar.terminals.has(symbol) ? 'S' : 'G',
+                            [symbol],
+                        );
+                        const oldAction = [...this.actions].find((act) =>
+                            act.equals(action, false),
+                        );
+                        if (oldAction) {
+                            oldAction.targetStateBaseItems.push(baseItem);
+                        } else {
+                            action.targetStateBaseItems = [baseItem];
+                            actions.push(action);
+                        }
+                    }
+                } else {
+                    const action = createLRAction('R', item.lookAhead, null);
+                    actions.push(action);
+                }
+            });
+            return actions;
         },
     };
 }
