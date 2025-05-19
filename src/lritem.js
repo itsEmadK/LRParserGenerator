@@ -11,7 +11,7 @@ export default function createLRItem(rule, dotPosition, lookAhead) {
     return {
         rule: rule.clone(),
         dotPosition,
-        lookAhead: new Set(...lookAhead),
+        lookAhead: new Set([...lookAhead]),
         toString(includeLookahead) {
             const dottedRHS = [...this.rule.RHS];
             dottedRHS.splice(this.dotPosition, 0, '.');

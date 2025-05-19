@@ -10,7 +10,7 @@ import './types.js';
 export default function createLRAction(type, input, targetState) {
     return {
         type,
-        input: new Set(...input),
+        input: new Set([...input]),
         targetState: targetState.clone(),
         toString(includeInputSymbols) {
             const inputSymbolsStr = `{${[...this.input].join()}}`;
