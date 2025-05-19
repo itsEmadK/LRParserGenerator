@@ -120,7 +120,7 @@ export default function createGrammar(
         let first = new Set();
         for (let i = 0; i < exp.length; i++) {
             const symbol = exp[i];
-            if (_terminals.has(symbol)) {
+            if (_terminals.has(symbol) || symbol === '$') {
                 first = new Set([...first, symbol]);
                 break;
             } else {
