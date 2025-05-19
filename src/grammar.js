@@ -56,14 +56,6 @@ export default function createGrammar(
     const nullables = calculateNullables();
 
     /**
-     *
-     * @param {string[]} exp
-     */
-    function isNullable(exp) {
-        return exp.every((symbol) => nullables.has(symbol));
-    }
-
-    /**
      * @returns {Map<string,Set<string>>}
      */
     function calculateFirstSets() {
@@ -111,6 +103,14 @@ export default function createGrammar(
         return firstSets;
     }
     const firstSets = calculateFirstSets();
+
+    /**
+     *
+     * @param {string[]} exp
+     */
+    function isNullable(exp) {
+        return exp.every((symbol) => nullables.has(symbol));
+    }
 
     /**
      *
