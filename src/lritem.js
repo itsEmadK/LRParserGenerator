@@ -15,14 +15,14 @@ export default function createLRItem(rule, dotPosition, lookAhead) {
         toString(includeLookahead) {
             const dottedRHS = [...this.rule.RHS];
             dottedRHS.splice(this.dotPosition, 0, '.');
-            const lookAheadString = `{${this.lookAhead.join()}}`;
+            const lookAheadString = `{${[...this.lookAhead].join()}}`;
             return `${this.rule.LHS} -> ${dottedRHS.join('')} ${includeLookahead ? lookAheadString : ''}`;
         },
         equals(other) {
             return other.toString() === this.toString();
         },
-        clone(){
-            return createLRItem(this.rule, this.dotPosition, this.lookAhead)
-        }
+        clone() {
+            return createLRItem(this.rule, this.dotPosition, this.lookAhead);
+        },
     };
 }
