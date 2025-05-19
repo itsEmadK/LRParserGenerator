@@ -25,7 +25,7 @@
  * @property {number} dotPosition index of the symbol after the dot in the RHS.
  * @property {Set<string>} lookAhead
  * @property {(includeLookahead:boolean)=>string} toString returns a string representation of the item in the format {A -> B.CD ,{a,b,c}} if includeLookahead is true; other wise the format is {A -> B.CD}
- * @property {(other:LRItem)=>boolean} equals returns true if the toString call of the two items are the same, false otherwise.
+ * @property {(other:LRItem,matchLookahead:boolean)=>boolean} equals returns true if the toString call of the two items are the same, false otherwise.
  * @property {()=>LRItem} clone returns a deep copy of the item.
  */
 
@@ -48,6 +48,6 @@
  * @property {LRAction[]} actions
  * @property {(rules:ProductionRule[])=>LRState} calculateClosure
  * @property {()=>LRState} clone
- * @property {(includeLookahead:boolean)=>string} toString
+ * @property {(includeLookahead:boolean,includeActions:boolean)=>string} toString
  * @property {(other:LRState,matchLookahead:boolean)=>boolean} equals
  */
