@@ -35,19 +35,13 @@ export default function createGrammar(
      */
     function calculateNullables() {
         const nullables = new Set();
-        rules.forEach((rule) => {
-            if (rule.RHS.length === 0) {
-                nullables.add(rule.LHS);
-            }
-        });
-
         let oldCount = 0;
         while (true) {
             oldCount = nullables.size;
             rules.forEach((rule) => {
-                const isNullable = rule.RHS.every((symbol) =>
-                    nullables.has(symbol),
-                );
+                const isNullable =
+                    rule.RHS.every((symbol) => nullables.has(symbol)) ||
+                    rule.RHS.length === 0;
                 if (isNullable) {
                     nullables.add(rule.LHS);
                 }
