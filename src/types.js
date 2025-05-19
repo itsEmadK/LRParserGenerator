@@ -41,3 +41,14 @@
  *
  */
 
+/**
+ * @typedef LRState
+ * @property {number} number
+ * @property {LRItem[]} baseItems
+ * @property {LRItem[]} nonBaseItems
+ * @property {LRAction[]} actions
+ * @property {(rules:ProductionRule[])=>LRState} calculateClosure
+ * @property {()=>LRState} clone
+ * @property {(includeLookahead)=>string} toString
+ * @property {(other,matchLookahead)=>boolean} equals
+ */
