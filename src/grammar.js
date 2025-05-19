@@ -61,10 +61,19 @@ export default function createGrammar(
     }
     const nullables = calculateNullables();
 
+    /**
+     *
+     * @param {string[]} exp
+     */
+    function isNullable(exp) {
+        return exp.every((symbol) => nullables.has(symbol));
+    }
+
     return {
         rules: rules.slice(),
         terminals: _terminals,
         nonTerminals: _nonTerminals,
         nullables,
+        isNullable,
     };
 }
