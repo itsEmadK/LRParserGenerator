@@ -34,8 +34,8 @@
  * @property {string} type one of {A, G, S, R}
  * @property {Set<string>} input the symbols triggering the action
  * @property {LRState} targetState the symbols triggering the action
- * @property {(includeInputSymbols)=>string} toString returns a string representation of the action in the format: {{type}{targetStateNumber}, {input}} if the includeLookahead is true. example: S3, {a}. if the includeLookahead is false, the format will be: {{type}{targetStateNumber}}
- * @property {(other, matchInputSymbols)=>boolean} equals returns true if the toString results of the objects are the same, false otherwise.
+ * @property {(includeInputSymbols:boolean)=>string} toString returns a string representation of the action in the format: {{type}{targetStateNumber}, {input}} if the includeLookahead is true. example: S3, {a}. if the includeLookahead is false, the format will be: {{type}{targetStateNumber}}
+ * @property {(other:LRAction)=>boolean} equals returns true if the toString results of the objects are the same, false otherwise.
  * @property {(matchInputSymbols)=>boolean} clone returns a deep copy of the object.
  *
  */
@@ -48,6 +48,6 @@
  * @property {LRAction[]} actions
  * @property {(rules:ProductionRule[])=>LRState} calculateClosure
  * @property {()=>LRState} clone
- * @property {(includeLookahead)=>string} toString
- * @property {(other,matchLookahead)=>boolean} equals
+ * @property {(includeLookahead:boolean)=>string} toString
+ * @property {(other:LRState,matchLookahead:boolean)=>boolean} equals
  */
