@@ -15,5 +15,8 @@ export default function createProductionRule(number, LHS, RHS) {
         toString() {
             return `${LHS} ->${number} ${RHS.join('')}`;
         },
+        clone() {
+            return { number, LHS, RHS: RHS.slice() };
+        },
     };
 }
