@@ -18,5 +18,8 @@ export default function createProductionRule(number, LHS, RHS) {
         clone() {
             return { number, LHS, RHS: RHS.slice() };
         },
+        equals(other) {
+            return this.toString() === other.toString();
+        },
     };
 }
