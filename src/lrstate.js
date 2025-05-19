@@ -1,3 +1,4 @@
+import createLRItem from './lritem.js';
 import './types.js';
 
 /**
@@ -107,6 +108,42 @@ export default function createLRState(baseItems, nonBaseItems, actions) {
 
                 const newCount = calculateItemLookaheadCount();
                 if (oldCount === newCount) {
+                    break;
+                }
+            }
+            return newState;
+        },
+
+        /**
+         *
+         * @param {Grammar} grammar
+         * @returns {LRState} updated state with calculated closure
+         */
+        calculateClosure(grammar) {
+            const newState = this.clone();
+            function calculateStateItemCount() {
+                return newState.nonBaseItems.length;
+            }
+            while (true) {
+                const oldCount = calculateStateItemCount();
+                [...newState.baseItems, ...newState.nonBaseItems].forEach(
+                    (item) => {
+                        const symbol = item.rule.RHS[item.dotPosition];
+                        if (grammar.nonTerminals.has(symbol)) {
+                            const correspondingRules = grammar.rules.filter(
+                                (rule) => rule.LHS === symbol,
+                            );
+                            correspondingRules.forEach((rule) => {
+                                const newItem = createLRItem(rule, 0, []);
+                                if (newState.indexOfItem(newItem) === -1) {
+                                    newState.nonBaseItems.push(newItem);
+                                }
+                            });
+                        }
+                    },
+                );
+                const newCount = calculateStateItemCount();
+                if (newCount === oldCount) {
                     break;
                 }
             }
