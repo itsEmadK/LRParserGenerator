@@ -10,13 +10,13 @@ import './types.js';
 export default function createProductionRule(number, LHS, RHS) {
     return {
         number,
-        LHS: LHS.slice(),
+        LHS,
         RHS: RHS.slice(),
         toString() {
-            return `${LHS} ->${number} ${RHS.join('')}`;
+            return `${this.LHS} ->${this.number} ${this.RHS.join('')}`;
         },
         clone() {
-            return { number, LHS, RHS: RHS.slice() };
+            return createProductionRule(this.number, this.LHS, this.RHS);
         },
         equals(other) {
             return this.toString() === other.toString();
