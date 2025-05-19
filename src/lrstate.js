@@ -40,5 +40,20 @@ export default function createLRState(baseItems, nonBaseItems, actions) {
                 this.actions,
             );
         },
+
+        /**
+         * @param {LRItem} item
+         * @returns {number} index of the found item, if no such item was present, null.
+         */
+        indexOfItem(item) {
+            const allItems = [...this.baseItems, ...this.nonBaseItems];
+            for (let i = 0; i < allItems.length; i++) {
+                const current = allItems[i];
+                if (item.equals(current)) {
+                    return i;
+                }
+            }
+            return -1;
+        },
     };
 }
