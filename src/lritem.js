@@ -52,6 +52,22 @@ export default class LRItem {
         return new Set([...this.#lookahead]);
     }
 
+    /**
+     *
+     * @returns {boolean}
+     */
+    isReducible() {
+        return this.#dotPosition === this.#rule.rhs.length;
+    }
+
+    /**
+     *
+     * @returns {string}
+     */
+    getNextSymbol() {
+        return this.#rule.rhs[this.#dotPosition] || null;
+    }
+
     hash() {
         const dotPositionStr = this.#dotPosition.toString().charCodeAt(0);
         const lookaheadStr = [...this.#lookahead.values()]
