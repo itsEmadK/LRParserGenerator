@@ -58,11 +58,7 @@ export default class Grammar {
         this.#nonTerminals.forEach((nt) => this.#firstSets.set(nt, new Set()));
         while (true) {
             const oldCount = calcCount();
-
             this.#rules.forEach((rule) => {
-                if (rule.lhs === 'E') {
-                    let a = 2;
-                }
                 for (let i = 0; i < rule.rhs.length; i++) {
                     const symbol = rule.rhs[i];
                     if (this.#terminals.has(symbol)) {
