@@ -48,9 +48,16 @@ export default class Grammar {
     }
 
     #calculateFirstSets() {
+        const calcCount = () => {
+            let count = 0;
+            this.#firstSets.forEach((first, symbol) => {
+                count += first.size;
+            });
+            return count;
+        };
         this.#nonTerminals.forEach((nt) => this.#firstSets.set(nt, new Set()));
         while (true) {
-            const oldCount = this.#firstSets.size;
+            const oldCount = calcCount();
 
             this.#rules.forEach((rule) => {
                 if (rule.lhs === 'E') {
@@ -72,7 +79,7 @@ export default class Grammar {
                 }
             });
 
-            const newCount = this.#firstSets.size;
+            const newCount = calcCount();
             if (oldCount === newCount) {
                 break;
             }
@@ -124,7 +131,7 @@ export default class Grammar {
         let output = new Set();
         for (let i = 0; i < expr.length; i++) {
             const symbol = expr[i];
-            output = new Set(...output, ...this.#firstSets.get(symbol));
+            output = new Set([...output, ...this.#firstSets.get(symbol)]);
             if (this.#nullables.has(symbol)) {
                 break;
             }
