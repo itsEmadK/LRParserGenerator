@@ -100,4 +100,14 @@ export default class LRItem {
             ...this.#lookahead,
         ]);
     }
+
+    /**
+     *
+     * @param {string[]} symbols
+     */
+    addToLookahead(symbols) {
+        symbols.forEach((symbol) => {
+            this.#lookahead.add(symbol);
+        });
+    }
 }
