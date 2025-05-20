@@ -55,6 +55,7 @@ export default class LRItem {
     hash() {
         const dotPositionStr = this.#dotPosition.toString().charCodeAt(0);
         const lookaheadStr = [...this.#lookahead.values()]
+            .sort()
             .join('')
             .split('')
             .map((symbol) => symbol.charCodeAt(0))
