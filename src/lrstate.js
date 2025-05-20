@@ -19,6 +19,11 @@ export default class LRState {
     #derivedItems = new HashSet();
 
     /**
+     * @type {{type:string,inputs:string[]}[]}
+     */
+    #actions = [];
+
+    /**
      *
      * @param {LRItem[]} baseItems
      */
@@ -27,6 +32,7 @@ export default class LRState {
         baseItems.forEach((item) => {
             this.#baseItems.add(item.clone());
         });
+        this.#calculateClosure();
     }
 
     /**
@@ -46,6 +52,41 @@ export default class LRState {
             this.#derivedItems.values().map((item) => item.clone()),
         );
     }
+
+    get closure() {
+        return new HashSet([
+            ...this.#baseItems.values().map((item) => item.clone()),
+            ...this.#derivedItems.values().map((item) => item.clone()),
+        ]);
+    }
+
+    #calculateClosure() {
+        while (true) {
+            const oldCount = this.#derivedItems.size;
+
+            this.closure.forEach((item) => {
+                const symbol = item.getNextSymbol();
+                if (symbol) {
+                    if (this.#grammar.nonTerminals.has(symbol)) {
+                        const lhsRules = this.#grammar.getRulesForLHS(symbol);
+                        lhsRules.forEach((rule) => {
+                            const newItem = new LRItem(rule, 0, []);
+                            this.#derivedItems.add(newItem);
+                        });
+                    }
+                }
+            });
+
+            const newCount = this.#derivedItems.size;
+            if (oldCount === newCount) {
+                break;
+            }
+        }
+    }
+
+    #calculateLookahead() {}
+
+    #calculateActions() {}
 
     hash() {
         let hash = '';
