@@ -1,13 +1,19 @@
 /**
- * items of the set must be hashable(must have a hash() method)
+ * A custom hash-based set implementation.
+ * Items of the set must implement a `hash()` method that returns a string.
+ *
+ * @template T
  */
 export default class HashSet {
+    /**
+     * @type {Map<string,Set<T>>}
+     */
     #map = new Map();
+
     /**
      *
-     * @param {*[]} items
+     * @param {items:T[]} items
      */
-
     constructor(items) {
         items.forEach((item) => {
             this.#map.set(item.hash(), item);
@@ -16,13 +22,17 @@ export default class HashSet {
 
     /**
      *
-     * @param {*} item
+     * @param {item:T} item
      * @returns {boolean}
      */
     has(item) {
         return !!this.#map.get(item.hash());
     }
 
+    /**
+     *
+     * @param {item:T} item
+     */
     add(item) {
         if (!this.has(item)) {
             this.#map.set(item.hash(), item);
@@ -35,7 +45,7 @@ export default class HashSet {
 
     /**
      *
-     * @param {*} item
+     * @param {item:T} item
      */
     delete(item) {
         this.#map.delete(item.hash());
@@ -43,7 +53,7 @@ export default class HashSet {
 
     /**
      *
-     * @returns *[]
+     * @returns {values:T[]}
      */
     values() {
         const valuesSorted = [...this.#map.values()].sort((a, b) =>
@@ -54,7 +64,7 @@ export default class HashSet {
 
     /**
      *
-     * @param {(*)=>void} callbackFn
+     * @param {(item:T)=>void} callbackFn
      */
     forEach(callbackFn) {
         this.values().forEach((value) => callbackFn(value));
