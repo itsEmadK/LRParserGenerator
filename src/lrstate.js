@@ -109,4 +109,29 @@ export default class LRState {
             ...this.#baseItems.values().map((item) => item.clone()),
         ]);
     }
+
+    toString() {
+        let output = '=============================\n';
+
+        output += 'Base Items:\n';
+        this.#baseItems.forEach((item) => {
+            output += '\t';
+            output += item.toString();
+            output += '\n';
+        });
+        output += '_____________________________\n';
+
+        output += 'Derived Items:\n';
+        this.#derivedItems.forEach((item) => {
+            output += '\t';
+            output += item.toString();
+            output += '\n';
+        });
+
+        output += '=============================\n';
+        return output;
+    }
+
+    // goto(){}
+    // shift(){}
 }
