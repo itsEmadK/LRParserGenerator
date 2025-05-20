@@ -61,4 +61,9 @@ export default class LRItem {
             .join('');
         return `${this.#rule.hash()}${dotPositionStr}${lookaheadStr}`;
     }
+
+    hashWithoutLookahead() {
+        const dotPositionStr = this.#dotPosition.toString().charCodeAt(0);
+        return `${this.#rule.hash()}${dotPositionStr}`;
+    }
 }
