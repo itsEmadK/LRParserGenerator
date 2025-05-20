@@ -3,7 +3,7 @@ import Production from './prod.js';
 
 export default class Grammar {
     /**
-     * @type {HashSet<Production>}
+     * @type {HashSet<{num:number,rule:Production,hash:()=>string}>}
      */
     #rules = new HashSet();
 
@@ -34,7 +34,13 @@ export default class Grammar {
      * @param {string[]} [terminals=[]]
      */
     constructor(rules, terminals = [], nonTerminals = []) {
-        rules.forEach((rule) => this.#rules.add(rule.clone()));
+        rules.forEach((rule, index) =>
+            this.#rules.add({
+                num: index + 1,
+                rule: rule.clone(),
+                hash: () => `${index + 1}${rule.hash()}`,
+            }),
+        );
         if (terminals) {
             terminals.forEach((t) => this.#terminals.add(t));
         }
@@ -58,7 +64,7 @@ export default class Grammar {
         this.#nonTerminals.forEach((nt) => this.#firstSets.set(nt, new Set()));
         while (true) {
             const oldCount = calcCount();
-            this.#rules.forEach((rule) => {
+            this.#rules.forEach(({ rule }) => {
                 for (let i = 0; i < rule.rhs.length; i++) {
                     const symbol = rule.rhs[i];
                     if (this.#terminals.has(symbol)) {
@@ -86,7 +92,7 @@ export default class Grammar {
         while (true) {
             const oldCount = this.#nullables.size;
 
-            this.#rules.forEach((rule) => {
+            this.#rules.forEach(({ rule }) => {
                 const isLambdaProd = rule.rhs.length === 0;
                 const isRHSNullable = rule.rhs.every((symbol) =>
                     this.#nullables.has(symbol),
@@ -104,12 +110,12 @@ export default class Grammar {
     }
 
     #calculateNonTerminals() {
-        this.#rules.forEach((rule) => this.#nonTerminals.add(rule.lhs));
+        this.#rules.forEach(({ rule }) => this.#nonTerminals.add(rule.lhs));
     }
 
     #calculateTerminals() {
         this.#calculateNonTerminals();
-        this.#rules.forEach((rule) => {
+        this.#rules.forEach(({ rule }) => {
             rule.rhs.forEach((symbol) => {
                 if (!this.#nonTerminals.has(symbol)) {
                     this.#terminals.add(symbol);
@@ -144,8 +150,15 @@ export default class Grammar {
         return expr.every((symbol) => this.#nullables.has(symbol));
     }
 
+    /**
+     * @type {HashSet<{num:number,rule:Production,hash:()=>string}>}
+     */
     get rules() {
-        return this.#rules.values().map((r) => r.clone());
+        return this.#rules.values().map(({ num, rule }) => ({
+            num,
+            rule: rule.clone(),
+            hash: () => `${num + 1}${rule.hash()}`,
+        }));
     }
 
     /**
@@ -171,7 +184,7 @@ export default class Grammar {
     toString() {
         let output = '=======================================\n';
         output += 'Production Rules:\n';
-        this.#rules.forEach((rule) => {
+        this.#rules.forEach(({ rule }) => {
             output += '\t';
             output += rule.toString();
             output += '\n';
