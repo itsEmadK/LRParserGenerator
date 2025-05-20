@@ -144,6 +144,10 @@ export default class Grammar {
         return expr.every((symbol) => this.#nullables.has(symbol));
     }
 
+    get rules() {
+        return this.#rules.values().map((r) => r.clone());
+    }
+
     /**
      * @type {Map<string,Set<string>>}
      */
