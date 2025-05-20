@@ -1,5 +1,5 @@
-import HashSet from './hashset';
-import Production from './prod';
+import HashSet from './hashset.js';
+import Production from './prod.js';
 
 export default class LRItem {
     /**
@@ -50,5 +50,15 @@ export default class LRItem {
      */
     get lookahead() {
         return new Set([...this.#lookahead]);
+    }
+
+    hash() {
+        const dotPositionStr = this.#dotPosition.toString().charCodeAt(0);
+        const lookaheadStr = [...this.#lookahead.values()]
+            .join('')
+            .split('')
+            .map((symbol) => symbol.charCodeAt(0))
+            .join('');
+        return `${this.#rule.hash()}${dotPositionStr}${lookaheadStr}`;
     }
 }
