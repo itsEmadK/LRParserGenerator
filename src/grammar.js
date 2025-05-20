@@ -133,8 +133,20 @@ export default class Grammar {
         let output = new Set();
         for (let i = 0; i < expr.length; i++) {
             const symbol = expr[i];
-            output = new Set([...output, ...this.#firstSets.get(symbol)]);
+            if (this.#firstSets.get(symbol)) {
+                output = new Set([...output, ...this.#firstSets.get(symbol)]);
+            } else {
+                output = new Set([...output]);
+            }
             if (this.#nullables.has(symbol)) {
+                break;
+            }
+            if (this.#terminals.has(symbol)) {
+                output.add(symbol);
+                break;
+            }
+            if (symbol === '$') {
+                output.add('$');
                 break;
             }
         }
@@ -151,7 +163,10 @@ export default class Grammar {
     }
 
     getRulesForLHS(lhs) {
-        return this.#rules.values().filter(({ rule }) => rule.lhs === lhs);
+        return this.#rules
+            .values()
+            .filter(({ rule }) => rule.lhs === lhs)
+            .map(({ rule }) => rule);
     }
 
     /**
