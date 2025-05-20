@@ -35,7 +35,11 @@ export default class Production {
 
     hash() {
         const str = `${this.#lhs}${this.#rhs.join('')}`;
-        return str.split('').map((char) => char.charCodeAt(0));
+
+        return str
+            .split('')
+            .map((char) => char.charCodeAt(0))
+            .join('');
     }
 
     clone() {
