@@ -66,4 +66,20 @@ export default class LRItem {
         const dotPositionStr = this.#dotPosition.toString().charCodeAt(0);
         return `${this.#rule.hash()}${dotPositionStr}`;
     }
+
+    toString() {
+        let output = '================================\n';
+
+        output += `${this.#rule.lhs} ⟶ `;
+        const dottedRHS = this.#rule.rhs;
+        dottedRHS.splice(this.#dotPosition, 0, '•');
+        output += dottedRHS.join('');
+        if (this.#lookahead.size !== 0) {
+            output += ` ,{${[...this.#lookahead.values()].join()}} `;
+        }
+        output += '\n';
+
+        output += '================================\n';
+        return output;
+    }
 }
