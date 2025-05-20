@@ -12,7 +12,7 @@ export default class HashSet {
 
     /**
      *
-     * @param {items:T[]} items
+     * @param {T[]} items
      */
     constructor(items) {
         if (items) {
@@ -24,7 +24,7 @@ export default class HashSet {
 
     /**
      *
-     * @param {item:T} item
+     * @param {T} item
      * @returns {boolean}
      */
     has(item) {
@@ -33,7 +33,7 @@ export default class HashSet {
 
     /**
      *
-     * @param {item:T} item
+     * @param {T} item
      */
     add(item) {
         if (!this.has(item)) {
@@ -47,7 +47,7 @@ export default class HashSet {
 
     /**
      *
-     * @param {item:T} item
+     * @param {T} item
      */
     delete(item) {
         this.#map.delete(item.hash());
@@ -55,7 +55,7 @@ export default class HashSet {
 
     /**
      *
-     * @returns {values:T[]}
+     * @returns {T[]} values
      */
     values() {
         const valuesSorted = [...this.#map.values()].sort((a, b) =>
