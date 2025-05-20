@@ -1,7 +1,7 @@
 import HashSet from './hashset';
 import Production from './prod';
 
-class LRItem {
+export default class LRItem {
     /**
      * @type {Production}
      */
@@ -21,12 +21,14 @@ class LRItem {
      *
      * @param {Production} rule
      * @param {number} dotPosition
-     * @param {Set<string>} lookahead
+     * @param {string[]} lookahead
      */
     constructor(rule, dotPosition, lookahead) {
         this.#rule = rule.clone();
-        this.dotPosition = dotPosition;
-        this.lookahead = new Set([...lookahead]);
+        this.#dotPosition = dotPosition;
+        if (lookahead) {
+            this.#lookahead = new Set([...lookahead]);
+        }
     }
 
     /**
