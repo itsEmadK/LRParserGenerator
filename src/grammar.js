@@ -150,6 +150,10 @@ export default class Grammar {
         return expr.every((symbol) => this.#nullables.has(symbol));
     }
 
+    getRulesForLHS(lhs) {
+        return this.#rules.values().filter(({ rule }) => rule.lhs === lhs);
+    }
+
     /**
      * @type {HashSet<{num:number,rule:Production,hash:()=>string}>}
      */
@@ -213,5 +217,13 @@ export default class Grammar {
         output += '=======================================\n';
 
         return output;
+    }
+
+    get terminals() {
+        return new Set([...this.#terminals]);
+    }
+
+    get nonTerminals() {
+        return new Set([...this.#nonTerminals]);
     }
 }
