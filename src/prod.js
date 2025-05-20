@@ -41,4 +41,8 @@ export default class Production {
     clone() {
         return new Production(this.#lhs, this.#rhs);
     }
+
+    toString() {
+        return `${this.#lhs} -> ${this.#rhs.join('')}`;
+    }
 }

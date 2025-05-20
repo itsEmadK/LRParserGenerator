@@ -15,9 +15,11 @@ export default class HashSet {
      * @param {items:T[]} items
      */
     constructor(items) {
-        items.forEach((item) => {
-            this.#map.set(item.hash(), item);
-        });
+        if (items) {
+            items.forEach((item) => {
+                this.#map.set(item.hash(), item);
+            });
+        }
     }
 
     /**
