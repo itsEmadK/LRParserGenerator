@@ -83,4 +83,10 @@ export default class LRItem {
         output += '================================\n';
         return output;
     }
+
+    clone() {
+        return new LRItem(this.#rule.clone(), this.#dotPosition, [
+            ...this.#lookahead,
+        ]);
+    }
 }
