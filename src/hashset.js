@@ -71,4 +71,8 @@ export default class HashSet {
     forEach(callbackFn) {
         this.values().forEach((value) => callbackFn(value));
     }
+
+    get size() {
+        return this.#map.size;
+    }
 }
