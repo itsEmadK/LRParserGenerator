@@ -33,6 +33,7 @@ export default class LRState {
             this.#baseItems.add(item.clone());
         });
         this.#calculateClosure();
+        this.#calculateLookahead();
     }
 
     /**
@@ -84,7 +85,37 @@ export default class LRState {
         }
     }
 
-    #calculateLookahead() {}
+    #calculateLookahead() {
+        const calcCount = () => {
+            let count = 0;
+            this.#derivedItems.forEach((item) => {
+                count += item.lookahead.size;
+            });
+            return count;
+        };
+        while (true) {
+            const oldCount = calcCount();
+
+            this.#derivedItems.forEach((dit) => {
+                this.closure.forEach((it) => {
+                    if (it.getNextSymbol() === dit.rule.lhs) {
+                        const rest = it.rule.rhs.slice(it.dotPosition + 1);
+                        const restFirstSet = this.#grammar.getFirst(rest);
+                        dit.addToLookahead([...restFirstSet]);
+                        const isRestNullable = this.#grammar.isNullable(rest);
+                        if (isRestNullable) {
+                            dit.addToLookahead([...it.lookahead]);
+                        }
+                    }
+                });
+            });
+
+            const newCount = calcCount();
+            if (oldCount === newCount) {
+                break;
+            }
+        }
+    }
 
     #calculateActions() {}
 
