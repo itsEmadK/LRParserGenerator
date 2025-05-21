@@ -1,6 +1,7 @@
 import HashSet from './hashset.js';
 import Production from './prod.js';
 
+// TODO: Fix the bug of hashing with number!!!!
 export default class Grammar {
     /**
      * @type {HashSet<{num:number,rule:Production,hash:()=>string}>}
