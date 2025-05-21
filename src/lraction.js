@@ -1,5 +1,5 @@
-import HashSet from './hashset';
-import LRItem from './lritem';
+import HashSet from './hashset.js';
+import LRItem from './lritem.js';
 
 export default class LRAction {
     /**
@@ -19,7 +19,9 @@ export default class LRAction {
      */
     constructor(type, originatingItems) {
         this.#type = type;
-        this.#originatingItems = new HashSet([...originatingItems]);
+        this.#originatingItems = new HashSet([
+            ...originatingItems.map((item) => item.clone()),
+        ]);
     }
 
     get type() {
@@ -30,7 +32,9 @@ export default class LRAction {
      * @returns {HashSet<LRAction>}
      */
     get originatingItems() {
-        return new HashSet([...this.#originatingItems.values()]);
+        return new HashSet([
+            ...this.#originatingItems.values().map((item) => item.clone()),
+        ]);
     }
 
     /**
@@ -74,6 +78,6 @@ export default class LRAction {
      * @param {LRItem} item
      */
     addOriginatingItem(item) {
-        this.#originatingItems.add(item);
+        this.#originatingItems.add(item.clone());
     }
 }
