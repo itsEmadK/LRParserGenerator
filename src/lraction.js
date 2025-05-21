@@ -42,9 +42,18 @@ export default class LRAction {
      */
     get inputs() {
         const symbols = new Set();
-        this.#originatingItems.forEach((item) => {
-            symbols.add(item.getNextSymbol());
-        });
+        if (this.#type === 'S' || this.#type === 'G') {
+            this.#originatingItems.forEach((item) => {
+                symbols.add(item.getNextSymbol());
+            });
+        } else if (this.#type === 'A') {
+            symbols.add('$');
+        } else {
+            const item = this.#originatingItems.values()[0];
+            [...item.lookahead.values()].forEach((symbol) => {
+                symbols.add(symbol);
+            });
+        }
         return symbols;
     }
 
