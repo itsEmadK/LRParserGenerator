@@ -3,18 +3,19 @@ import HashSet from './hashset.js';
 import LR1DFA from './lr1dfa.js';
 import LRItem from './lritem.js';
 import LRState from './lrstate.js';
+import ParseTable from './parse-table.js';
 import Production from './prod.js';
 
-// const rules = [
-//     new Production('E', ['T', "E'"]),
-//     new Production("E'", []),
-//     new Production("E'", ['+', 'T', "E'"]),
-//     new Production('T', ['F', "T'"]),
-//     new Production("T'", []),
-//     new Production("T'", ['*', 'F', "T'"]),
-//     new Production('F', ['id']),
-//     new Production('F', ['(', 'E', ')']),
-// ];
+const rules = [
+    new Production('E', ['T', "E'"]),
+    new Production("E'", []),
+    new Production("E'", ['+', 'T', "E'"]),
+    new Production('T', ['F', "T'"]),
+    new Production("T'", []),
+    new Production("T'", ['*', 'F', "T'"]),
+    new Production('F', ['id']),
+    new Production('F', ['(', 'E', ')']),
+];
 
 // hs.forEach((it) => console.log(it.toString()));
 
@@ -25,13 +26,13 @@ import Production from './prod.js';
 //     new Production('E', ['id']),
 //     new Production('E', ['(', 'E', ')']),
 // ];
-const rules = [
-    new Production('E', ['L', '=', 'R']),
-    new Production('E', ['R']),
-    new Production('L', ['id']),
-    new Production('L', ['*', 'R']),
-    new Production('R', ['L']),
-];
+// const rules = [
+//     new Production('E', ['L', '=', 'R']),
+//     new Production('E', ['R']),
+//     new Production('L', ['id']),
+//     new Production('L', ['*', 'R']),
+//     new Production('R', ['L']),
+// ];
 
 const grammar = new Grammar(rules);
 
@@ -48,4 +49,10 @@ dfa.states.forEach((s) => {
     console.log('-----------------------');
 });
 
-console.log(dfa.states.size);
+const pt = new ParseTable(dfa);
+console.log(pt.isError('12', 'asd'));
+
+console.log(pt.getCell('12', '*'));
+console.log(pt.getRow('12'));
+console.log(pt.toString());
+console.log(pt.getCell('0', 'id'));
