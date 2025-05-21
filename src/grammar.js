@@ -247,4 +247,13 @@ export default class Grammar {
     get startSymbol() {
         return this.#startSymbol;
     }
+
+    /**
+     *
+     * @param {Production} rule
+     * @returns {number}
+     */
+    findRuleNumber(rule) {
+        return this.#rules.values().findIndex((r) => r.hash() === rule.hash());
+    }
 }
