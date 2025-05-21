@@ -8,7 +8,7 @@ export default class LR1DFA {
     /**
      * @type {Grammar}
      */
-    #grammar;
+    grammar;
 
     /**
      * @type {HashSet<LRState>}
@@ -25,19 +25,19 @@ export default class LR1DFA {
      * @param {Grammar} grammar
      */
     constructor(grammar) {
-        this.#grammar = grammar;
+        this.grammar = grammar;
         this.#calculateStates();
     }
 
     #calculateStates() {
-        const { startSymbol } = this.#grammar;
+        const { startSymbol } = this.grammar;
         let augmentedLHS = 'S';
-        while (this.#grammar.nonTerminals.has(augmentedLHS)) {
+        while (this.grammar.nonTerminals.has(augmentedLHS)) {
             augmentedLHS += "'";
         }
         const augmentedRule = new Production(augmentedLHS, [startSymbol, '$']);
         const baseItem = new LRItem(augmentedRule, 0, []);
-        const startState = new LRState([baseItem], this.#grammar);
+        const startState = new LRState([baseItem], this.grammar);
         this.#startState = startState;
         const q = [];
         q.push(this.#startState);
