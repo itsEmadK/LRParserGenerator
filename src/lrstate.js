@@ -255,4 +255,40 @@ export default class LRState {
     shift(inputSymbol) {
         return this.#transition('S', inputSymbol);
     }
+
+    /**
+     *
+     * @param {LRState[]} states
+     * @returns {LRState}
+     */
+    merge(states) {
+        let newState = new LRState(this.baseItems, this.#grammar);
+        states.forEach((state) => {
+            const newBaseItems = new HashSet(
+                newState.baseItems.values(),
+                LRItem.hashWithoutLookahead,
+            );
+            state.closure.forEach((item) => {
+                for (let i = 0; i < newState.baseItems.size; i++) {
+                    const it = newState.baseItems.values()[i];
+                    if (
+                        it.hashWithoutLookahead() ===
+                        item.hashWithoutLookahead()
+                    ) {
+                        const mergedItem = new LRItem(it.rule, it.dotPosition, [
+                            ...it.lookahead,
+                            ...item.lookahead,
+                        ]);
+                        newBaseItems.delete(mergedItem);
+                        newBaseItems.add(mergedItem);
+                        break;
+                    }
+                }
+            });
+
+            newState = new LRState(newBaseItems.values(), this.#grammar);
+        });
+
+        return newState;
+    }
 }
