@@ -219,6 +219,37 @@ export default class LRState {
         return output;
     }
 
-    // goto(){}
-    // shift(){}
+    #transition(type, inputSymbol) {
+        const targetBaseItems = this.#actions
+            .values()
+            .find(
+                (action) =>
+                    action.type === type && action.inputs.has(inputSymbol),
+            )
+            .originatingItems.values()
+            .map(
+                (item) =>
+                    new LRItem(item.rule, item.dotPosition + 1, item.lookahead),
+            );
+        const newState = new LRState(targetBaseItems, this.#grammar);
+        return newState;
+    }
+
+    /**
+     *
+     * @param {string} inputSymbol
+     * @returns {LRState}
+     */
+    goto(inputSymbol) {
+        return this.#transition('G', inputSymbol);
+    }
+
+    /**
+     *
+     * @param {string} inputSymbol
+     * @returns {LRState}
+     */
+    shift(inputSymbol) {
+        return this.#transition('S', inputSymbol);
+    }
 }
