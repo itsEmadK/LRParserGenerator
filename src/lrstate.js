@@ -230,7 +230,9 @@ export default class LRState {
             .originatingItems.values()
             .map(
                 (item) =>
-                    new LRItem(item.rule, item.dotPosition + 1, item.lookahead),
+                    new LRItem(item.rule, item.dotPosition + 1, [
+                        ...item.lookahead,
+                    ]),
             );
         const newState = new LRState(targetBaseItems, this.#grammar);
         return newState;
