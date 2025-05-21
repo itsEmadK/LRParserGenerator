@@ -178,9 +178,10 @@ export default class LRState {
     }
 
     clone() {
-        return new LRState([
-            ...this.#baseItems.values().map((item) => item.clone()),
-        ]);
+        return new LRState(
+            [...this.#baseItems.values().map((item) => item.clone())],
+            this.#grammar,
+        );
     }
 
     toString() {
