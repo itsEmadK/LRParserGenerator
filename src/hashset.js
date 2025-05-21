@@ -16,13 +16,25 @@ export default class HashSet {
     #index = 0;
 
     /**
+     * @type {(T)=>string}
+     */
+    #hashFn;
+
+    /**
      *
      * @param {T[]} items
+     * @param {(T)=>string} hashFn
      */
-    constructor(items) {
+    constructor(items, hashFn) {
+        if (hashFn) {
+            this.#hashFn = hashFn;
+        }
         if (items) {
             items.forEach((item) => {
-                this.#map.set(item.hash(), { index: this.#index++, item });
+                this.#map.set(this.#hashFn ? this.#hashFn(item) : item.hash(), {
+                    index: this.#index++,
+                    item,
+                });
             });
         }
     }
@@ -33,7 +45,7 @@ export default class HashSet {
      * @returns {boolean}
      */
     has(item) {
-        return this.#map.has(item.hash());
+        return this.#map.has(this.#hashFn ? this.#hashFn(item) : item.hash());
     }
 
     /**
@@ -42,7 +54,10 @@ export default class HashSet {
      */
     add(item) {
         if (!this.has(item)) {
-            this.#map.set(item.hash(), { index: this.#index++, item });
+            this.#map.set(this.#hashFn ? this.#hashFn(item) : item.hash(), {
+                index: this.#index++,
+                item,
+            });
         }
     }
 
@@ -55,7 +70,7 @@ export default class HashSet {
      * @param {T} item
      */
     delete(item) {
-        this.#map.delete(item.hash());
+        this.#map.delete(this.#hashFn ? this.#hashFn(item) : item.hash());
     }
 
     /**
