@@ -71,10 +71,10 @@ export default class HashSet {
 
     /**
      *
-     * @param {(item:T)=>void} callbackFn
+     * @param {(item:T,index:number)=>void} callbackFn
      */
     forEach(callbackFn) {
-        this.values().forEach((value) => callbackFn(value));
+        this.values().forEach((value, index) => callbackFn(value, index));
     }
 
     get size() {
