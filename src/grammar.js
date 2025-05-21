@@ -28,10 +28,22 @@ export default class Grammar {
     #nullables = new Set();
 
     /**
+     * @type {string}
+     */
+    #startSymbol;
+
+    /**
      *
      * @param {Production[]} rules
+     * @param {string} startSymbol
      */
-    constructor(rules) {
+    constructor(rules, startSymbol) {
+        if (startSymbol) {
+            this.#startSymbol = startSymbol;
+        } else {
+            this.#startSymbol = rules[0].lhs;
+        }
+
         rules.forEach((rule, index) =>
             this.#rules.add({
                 num: index + 1,
@@ -233,5 +245,9 @@ export default class Grammar {
 
     get nonTerminals() {
         return new Set([...this.#nonTerminals]);
+    }
+
+    get startSymbol() {
+        return this.#startSymbol;
     }
 }
