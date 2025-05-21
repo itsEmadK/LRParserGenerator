@@ -29,7 +29,7 @@ export default class LRAction {
     }
 
     /**
-     * @returns {HashSet<LRAction>}
+     * @returns {HashSet<LRItem>}
      */
     get originatingItems() {
         return new HashSet([
