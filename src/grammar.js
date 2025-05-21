@@ -1,145 +1,259 @@
-/* eslint-disable no-underscore-dangle */
-import './types.js';
+import HashSet from './hashset.js';
+import Production from './prod.js';
 
-/**
- *
- * @param {ProductionRule[]} rules list of all production rules.
- * @param {Set<string>} terminals list of terminals; if not passed, it will be extracted from the RHS of rules; everything that is in the RHS and is not in non-terminals, is considered a terminal.
- * @param {Set<string>} nonTerminals list of non-terminals; if not passed, it will be extracted from the LHS of rules.
- * @returns {Grammar}
- */
-export default function createGrammar(
-    rules,
-    terminals = new Set(),
-    nonTerminals = new Set(),
-) {
-    const _nonTerminals = new Set(nonTerminals);
-    if (_nonTerminals.size === 0) {
-        rules.forEach((rule) => {
-            _nonTerminals.add(rule.LHS);
-        });
-    }
-    const _terminals = new Set(terminals);
-    if (_terminals.size === 0) {
-        rules.forEach((rule) => {
-            rule.RHS.forEach((symbol) => {
-                if (!_nonTerminals.has(symbol)) {
-                    _terminals.add(symbol);
-                }
-            });
-        });
-    }
+export default class Grammar {
+    /**
+     * @type {HashSet<Production>}
+     */
+    #rules = new HashSet();
 
     /**
-     * @returns {Set<string>}
+     * @type {Set<string>}
      */
-    function calculateNullables() {
-        const nullables = new Set();
-        let oldCount = 0;
-        while (true) {
-            oldCount = nullables.size;
-            rules.forEach((rule) => {
-                const isNullable =
-                    rule.RHS.every((symbol) => nullables.has(symbol)) ||
-                    rule.RHS.length === 0;
-                if (isNullable) {
-                    nullables.add(rule.LHS);
-                }
-            });
-            const newCount = nullables.size;
-            if (newCount === oldCount) {
-                break;
-            }
+    #terminals = new Set();
+
+    /**
+     * @type {Set<string>}
+     */
+    #nonTerminals = new Set();
+
+    /**
+     * @type {Map<string,Set<String>>}
+     */
+    #firstSets = new Map();
+
+    /**
+     * @type {Set<string>}
+     *  */
+    #nullables = new Set();
+
+    /**
+     * @type {string}
+     */
+    #startSymbol;
+
+    /**
+     *
+     * @param {Production[]} rules
+     * @param {string} startSymbol
+     */
+    constructor(rules, startSymbol) {
+        if (startSymbol) {
+            this.#startSymbol = startSymbol;
+        } else {
+            this.#startSymbol = rules[0].lhs;
         }
-        return nullables;
+
+        rules.forEach((rule) => this.#rules.add(rule.clone()));
+
+        this.#calculateNonTerminals();
+        this.#calculateTerminals();
+        this.#calculateFirstSets();
+        this.#calculateNullables();
     }
-    const nullables = calculateNullables();
 
-    /**
-     * @returns {Map<string,Set<string>>}
-     */
-    function calculateFirstSets() {
-        const firstSets = new Map();
-        rules.forEach((rule) => {
-            firstSets.set(rule.LHS, new Set());
-        });
-
-        function calculateFirstCount() {
+    #calculateFirstSets() {
+        const calcCount = () => {
             let count = 0;
-            for (const [key, value] of firstSets) {
-                count += value.size;
-            }
+            this.#firstSets.forEach((first, symbol) => {
+                count += first.size;
+            });
             return count;
-        }
-        let oldCount = 0;
+        };
+        this.#nonTerminals.forEach((nt) => this.#firstSets.set(nt, new Set()));
         while (true) {
-            oldCount = calculateFirstCount();
-            rules.forEach((rule) => {
-                for (let i = 0; i < rule.RHS.length; i++) {
-                    const symbol = rule.RHS[i];
-                    if (_terminals.has(symbol)) {
-                        const oldSet = new Set(firstSets.get(rule.LHS));
-                        oldSet.add(symbol);
-                        firstSets.set(rule.LHS, oldSet);
+            const oldCount = calcCount();
+            this.#rules.forEach((rule) => {
+                for (let i = 0; i < rule.rhs.length; i++) {
+                    const symbol = rule.rhs[i];
+                    if (this.#terminals.has(symbol)) {
+                        this.#firstSets.get(rule.lhs).add(symbol);
                         break;
-                    } else {
-                        const oldSet = new Set(firstSets.get(rule.LHS));
-                        const newSet = new Set([
-                            ...oldSet,
-                            ...firstSets.get(symbol),
-                        ]);
-                        firstSets.set(rule.LHS, newSet);
-                        if (!isNullable([symbol])) {
-                            break;
-                        }
+                    }
+                    const otherFirstSet = this.#firstSets.get(symbol);
+                    otherFirstSet.forEach((terminal) =>
+                        this.#firstSets.get(rule.lhs).add(terminal),
+                    );
+                    if (!this.#nullables.has(symbol)) {
+                        break;
                     }
                 }
             });
-            const newCount = calculateFirstCount();
-            if (newCount === oldCount) {
+
+            const newCount = calcCount();
+            if (oldCount === newCount) {
                 break;
             }
         }
-        return firstSets;
-    }
-    const firstSets = calculateFirstSets();
-
-    /**
-     *
-     * @param {string[]} exp
-     */
-    function isNullable(exp) {
-        return exp.every((symbol) => nullables.has(symbol));
     }
 
-    /**
-     *
-     * @param {string[]} exp
-     */
-    function getFirstSet(exp) {
-        let first = new Set();
-        for (let i = 0; i < exp.length; i++) {
-            const symbol = exp[i];
-            if (_terminals.has(symbol) || symbol === '$') {
-                first = new Set([...first, symbol]);
-                break;
-            } else {
-                first = new Set([...first, ...firstSets.get(symbol)]);
-                if (!isNullable([symbol])) {
-                    break;
+    #calculateNullables() {
+        while (true) {
+            const oldCount = this.#nullables.size;
+
+            this.#rules.forEach((rule) => {
+                const isLambdaProd = rule.rhs.length === 0;
+                const isRHSNullable = rule.rhs.every((symbol) =>
+                    this.#nullables.has(symbol),
+                );
+                if (isLambdaProd || isRHSNullable) {
+                    this.#nullables.add(rule.lhs);
                 }
+            });
+
+            const newCount = this.#nullables.size;
+            if (oldCount === newCount) {
+                break;
             }
         }
-        return first;
     }
 
-    return {
-        rules: rules.slice(),
-        terminals: _terminals,
-        nonTerminals: _nonTerminals,
-        nullables,
-        firstSets,
-        isNullable,
-        getFirstSet,
-    };
+    #calculateNonTerminals() {
+        this.#rules.forEach((rule) => this.#nonTerminals.add(rule.lhs));
+    }
+
+    #calculateTerminals() {
+        this.#calculateNonTerminals();
+        this.#rules.forEach((rule) => {
+            rule.rhs.forEach((symbol) => {
+                if (!this.#nonTerminals.has(symbol)) {
+                    this.#terminals.add(symbol);
+                }
+            });
+        });
+    }
+
+    /**
+     *
+     * @param {string[]} expr
+     * @returns {Set<string>}
+     */
+    getFirst(expr) {
+        let output = new Set();
+        for (let i = 0; i < expr.length; i++) {
+            const symbol = expr[i];
+            if (this.#firstSets.get(symbol)) {
+                output = new Set([...output, ...this.#firstSets.get(symbol)]);
+            } else {
+                output = new Set([...output]);
+            }
+            if (this.#nullables.has(symbol)) {
+                break;
+            }
+            if (this.#terminals.has(symbol)) {
+                output.add(symbol);
+                break;
+            }
+            if (symbol === '$') {
+                output.add('$');
+                break;
+            }
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param {string[]} expr
+     * @returns {boolean}
+     */
+    isNullable(expr) {
+        return expr.every((symbol) => this.#nullables.has(symbol));
+    }
+
+    /**
+     *
+     * @param {string} lhs
+     * @returns {HashSet<Production>}
+     */
+    getRulesForLHS(lhs) {
+        return new HashSet(
+            this.#rules
+                .values()
+                .filter((rule) => rule.lhs === lhs)
+                .map((rule) => rule.clone()),
+        );
+    }
+
+    /**
+     * @type {HashSet<rule:Production>}
+     */
+    get rules() {
+        return new HashSet(this.#rules.values().map((rule) => rule.clone()));
+    }
+
+    /**
+     * @type {Map<string,Set<string>>}
+     */
+    get firstSets() {
+        const output = new Map();
+        this.#firstSets.forEach((first, lhs) => {
+            output.set(lhs, new Set(first));
+        });
+        return output;
+    }
+
+    /**
+     * @type {Set<string>}
+     */
+    get nullables() {
+        const output = new Set();
+        this.#nullables.forEach((nt) => output.add(nt));
+        return output;
+    }
+
+    toString() {
+        let output = '=======================================\n';
+        output += 'Production Rules:\n';
+        this.#rules.forEach((rule) => {
+            output += '\t';
+            output += rule.toString();
+            output += '\n';
+        });
+        output += '=======================================\n';
+
+        const terminalsStr = [...this.#terminals.values()].join();
+        output += `Terminals: ${terminalsStr}\n`;
+        output += '=======================================\n';
+
+        const nonTerminalsStr = [...this.#nonTerminals.values()].join();
+        output += `Non-Terminals: ${nonTerminalsStr}\n`;
+        output += '=======================================\n';
+
+        output += 'First sets: \n';
+        this.#firstSets.forEach((first, lhs) => {
+            output += '\t';
+            const firstStr = [...first.values()].join();
+            output += `${lhs}: ${firstStr}`;
+            output += '\n';
+        });
+        output += '=======================================\n';
+
+        const nullablesStr = [...this.#nullables.values()].join();
+        output += `Nullables: ${nullablesStr}\n`;
+        output += '=======================================\n';
+
+        return output;
+    }
+
+    get terminals() {
+        return new Set([...this.#terminals]);
+    }
+
+    get nonTerminals() {
+        return new Set([...this.#nonTerminals]);
+    }
+
+    get startSymbol() {
+        return this.#startSymbol;
+    }
+
+    /**
+     *
+     * @param {Production} rule
+     * @returns {number}
+     */
+    findRuleNumber(rule) {
+        return this.#rules.values().findIndex((r) => r.hash() === rule.hash());
+    }
 }

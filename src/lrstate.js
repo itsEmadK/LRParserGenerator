@@ -1,298 +1,258 @@
-/* eslint-disable no-lonely-if */
-/* eslint-disable no-else-return */
-import createLRAction from './lraction.js';
-import createLRItem from './lritem.js';
-import './types.js';
+import HashSet from './hashset.js';
+import LRItem from './lritem.js';
+import Grammar from './grammar.js';
+import LRAction from './lraction.js';
 
-const LRactionsSortFunction = (a, b) => {
-    if (a.type < b.type) {
-        return -1;
-    } else if (a.type > b.type) {
-        return 1;
-    } else {
-        if ([...a.input].sort().join('') < [...b.input].sort().join()) {
-            return -1;
-        } else if ([...a.input].sort().join('') > [...b.input].sort().join()) {
-            return 1;
-        } else {
-            return 0;
-        }
+export default class LRState {
+    /**
+     * @type {Grammar}
+     */
+    #grammar;
+
+    /**
+     * @type {HashSet<LRItem>}
+     */
+    #baseItems = new HashSet();
+
+    /**
+     * @type {HashSet<LRItem>}
+     */
+    #derivedItems = new HashSet();
+
+    /**
+     * @type {HashSet<LRAction>}
+     */
+    #actions = new HashSet();
+
+    /**
+     *
+     * @param {LRItem[]} baseItems
+     */
+    constructor(baseItems, grammar) {
+        this.#grammar = grammar;
+        baseItems.forEach((item) => {
+            this.#baseItems.add(item.clone());
+        });
+        this.#calculateClosure();
+        this.#calculateLookahead();
+        this.#calculateActions();
     }
-};
-export const LRItemsSortFunction = (a, b) => {
-    if (a.rule.LHS < b.rule.LHS) {
-        return -1;
-    } else if (a.rule.LHS > b.rule.LHS) {
-        return 1;
-    } else {
-        if (a.rule.RHS.join('') < b.rule.RHS.join('')) {
-            return -1;
-        } else if (a.rule.RHS.join('') > b.rule.RHS.join('')) {
-            return 1;
-        } else {
-            if (a.dotPosition < b.dotPosition) {
-                return -1;
-            } else if (a.dotPosition > b.dotPosition) {
-                return 1;
-            } else {
-                const aLookaheadSorted = [...a.lookAhead].sort().join('');
-                const bLookaheadSorted = [...b.lookAhead].sort().join('');
-                if (aLookaheadSorted < bLookaheadSorted) {
-                    return -1;
-                } else if (aLookaheadSorted > bLookaheadSorted) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        }
+
+    /**
+     * @type {HashSet<LRItem>}
+     */
+    get baseItems() {
+        return new HashSet(
+            this.#baseItems.values().map((item) => item.clone()),
+        );
     }
-};
 
-/**
- *
- * @param {number} number
- * @param {LRItem[]} baseItems
- * @param {LRItem[]} nonBaseItems
- * @param {LRAction[]} actions
- * @returns {LRState}
- */
-export default function createLRState(
-    number,
-    baseItems,
-    nonBaseItems,
-    actions,
-) {
-    return {
-        number,
-        baseItems: baseItems.slice().map((item) => item.clone()),
-        nonBaseItems: nonBaseItems.slice().map((item) => item.clone()),
-        actions: actions.slice().map((action) => action.clone()),
-        toString(includeLookahead, includeActions) {
-            let output = '';
-            const itemsStr = [...this.baseItems, ...this.nonBaseItems]
-                .map((item) => `${item.toString(includeLookahead)}\n`)
-                .join('');
-            output += itemsStr;
-            if (includeActions) {
-                output += 'Actions:\n';
-                let actionsStr = this.actions.map((action) =>
-                    action.toString(false),
-                );
-                output += actionsStr;
-            }
-            return output;
-        },
-        /**
-         *
-         * @param {LRState} other
-         * @param {number} matchNumber
-         * @param {boolean} matchNonBaseItems
-         * @param {boolean} matchLookahead
-         * @param {boolean} matchActions
-         * @returns {boolean}
-         */
-        equals(
-            other,
-            matchNumber,
-            matchNonBaseItems,
-            matchLookahead,
-            matchActions,
-        ) {
-            const otherBaseItemsSorted = [...other.baseItems].sort(
-                LRItemsSortFunction,
-            );
-            const thisBaseItemsSorted = [...this.baseItems].sort(
-                LRItemsSortFunction,
-            );
-            const baseItemsMatch = otherBaseItemsSorted.every((item, index) =>
-                item.equals(thisBaseItemsSorted[index], matchLookahead),
-            );
+    /**
+     * @type {HashSet<LRItem>}
+     */
+    get derivedItems() {
+        return new HashSet(
+            this.#derivedItems.values().map((item) => item.clone()),
+        );
+    }
 
-            const otherNonBaseItemsSorted = [...other.nonBaseItems].sort(
-                LRItemsSortFunction,
-            );
-            const thisNonBaseItemsSorted = [...this.nonBaseItems].sort(
-                LRItemsSortFunction,
-            );
-            const nonBaseItemsMatch = otherNonBaseItemsSorted.every(
-                (item, index) =>
-                    item.equals(thisNonBaseItemsSorted[index], matchLookahead),
-            );
+    get closure() {
+        return new HashSet([
+            ...this.#baseItems.values().map((item) => item.clone()),
+            ...this.#derivedItems.values().map((item) => item.clone()),
+        ]);
+    }
 
-            const thisActionsSorted = [...this.actions].sort(
-                LRactionsSortFunction,
-            );
-            const otherActionsSorted = [...other.actions].sort(
-                LRactionsSortFunction,
-            );
-            const actionsMatch = thisActionsSorted.every(
-                (act, index) => act === otherActionsSorted[index],
-            );
+    /**
+     * @type {HashSet<LRAction>}
+     */
+    get actions() {
+        return new HashSet([
+            ...this.#actions.values().map((act) => act.clone()),
+        ]);
+    }
 
-            return (
-                baseItemsMatch &&
-                (matchNumber ? this.number === other.number : true) &&
-                (matchNonBaseItems ? nonBaseItemsMatch : true) &&
-                (matchActions ? actionsMatch : true)
-            );
-        },
-        clone() {
-            return createLRState(
-                this.number,
-                this.baseItems,
-                this.nonBaseItems,
-                this.actions,
-            );
-        },
+    #calculateClosure() {
+        while (true) {
+            const oldCount = this.#derivedItems.size;
 
-        /**
-         * @param {LRItem} item
-         * @returns {number} index of the found item, if no such item was present, null.
-         */
-        indexOfItem(item) {
-            const allItems = [...this.baseItems, ...this.nonBaseItems];
-            for (let i = 0; i < allItems.length; i++) {
-                const current = allItems[i];
-                if (item.equals(current)) {
-                    return i;
-                }
-            }
-            return -1;
-        },
-
-        /**
-         *
-         * @param {Grammar} grammar
-         * @returns {LRItem} //item with updated lookahead
-         */
-        calculateStateLookahead(grammar) {
-            const newState = this.clone();
-            function calculateItemLookaheadCount() {
-                let count = 0;
-                [...newState.baseItems, ...newState.nonBaseItems].forEach(
-                    (item) => {
-                        count += item.lookAhead.size;
-                    },
-                );
-                return count;
-            }
-            while (true) {
-                const oldCount = calculateItemLookaheadCount();
-
-                [...newState.nonBaseItems].forEach((nbItem, nbIndex) => {
-                    [...newState.baseItems, ...newState.nonBaseItems].forEach(
-                        (item, itemIndex) => {
-                            if (
-                                item.rule.RHS.indexOf(nbItem.rule.LHS) ===
-                                item.dotPosition
-                            ) {
-                                const rest = item.rule.RHS.slice(
-                                    item.dotPosition + 1,
-                                );
-                                const restFirstSet = grammar.getFirstSet(rest);
-                                let lookahead = new Set([...restFirstSet]);
-                                if (grammar.isNullable(rest)) {
-                                    lookahead = new Set([
-                                        ...lookahead,
-                                        ...item.lookAhead,
-                                    ]);
-                                }
-
-                                newState.nonBaseItems[nbIndex].lookAhead =
-                                    new Set([
-                                        ...newState.nonBaseItems[nbIndex]
-                                            .lookAhead,
-                                        ...lookahead,
-                                    ]);
-                            }
-                        },
-                    );
-                });
-
-                const newCount = calculateItemLookaheadCount();
-                if (oldCount === newCount) {
-                    break;
-                }
-            }
-            return newState;
-        },
-
-        /**
-         *
-         * @param {Grammar} grammar
-         * @returns {LRState} updated state with calculated closure
-         */
-        calculateClosure(grammar) {
-            const newState = this.clone();
-            function calculateStateItemCount() {
-                return newState.nonBaseItems.length;
-            }
-            while (true) {
-                const oldCount = calculateStateItemCount();
-                [...newState.baseItems, ...newState.nonBaseItems].forEach(
-                    (item) => {
-                        const symbol = item.rule.RHS[item.dotPosition];
-                        if (grammar.nonTerminals.has(symbol)) {
-                            const correspondingRules = grammar.rules.filter(
-                                (rule) => rule.LHS === symbol,
-                            );
-                            correspondingRules.forEach((rule) => {
-                                const newItem = createLRItem(rule, 0, []);
-                                if (newState.indexOfItem(newItem) === -1) {
-                                    newState.nonBaseItems.push(newItem);
-                                }
-                            });
-                        }
-                    },
-                );
-                const newCount = calculateStateItemCount();
-                if (newCount === oldCount) {
-                    break;
-                }
-            }
-            return newState;
-        },
-
-        /**
-         *
-         * @param {Grammar} grammar
-         * @returns {LRState}
-         */
-        calculateStateActions(grammar) {
-            const actions = [];
-            [...this.baseItems, ...this.nonBaseItems].forEach((item) => {
-                const symbol = item.rule.RHS[item.dotPosition];
+            this.closure.forEach((item) => {
+                const symbol = item.getNextSymbol();
                 if (symbol) {
-                    if (symbol === '$') {
-                        const action = createLRAction('A', ['$'], null);
-                        actions.push(action);
-                    } else if (
-                        grammar.terminals.has(symbol) ||
-                        grammar.nonTerminals.has(symbol)
-                    ) {
-                        const baseItem = item.clone();
-                        baseItem.dotPosition++;
-                        const action = createLRAction(
-                            grammar.terminals.has(symbol) ? 'S' : 'G',
-                            [symbol],
-                        );
-                        const oldAction = [...this.actions].find((act) =>
-                            act.equals(action, false),
-                        );
-                        if (oldAction) {
-                            oldAction.targetStateBaseItems.push(baseItem);
-                        } else {
-                            action.targetStateBaseItems = [baseItem];
-                            actions.push(action);
-                        }
+                    if (this.#grammar.nonTerminals.has(symbol)) {
+                        const lhsRules = this.#grammar.getRulesForLHS(symbol);
+                        lhsRules.forEach((rule) => {
+                            const newItem = new LRItem(rule, 0, []);
+                            this.#derivedItems.add(newItem);
+                        });
                     }
-                } else {
-                    const action = createLRAction('R', item.lookAhead, null);
-                    actions.push(action);
                 }
             });
-            return actions;
-        },
-    };
+
+            const newCount = this.#derivedItems.size;
+            if (oldCount === newCount) {
+                break;
+            }
+        }
+    }
+
+    #calculateLookahead() {
+        const calcCount = () => {
+            let count = 0;
+            this.#derivedItems.forEach((item) => {
+                count += item.lookahead.size;
+            });
+            return count;
+        };
+        while (true) {
+            const oldCount = calcCount();
+
+            this.#derivedItems.forEach((dit) => {
+                this.closure.forEach((it) => {
+                    if (it.getNextSymbol() === dit.rule.lhs) {
+                        const rest = it.rule.rhs.slice(it.dotPosition + 1);
+                        const restFirstSet = this.#grammar.getFirst(rest);
+                        dit.addToLookahead([...restFirstSet]);
+                        const isRestNullable = this.#grammar.isNullable(rest);
+                        if (isRestNullable) {
+                            dit.addToLookahead([...it.lookahead]);
+                        }
+                    }
+                });
+            });
+
+            const newCount = calcCount();
+            if (oldCount === newCount) {
+                break;
+            }
+        }
+    }
+
+    #calculateActions() {
+        this.closure.forEach((item) => {
+            const symbol = item.getNextSymbol();
+            if (symbol) {
+                if (symbol === '$') {
+                    const action = new LRAction('A', [item]);
+                    this.#actions.add(action);
+                } else {
+                    const actionType = this.#grammar.terminals.has(symbol)
+                        ? 'S'
+                        : 'G';
+                    let actionExists = false;
+                    this.#actions.values().forEach((a) => {
+                        if (
+                            a.type === actionType &&
+                            [...a.inputs.values()][0] === symbol
+                        ) {
+                            a.addOriginatingItem(item);
+                            actionExists = true;
+                        }
+                    });
+                    if (!actionExists) {
+                        const action = new LRAction(actionType, [item]);
+                        this.#actions.add(action);
+                    }
+                }
+            } else {
+                const action = new LRAction('R', [item]);
+                this.#actions.add(action);
+            }
+        });
+    }
+
+    hash() {
+        let hash = '';
+        this.#baseItems.forEach((item) => {
+            hash += item.hash();
+        });
+        return hash;
+    }
+
+    hashWithoutLookahead() {
+        let hash = '';
+        this.#baseItems.forEach((item) => {
+            hash += item.hashWithoutLookahead();
+        });
+        return hash;
+    }
+
+    clone() {
+        return new LRState(
+            [...this.#baseItems.values().map((item) => item.clone())],
+            this.#grammar,
+        );
+    }
+
+    toString() {
+        let output = '=============================\n';
+
+        output += 'Base Items:\n';
+        this.#baseItems.forEach((item) => {
+            output += '\t';
+            output += item.toString();
+            output += '\n';
+        });
+        output += '_____________________________\n';
+
+        output += 'Derived Items:\n';
+        this.#derivedItems.forEach((item) => {
+            output += '\t';
+            output += item.toString();
+            output += '\n';
+        });
+
+        output += '------------------------------\n';
+        output += 'Actions: \n';
+        this.#actions.forEach((action) => {
+            output += `\tType: ${action.type}\n`;
+            output += `\tInputs: {${[...action.inputs.values()]}}\n`;
+            output += '\tOriginating Items: \n';
+            action.originatingItems.forEach((item) => {
+                output += `\t  ${item.toString()}\n`;
+            });
+            output += '\n_____________________________\n';
+        });
+        output += '------------------------------\n';
+
+        output += '=============================\n';
+
+        return output;
+    }
+
+    #transition(type, inputSymbol) {
+        const targetBaseItems = this.#actions
+            .values()
+            .find(
+                (action) =>
+                    action.type === type && action.inputs.has(inputSymbol),
+            )
+            .originatingItems.values()
+            .map(
+                (item) =>
+                    new LRItem(item.rule, item.dotPosition + 1, [
+                        ...item.lookahead,
+                    ]),
+            );
+        const newState = new LRState(targetBaseItems, this.#grammar);
+        return newState;
+    }
+
+    /**
+     *
+     * @param {string} inputSymbol
+     * @returns {LRState}
+     */
+    goto(inputSymbol) {
+        return this.#transition('G', inputSymbol);
+    }
+
+    /**
+     *
+     * @param {string} inputSymbol
+     * @returns {LRState}
+     */
+    shift(inputSymbol) {
+        return this.#transition('S', inputSymbol);
+    }
 }
