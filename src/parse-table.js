@@ -139,12 +139,11 @@ export default class ParseTable {
             ...this.#dfa.grammar.nonTerminals,
         ];
         allSymbols.forEach((symbol) => {
-            output += `\t|${symbol}`;
+            output += `\t${symbol}`;
         });
-        output += '\t|';
 
         const count = this.#dfa.states.size;
-        output += `\n${'----------'.repeat(allSymbols.length)}\n`;
+        output += `\n${'---------'.repeat(allSymbols.length)}\n`;
         for (let i = 0; i < count; i++) {
             output += `${i}\t`;
             // eslint-disable-next-line no-loop-func
@@ -158,9 +157,9 @@ export default class ParseTable {
                         .join('');
                     output += `${actionsStr}`;
                 }
-                output += '\t|';
+                output += '\t';
             });
-            output += `\n${'----------'.repeat(allSymbols.length)}\n`;
+            output += `\n${'---------'.repeat(allSymbols.length)}\n`;
         }
 
         return output;
