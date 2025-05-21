@@ -1,6 +1,7 @@
 import HashSet from './hashset.js';
 import LRItem from './lritem.js';
 import Grammar from './grammar.js';
+import LRAction from './lraction.js';
 
 export default class LRState {
     /**
@@ -19,9 +20,9 @@ export default class LRState {
     #derivedItems = new HashSet();
 
     /**
-     * @type {{type:string,inputs:string[]}[]}
+     * @type {HashSet<LRAction>}
      */
-    #actions = [];
+    #actions = new HashSet();
 
     /**
      *
@@ -34,6 +35,7 @@ export default class LRState {
         });
         this.#calculateClosure();
         this.#calculateLookahead();
+        this.#calculateActions();
     }
 
     /**
@@ -58,6 +60,15 @@ export default class LRState {
         return new HashSet([
             ...this.#baseItems.values().map((item) => item.clone()),
             ...this.#derivedItems.values().map((item) => item.clone()),
+        ]);
+    }
+
+    /**
+     * @type {HashSet<LRAction>}
+     */
+    get actions() {
+        return new HashSet([
+            ...this.#actions.values().map((act) => act.clone()),
         ]);
     }
 
@@ -117,7 +128,38 @@ export default class LRState {
         }
     }
 
-    #calculateActions() {}
+    #calculateActions() {
+        this.closure.forEach((item) => {
+            const symbol = item.getNextSymbol();
+            if (symbol) {
+                if (symbol === '$') {
+                    const action = new LRAction('A', [item]);
+                    this.#actions.add(action);
+                } else {
+                    const actionType = this.#grammar.terminals.has(symbol)
+                        ? 'S'
+                        : 'G';
+                    let actionExists = false;
+                    this.#actions.values().forEach((a) => {
+                        if (
+                            a.type === actionType &&
+                            [...a.inputs.values()][0] === symbol
+                        ) {
+                            a.addOriginatingItem(item);
+                            actionExists = true;
+                        }
+                    });
+                    if (!actionExists) {
+                        const action = new LRAction(actionType, [item]);
+                        this.#actions.add(action);
+                    }
+                }
+            } else {
+                const action = new LRAction('R', [item]);
+                this.#actions.add(action);
+            }
+        });
+    }
 
     hash() {
         let hash = '';
@@ -159,7 +201,21 @@ export default class LRState {
             output += '\n';
         });
 
+        output += '------------------------------\n';
+        output += 'Actions: \n';
+        this.#actions.forEach((action) => {
+            output += `\tType: ${action.type}\n`;
+            output += `\tInputs: {${[...action.inputs.values()]}}\n`;
+            output += '\tOriginating Items: \n';
+            action.originatingItems.forEach((item) => {
+                output += `\t  ${item.toString()}\n`;
+            });
+            output += '\n_____________________________\n';
+        });
+        output += '------------------------------\n';
+
         output += '=============================\n';
+
         return output;
     }
 
