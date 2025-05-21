@@ -30,10 +30,8 @@ export default class Grammar {
     /**
      *
      * @param {Production[]} rules
-     * @param {string[]} [nonTerminals=[]]
-     * @param {string[]} [terminals=[]]
      */
-    constructor(rules, terminals = [], nonTerminals = []) {
+    constructor(rules) {
         rules.forEach((rule, index) =>
             this.#rules.add({
                 num: index + 1,
@@ -41,12 +39,7 @@ export default class Grammar {
                 hash: () => `${index + 1}${rule.hash()}`,
             }),
         );
-        if (terminals) {
-            terminals.forEach((t) => this.#terminals.add(t));
-        }
-        if (nonTerminals) {
-            nonTerminals.forEach((nt) => this.#nonTerminals.add(nt));
-        }
+
         this.#calculateNonTerminals();
         this.#calculateTerminals();
         this.#calculateFirstSets();
