@@ -6,9 +6,14 @@
  */
 export default class HashSet {
     /**
-     * @type {Map<string,Set<T>>}
+     * @type {Map<string,{index:number,item:T}>}
      */
     #map = new Map();
+
+    /**
+     * @type {number}
+     */
+    #index = 0;
 
     /**
      *
@@ -17,7 +22,7 @@ export default class HashSet {
     constructor(items) {
         if (items) {
             items.forEach((item) => {
-                this.#map.set(item.hash(), item);
+                this.#map.set(item.hash(), { index: this.#index++, item });
             });
         }
     }
@@ -28,7 +33,7 @@ export default class HashSet {
      * @returns {boolean}
      */
     has(item) {
-        return !!this.#map.get(item.hash());
+        return this.#map.has(item.hash());
     }
 
     /**
@@ -37,7 +42,7 @@ export default class HashSet {
      */
     add(item) {
         if (!this.has(item)) {
-            this.#map.set(item.hash(), item);
+            this.#map.set(item.hash(), { index: this.#index++, item });
         }
     }
 
@@ -58,9 +63,9 @@ export default class HashSet {
      * @returns {T[]} values
      */
     values() {
-        const valuesSorted = [...this.#map.values()].sort((a, b) =>
-            a.hash() < b.hash() ? -1 : 1,
-        );
+        const valuesSorted = [...this.#map.values()]
+            .sort((a, b) => (a.index < b.index ? -1 : 1))
+            .map(({ _, item }) => item);
         return valuesSorted;
     }
 
