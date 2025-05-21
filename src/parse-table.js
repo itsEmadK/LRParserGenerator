@@ -149,12 +149,15 @@ export default class ParseTable {
             // eslint-disable-next-line no-loop-func
             allSymbols.forEach((symbol) => {
                 if (!this.isError(`${i}`, symbol)) {
-                    const actionsStr = this.getCell(`${i}`, symbol).map(
-                        (act) =>
-                            `${act.action}${act.destination === -1 ? '' : act.destination}, `,
-                    );
-                    output += `${actionsStr}\t`;
+                    const actionsStr = this.getCell(`${i}`, symbol)
+                        .map(
+                            (act) =>
+                                `${act.action}${act.destination === -1 ? '' : act.destination},`,
+                        )
+                        .join('');
+                    output += `${actionsStr}`;
                 }
+                output += '\t';
             });
             output += `\n${'---------'.repeat(allSymbols.length)}\n`;
         }
