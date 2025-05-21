@@ -84,6 +84,16 @@ export default class LRItem {
         return `${this.#rule.hash()}${dotPositionStr}`;
     }
 
+    /**
+     *
+     * @param {LRItem} item
+     * @returns {string}
+     */
+    static hashWithoutLookahead(item) {
+        const dotPositionStr = item.#dotPosition.toString().charCodeAt(0);
+        return `${item.#rule.hash()}${dotPositionStr}`;
+    }
+
     toString() {
         let output = `${this.#rule.lhs} ⟶ `;
         const dottedRHS = this.#rule.rhs;
