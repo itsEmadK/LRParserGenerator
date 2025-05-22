@@ -13,12 +13,15 @@ export default class ParseTable {
      */
     #dfa;
 
+    #isLR1;
+
     /**
      *
      * @param {LR1DFA} dfa
      */
-    constructor(dfa) {
+    constructor(dfa, isLR1) {
         this.#dfa = dfa;
+        this.#isLR1 = isLR1;
         this.#generateParseTable();
     }
 
@@ -69,7 +72,14 @@ export default class ParseTable {
                     targetStateNumber = ruleNumber;
                 } else {
                     targetStateNumber = states.values().findIndex((s) => {
-                        const equals = targetState.hash() === s.hash();
+                        let equals;
+                        if (this.#isLR1) {
+                            equals = targetState.hash() === s.hash();
+                        } else {
+                            equals =
+                                targetState.hashWithoutLookahead() ===
+                                s.hashWithoutLookahead();
+                        }
                         return equals;
                     });
                 }
