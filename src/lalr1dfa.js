@@ -3,38 +3,31 @@ import LRState from './lrstate.js';
 import HashSet from './hashset.js';
 import Grammar from './grammar.js';
 
-export default class LALR1DFA {
+export default class LALR1DFA extends LR1DFA {
     /**
      * @type {HashSet<LRState>}
      */
     #states = new HashSet();
 
     /**
-     * @type {Grammar}
-     */
-    grammar;
-
-    /**
      *
      * @param {Grammar} grammar
      */
     constructor(grammar) {
-        this.grammar = grammar;
-        this.#calculateStates();
+        super(grammar);
+        this.#mergeStates();
     }
 
-    #calculateStates() {
-        const lr1dfa = new LR1DFA(this.grammar);
-        const { states } = lr1dfa;
+    #mergeStates() {
         const commonPools = [];
         const visited = new Set();
-        states.forEach((outerS, outerIndex) => {
+        super.states.forEach((outerS, outerIndex) => {
             if (visited.has(outerIndex)) {
                 return;
             }
             const currentPool = new Set([outerIndex]);
             visited.add(outerIndex);
-            states.forEach((innerS, innerIndex) => {
+            super.states.forEach((innerS, innerIndex) => {
                 if (visited.has(innerIndex)) {
                     return;
                 }
@@ -52,9 +45,9 @@ export default class LALR1DFA {
 
         commonPools.forEach((pool) => {
             const initialNumber = [...pool.values()][0];
-            const initialState = lr1dfa.getStateByNumber(initialNumber);
+            const initialState = super.getStateByNumber(initialNumber);
             const allStates = [...pool.values()].map((num) =>
-                lr1dfa.getStateByNumber(num),
+                super.getStateByNumber(num),
             );
             const newState = initialState.merge(allStates);
             this.#states.add(newState);
