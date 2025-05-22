@@ -13,11 +13,15 @@ export default class ParseTable {
      */
     #dfa;
 
+    /**
+     * @type {boolean}
+     */
     #isLR1;
 
     /**
      *
      * @param {LR1DFA} dfa
+     * @param {boolean} isLR1
      */
     constructor(dfa, isLR1) {
         this.#dfa = dfa;
