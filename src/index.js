@@ -1,11 +1,13 @@
 import Grammar from './grammar.js';
 import HashSet from './hashset.js';
 import LALR1DFA from './lalr1dfa.js';
+import LR0DFA from './lr0dfa.js';
 import LR1DFA from './lr1dfa.js';
 import LRItem from './lritem.js';
 import LRState from './lrstate.js';
 import ParseTable from './parse-table.js';
 import Production from './prod.js';
+import SLR1DFA from './slr1dfa.js';
 
 // const rules = [
 //     new Production('E', ['T', "E'"]),
@@ -37,7 +39,7 @@ import Production from './prod.js';
 const rules = [
     new Production('E', ['E', '+', 'T']),
     new Production('E', ['T']),
-    new Production('T', ['*', 'F']),
+    new Production('T', ['T', '*', 'F']),
     new Production('T', ['F']),
     new Production('F', ['id']),
     new Production('F', ['(', 'E', ')']),
@@ -45,38 +47,26 @@ const rules = [
 
 const grammar = new Grammar(rules);
 
-grammar.rules.forEach((rule, index) => {
-    console.log(index + 1, rule.toString());
-});
-console.log('==================================\n');
+console.log(grammar.toString());
 
 const dfa = new LR1DFA(grammar);
 const lalrdfa = new LALR1DFA(grammar);
-
-dfa.states.forEach((s, index) => {
-    s.baseItems.forEach((item) => {
-        console.log(index + 1, item.toString());
-    });
-    console.log('-----------------------');
-});
-
-console.log('========================================');
-
-lalrdfa.states.forEach((s, index) => {
-    s.baseItems.forEach((item) => {
-        console.log(index + 1, item.toString());
-    });
-    console.log('-----------------------');
-});
-console.log('========================================');
+const slr1dfa = new SLR1DFA(grammar);
+const lr0dfa = new LR0DFA(grammar);
 
 const lr1pt = new ParseTable(dfa);
 const lalr1pt = new ParseTable(lalrdfa);
+const slr1pt = new ParseTable(slr1dfa, false);
+const lr0pt = new ParseTable(lr0dfa, false);
 
-lalrdfa.states.values()[0].actions.forEach((act) => {
-    console.log(act.toString());
-});
-console.log('========================================');
+console.log('\nLR0 Parse Table:\n');
+console.log(lr0pt.toString());
 
+console.log('\nSLR1 Parse Table:\n');
+console.log(slr1pt.toString());
+
+console.log('\nLALR1 Parse Table:\n');
 console.log(lalr1pt.toString());
-console.log(lalr1pt.hasConflict('7', '+'));
+
+console.log('\nLR1 Parse Table:\n');
+console.log(lr1pt.toString());
