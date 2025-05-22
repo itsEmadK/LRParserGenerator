@@ -292,8 +292,8 @@ export default class Grammar {
     toString() {
         let output = '=======================================\n';
         output += 'Production Rules:\n';
-        this.#rules.forEach((rule) => {
-            output += '\t';
+        this.#rules.forEach((rule, index) => {
+            output += `\t${index}: `;
             output += rule.toString();
             output += '\n';
         });
