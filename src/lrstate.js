@@ -291,4 +291,22 @@ export default class LRState {
 
         return newState;
     }
+
+    /**
+     * @type {LRState}
+     */
+    toSLR1State() {
+        const newState = this.clone();
+        newState.#baseItems.forEach((item) => {
+            item.clearLookahead();
+            const follow = newState.#grammar.getFollow([item.rule.lhs]);
+            item.addToLookahead([...follow.values()]);
+        });
+        newState.#derivedItems.forEach((item) => {
+            item.clearLookahead();
+            const follow = newState.#grammar.getFollow([item.rule.lhs]);
+            item.addToLookahead([...follow.values()]);
+        });
+        return newState;
+    }
 }
