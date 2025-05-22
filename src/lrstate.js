@@ -309,4 +309,22 @@ export default class LRState {
         });
         return newState;
     }
+
+    /**
+     * @type {LRState}
+     */
+    toLR0State() {
+        const newState = this.clone();
+        newState.#baseItems.forEach((item) => {
+            item.clearLookahead();
+            const { terminals } = newState.#grammar;
+            item.addToLookahead([...terminals.values(), '$']);
+        });
+        newState.#derivedItems.forEach((item) => {
+            item.clearLookahead();
+            const { terminals } = newState.#grammar;
+            item.addToLookahead([...terminals.values(), '$']);
+        });
+        return newState;
+    }
 }
