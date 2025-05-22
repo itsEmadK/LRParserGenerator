@@ -1,27 +1,38 @@
 {
-    "name": "odin-restaurant",
-    "version": "1.0.0",
-    "author": "itsEmadK <EmadKheyroddin@gmail.com>",
-    "devDependencies": {
-        "@babel/core": "^7.26.7",
-        "@babel/preset-env": "^7.26.7",
-        "babel-loader": "^9.2.1",
-        "css-loader": "^7.1.2",
-        "eslint": "8.57",
-        "eslint-config-airbnb-base": "^15.0.0",
-        "eslint-config-prettier": "^10.0.1",
-        "eslint-plugin-import": "^2.31.0",
-        "html-loader": "^5.1.0",
-        "html-webpack-plugin": "^5.6.3",
-        "prettier": "3.4.2",
-        "style-loader": "^4.0.0"
-    },
-    "type": "module",
-    "scripts": {
-        "build": "webpack --config webpack.prod.js",
-        "dev": "webpack serve --config webpack.dev.js",
-        "predeploy": "git checkout gh-pages",
-        "deploy": "git merge main --no-edit && npm run build && git add dist -f && git commit -m 'Deployment commit' && git subtree push --prefix dist origin gh-pages",
-        "postdeploy": "git checkout main"
-    }
+  "name": "odin-cv",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "testw": "vitest"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-prettier": "^5.2.5",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "jsdom": "^26.1.0",
+    "prettier": "^3.5.3",
+    "vite": "^6.2.0",
+    "vitest": "^3.1.1"
+  }
 }
