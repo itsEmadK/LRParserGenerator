@@ -102,6 +102,8 @@ export default class Grammar {
             return count;
         };
         this.#nonTerminals.forEach((nt) => this.#followSets.set(nt, new Set()));
+        this.#followSets.set(this.#startSymbol, new Set(['$']));
+
         while (true) {
             const oldCount = calcCount();
 
@@ -211,12 +213,16 @@ export default class Grammar {
         for (let i = 0; i < rev.length; i++) {
             const symbol = rev[i];
             const follow = this.#followSets.get(symbol);
-            follow.forEach((sym) => {
-                output.add(sym);
-            });
-            const isNullable = this.isNullable(symbol);
-            if (!isNullable) {
-                break;
+            if (follow) {
+                follow.forEach((sym) => {
+                    output.add(sym);
+                });
+                const isNullable = this.isNullable([symbol]);
+                if (!isNullable) {
+                    break;
+                }
+            } else {
+                return new Set();
             }
         }
         return output;
