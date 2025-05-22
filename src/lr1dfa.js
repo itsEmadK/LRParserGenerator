@@ -66,6 +66,15 @@ export default class LR1DFA {
     }
 
     /**
+     *
+     * @param {number} number
+     * @returns {LRState}
+     */
+    getStateByNumber(number) {
+        return this.#states.values()[number].clone();
+    }
+
+    /**
      * @type {LRState}
      */
     get startState() {
