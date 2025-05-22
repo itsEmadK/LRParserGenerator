@@ -120,4 +120,8 @@ export default class LRItem {
             this.#lookahead.add(symbol);
         });
     }
+
+    clearLookahead() {
+        this.#lookahead.clear();
+    }
 }
