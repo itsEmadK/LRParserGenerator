@@ -1,13 +1,13 @@
-import Grammar from './grammar.js';
-import HashSet from './hashset.js';
-import LALR1DFA from './lalr1dfa.js';
-import LR0DFA from './lr0dfa.js';
-import LR1DFA from './lr1dfa.js';
-import LRItem from './lritem.js';
-import LRState from './lrstate.js';
-import ParseTable from './parse-table.js';
-import Production from './prod.js';
-import SLR1DFA from './slr1dfa.js';
+import Grammar from './parse-logic/grammar.js';
+import HashSet from './parse-logic/hashset.js';
+import LALR1DFA from './parse-logic/lalr1dfa.js';
+import LR0DFA from './parse-logic/lr0dfa.js';
+import LR1DFA from './parse-logic/lr1dfa.js';
+import LRItem from './parse-logic/lritem.js';
+import LRState from './parse-logic/lrstate.js';
+import ParseTable from './parse-logic/parse-table.js';
+import Production from './parse-logic/prod.js';
+import SLR1DFA from './parse-logic/slr1dfa.js';
 
 // const rules = [
 //     new Production('E', ['T', "E'"]),
@@ -37,12 +37,12 @@ import SLR1DFA from './slr1dfa.js';
 //     new Production('R', ['L']),
 // ];
 const rules = [
-    new Production('E', ['E', '+', 'T']),
-    new Production('E', ['T']),
-    new Production('T', ['T', '*', 'F']),
-    new Production('T', ['F']),
-    new Production('F', ['id']),
-    new Production('F', ['(', 'E', ')']),
+  new Production('E', ['E', '+', 'T']),
+  new Production('E', ['T']),
+  new Production('T', ['T', '*', 'F']),
+  new Production('T', ['F']),
+  new Production('F', ['id']),
+  new Production('F', ['(', 'E', ')']),
 ];
 
 const grammar = new Grammar(rules);

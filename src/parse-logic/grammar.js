@@ -182,20 +182,14 @@ export default class Grammar {
         let output = new Set();
         for (let i = 0; i < expr.length; i++) {
             const symbol = expr[i];
-            if (this.#firstSets.get(symbol)) {
-                output = new Set([...output, ...this.#firstSets.get(symbol)]);
-            } else {
-                output = new Set([...output]);
-            }
-            if (this.#nullables.has(symbol)) {
-                break;
-            }
-            if (this.#terminals.has(symbol)) {
+            if (this.#terminals.has(symbol) || symbol === "$") {
                 output.add(symbol);
                 break;
             }
-            if (symbol === '$') {
-                output.add('$');
+            if (this.#firstSets.get(symbol)) {
+                output = new Set([...output, ...this.#firstSets.get(symbol)]);
+            }
+            if (!this.#nullables.has(symbol)) {
                 break;
             }
         }
