@@ -256,4 +256,13 @@ export default class Grammar {
     findRuleNumber(rule) {
         return this.#rules.values().findIndex((r) => r.hash() === rule.hash());
     }
+
+    /**
+     *
+     * @param {number} number
+     * @returns {Production}
+     */
+    findRuleByNumber(number) {
+        return this.#rules.values()[number];
+    }
 }
