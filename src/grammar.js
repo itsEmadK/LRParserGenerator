@@ -23,6 +23,11 @@ export default class Grammar {
     #firstSets = new Map();
 
     /**
+     * @type {Map<string,Set<String>>}
+     */
+    #followSets = new Map();
+
+    /**
      * @type {Set<string>}
      *  */
     #nullables = new Set();
@@ -48,8 +53,9 @@ export default class Grammar {
 
         this.#calculateNonTerminals();
         this.#calculateTerminals();
-        this.#calculateFirstSets();
         this.#calculateNullables();
+        this.#calculateFirstSets();
+        this.#calculateFollowSets();
     }
 
     #calculateFirstSets() {
@@ -78,6 +84,48 @@ export default class Grammar {
                         break;
                     }
                 }
+            });
+
+            const newCount = calcCount();
+            if (oldCount === newCount) {
+                break;
+            }
+        }
+    }
+
+    #calculateFollowSets() {
+        const calcCount = () => {
+            let count = 0;
+            this.#followSets.forEach((first, symbol) => {
+                count += first.size;
+            });
+            return count;
+        };
+        this.#nonTerminals.forEach((nt) => this.#followSets.set(nt, new Set()));
+        while (true) {
+            const oldCount = calcCount();
+
+            this.#rules.forEach(({ lhs }) => {
+                this.#rules.forEach((rule) => {
+                    for (let i = 0; i < rule.rhs.length; i++) {
+                        const symbol = rule.rhs[i];
+                        if (symbol === lhs) {
+                            const rest = rule.rhs.slice(i + 1);
+                            const restFirstSet = this.getFirst(rest);
+                            restFirstSet.forEach((sym) => {
+                                this.#followSets.get(lhs).add(sym);
+                            });
+                            if (this.isNullable(rest)) {
+                                const ruleLHSFollowSet = this.#followSets.get(
+                                    rule.lhs,
+                                );
+                                ruleLHSFollowSet.forEach((sym) => {
+                                    this.#followSets.get(lhs).add(sym);
+                                });
+                            }
+                        }
+                    }
+                });
             });
 
             const newCount = calcCount();
@@ -155,6 +203,28 @@ export default class Grammar {
     /**
      *
      * @param {string[]} expr
+     * @returns {Set<string>}
+     */
+    getFollow(expr) {
+        let output = new Set();
+        const rev = expr.slice().reverse();
+        for (let i = 0; i < rev.length; i++) {
+            const symbol = rev[i];
+            const follow = this.#followSets.get(symbol);
+            follow.forEach((sym) => {
+                output.add(sym);
+            });
+            const isNullable = this.isNullable(symbol);
+            if (!isNullable) {
+                break;
+            }
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param {string[]} expr
      * @returns {boolean}
      */
     isNullable(expr) {
@@ -194,6 +264,17 @@ export default class Grammar {
     }
 
     /**
+     * @type {Map<string,Set<string>>}
+     */
+    get followSets() {
+        const output = new Map();
+        this.#followSets.forEach((follow, lhs) => {
+            output.set(lhs, new Set(follow));
+        });
+        return output;
+    }
+
+    /**
      * @type {Set<string>}
      */
     get nullables() {
@@ -225,6 +306,15 @@ export default class Grammar {
             output += '\t';
             const firstStr = [...first.values()].join();
             output += `${lhs}: ${firstStr}`;
+            output += '\n';
+        });
+        output += '=======================================\n';
+
+        output += 'Follow sets: \n';
+        this.#followSets.forEach((follow, lhs) => {
+            output += '\t';
+            const followStr = [...follow.values()].join();
+            output += `${lhs}: ${followStr}`;
             output += '\n';
         });
         output += '=======================================\n';
