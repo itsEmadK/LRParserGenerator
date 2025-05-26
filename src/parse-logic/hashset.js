@@ -5,94 +5,94 @@
  * @template T
  */
 export default class HashSet {
-    /**
-     * @type {Map<string,{index:number,item:T}>}
-     */
-    #map = new Map();
+  /**
+   * @type {Map<string,{index:number,item:T}>}
+   */
+  #map = new Map();
 
-    /**
-     * @type {number}
-     */
-    #index = 0;
+  /**
+   * @type {number}
+   */
+  #index = 0;
 
-    /**
-     * @type {(T)=>string}
-     */
-    #hashFn;
+  /**
+   * @type {(T)=>string}
+   */
+  #hashFn;
 
-    /**
-     *
-     * @param {T[]} items
-     * @param {(T)=>string} hashFn
-     */
-    constructor(items, hashFn) {
-        if (hashFn) {
-            this.#hashFn = hashFn;
-        }
-        if (items) {
-            items.forEach((item) => {
-                this.#map.set(this.#hashFn ? this.#hashFn(item) : item.hash(), {
-                    index: this.#index++,
-                    item,
-                });
-            });
-        }
+  /**
+   *
+   * @param {T[]} items
+   * @param {(T)=>string} hashFn
+   */
+  constructor(items, hashFn) {
+    if (hashFn) {
+      this.#hashFn = hashFn;
     }
-
-    /**
-     *
-     * @param {T} item
-     * @returns {boolean}
-     */
-    has(item) {
-        return this.#map.has(this.#hashFn ? this.#hashFn(item) : item.hash());
+    if (items) {
+      items.forEach((item) => {
+        this.#map.set(this.#hashFn ? this.#hashFn(item) : item.hash(), {
+          index: this.#index++,
+          item,
+        });
+      });
     }
+  }
 
-    /**
-     *
-     * @param {T} item
-     */
-    add(item) {
-        if (!this.has(item)) {
-            this.#map.set(this.#hashFn ? this.#hashFn(item) : item.hash(), {
-                index: this.#index++,
-                item,
-            });
-        }
-    }
+  /**
+   *
+   * @param {T} item
+   * @returns {boolean}
+   */
+  has(item) {
+    return this.#map.has(this.#hashFn ? this.#hashFn(item) : item.hash());
+  }
 
-    clear() {
-        this.#map.clear();
+  /**
+   *
+   * @param {T} item
+   */
+  add(item) {
+    if (!this.has(item)) {
+      this.#map.set(this.#hashFn ? this.#hashFn(item) : item.hash(), {
+        index: this.#index++,
+        item,
+      });
     }
+  }
 
-    /**
-     *
-     * @param {T} item
-     */
-    delete(item) {
-        this.#map.delete(this.#hashFn ? this.#hashFn(item) : item.hash());
-    }
+  clear() {
+    this.#map.clear();
+  }
 
-    /**
-     *
-     * @returns {T[]} values
-     */
-    values() {
-        const valuesSorted = [...this.#map.values()]
-            .sort((a, b) => (a.index < b.index ? -1 : 1))
-            .map(({ _, item }) => item);
-        return valuesSorted;
-    }
+  /**
+   *
+   * @param {T} item
+   */
+  delete(item) {
+    this.#map.delete(this.#hashFn ? this.#hashFn(item) : item.hash());
+  }
 
-    /**
-     *
-     * @param {(item:T,index:number)=>void} callbackFn
-     */
-    forEach(callbackFn) {
-        this.values().forEach((value, index) => callbackFn(value, index));
-    }
+  /**
+   *
+   * @returns {T[]} values
+   */
+  values() {
+    const valuesSorted = [...this.#map.values()]
+      .sort((a, b) => (a.index < b.index ? -1 : 1))
+      .map(({ _, item }) => item);
+    return valuesSorted;
+  }
 
-    get size() {
-        return this.#map.size;
-    }
+  /**
+   *
+   * @param {(item:T,index:number)=>void} callbackFn
+   */
+  forEach(callbackFn) {
+    this.values().forEach((value, index) => callbackFn(value, index));
+  }
+
+  get size() {
+    return this.#map.size;
+  }
 }

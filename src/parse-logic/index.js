@@ -70,3 +70,6 @@ console.log(lalr1pt.toString());
 
 console.log('\nLR1 Parse Table:\n');
 console.log(lr1pt.toString());
+
+console.log(dfa.getStateByNumber(2).toString());
+console.log(dfa.getStateLevels());
