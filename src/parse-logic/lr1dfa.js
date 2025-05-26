@@ -71,6 +71,17 @@ export default class LR1DFA {
   }
 
   /**
+   *
+   * @param {LRState} state
+   * @returns {number}
+   */
+  getStateNumber(state) {
+    return this.#states
+      .values()
+      .findIndex((s) => s.hash() === state.hash());
+  }
+
+  /**
    * @type {LRState}
    */
   get startState() {
