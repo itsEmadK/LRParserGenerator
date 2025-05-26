@@ -14,9 +14,9 @@ export default class SLR1DFA extends LALR1DFA {
   }
 
   #calculateLookahead() {
-    this.#states = super.states
-      .values()
-      .map((state) => state.toSLR1State());
+    this.#states = new HashSet(
+      super.states.values().map((state) => state.toSLR1State())
+    );
   }
 
   /**

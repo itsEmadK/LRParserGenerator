@@ -18,9 +18,9 @@ export default class LR0DFA extends LALR1DFA {
   }
 
   #calculateStates() {
-    this.#states = super.states
-      .values()
-      .map((state) => state.toLR0State());
+    this.#states = new HashSet(
+      super.states.values().map((state) => state.toLR0State())
+    );
   }
 
   /**

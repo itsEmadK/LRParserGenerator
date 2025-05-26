@@ -8,6 +8,7 @@ import LRState from './lrstate.js';
 import ParseTable from './parse-table.js';
 import Production from './prod.js';
 import SLR1DFA from './slr1dfa.js';
+import getStateLevels from '../dfa-graph-logic/getStateLevels.js';
 
 // const rules = [
 //     new Production('E', ['T', "E'"]),
@@ -22,13 +23,13 @@ import SLR1DFA from './slr1dfa.js';
 
 // hs.forEach((it) => console.log(it.toString()));
 
-// const rules = [
-//     new Production('E', ['E', '+', 'E']),
-//     new Production('E', ['E', '*', 'E']),
-//     new Production('E', ['id']),
-//     new Production('E', ['id']),
-//     new Production('E', ['(', 'E', ')']),
-// ];
+const rules = [
+  new Production('E', ['E', '+', 'E']),
+  new Production('E', ['E', '*', 'E']),
+  new Production('E', ['id']),
+  new Production('E', ['id']),
+  new Production('E', ['(', 'E', ')']),
+];
 // const rules = [
 //     new Production('E', ['L', '=', 'R']),
 //     new Production('E', ['R']),
@@ -36,26 +37,26 @@ import SLR1DFA from './slr1dfa.js';
 //     new Production('L', ['*', 'R']),
 //     new Production('R', ['L']),
 // ];
-const rules = [
-  new Production('E', ['E', '+', 'T']),
-  new Production('E', ['T']),
-  new Production('T', ['T', '*', 'F']),
-  new Production('T', ['F']),
-  new Production('F', ['id']),
-  new Production('F', ['(', 'E', ')']),
-];
+// const rules = [
+//   new Production('E', ['E', '+', 'T']),
+//   new Production('E', ['T']),
+//   new Production('T', ['T', '*', 'F']),
+//   new Production('T', ['F']),
+//   new Production('F', ['id']),
+//   new Production('F', ['(', 'E', ')']),
+// ];
 
 const grammar = new Grammar(rules);
 
 console.log(grammar.toString());
 
-const dfa = new LR1DFA(grammar);
-const lalrdfa = new LALR1DFA(grammar);
+const lr1dfa = new LR1DFA(grammar);
+const lalr1dfa = new LALR1DFA(grammar);
 const slr1dfa = new SLR1DFA(grammar);
 const lr0dfa = new LR0DFA(grammar);
 
-const lr1pt = new ParseTable(dfa);
-const lalr1pt = new ParseTable(lalrdfa);
+const lr1pt = new ParseTable(lr1dfa);
+const lalr1pt = new ParseTable(lalr1dfa);
 const slr1pt = new ParseTable(slr1dfa, false);
 const lr0pt = new ParseTable(lr0dfa, false);
 
@@ -71,5 +72,7 @@ console.log(lalr1pt.toString());
 console.log('\nLR1 Parse Table:\n');
 console.log(lr1pt.toString());
 
-console.log(dfa.getStateByNumber(2).toString());
-console.log(dfa.getStateLevels());
+console.log(getStateLevels(lr1dfa));
+console.log(getStateLevels(lalr1dfa));
+console.log(getStateLevels(slr1dfa));
+console.log(getStateLevels(lr0dfa));

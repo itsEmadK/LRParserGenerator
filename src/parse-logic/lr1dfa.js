@@ -81,6 +81,54 @@ export default class LR1DFA {
       .findIndex((s) => s.hash() === state.hash());
   }
 
+  getStateLevels() {
+    /**
+     * @type {LRState[][]}
+     */
+    const levels = [];
+    const q = [[this.getStateNumber(this.startState)]];
+    let currentLevelNumber = 0;
+    while (q.flat().length > 0) {
+      const level = q[currentLevelNumber];
+      const stateNumber = level.shift();
+      const currentState = this.getStateByNumber(stateNumber);
+      const targets = currentState.actions
+        .values()
+        .filter((act) => ['S', 'G'].includes(act.type))
+        .map((act) => {
+          return this.getStateNumber(
+            act.type === 'G'
+              ? currentState.goto([...act.inputs.values()][0])
+              : currentState.shift([...act.inputs.values()][0])
+          );
+        });
+
+      targets.forEach((target) => {
+        if (
+          !q.flat().includes(target) &&
+          !levels.flat().includes(target)
+        ) {
+          if (q[currentLevelNumber + 1]) {
+            q[currentLevelNumber + 1].push(target);
+          } else {
+            q.push([target]);
+          }
+        }
+      });
+
+      if (levels[currentLevelNumber]) {
+        levels[currentLevelNumber].push(stateNumber);
+      } else {
+        levels.push([stateNumber]);
+      }
+
+      if (level.length === 0) {
+        currentLevelNumber++;
+      }
+    }
+    return levels;
+  }
+
   /**
    * @type {LRState}
    */

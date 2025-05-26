@@ -7,7 +7,7 @@ export default class LALR1DFA extends LR1DFA {
   /**
    * @type {HashSet<LRState>}
    */
-  #states = new HashSet();
+  #mergedStates = new HashSet();
 
   /**
    *
@@ -21,13 +21,14 @@ export default class LALR1DFA extends LR1DFA {
   #mergeStates() {
     const commonPools = [];
     const visited = new Set();
-    super.states.forEach((outerS, outerIndex) => {
+    const originalStates = super.states;
+    originalStates.forEach((outerS, outerIndex) => {
       if (visited.has(outerIndex)) {
         return;
       }
       const currentPool = new Set([outerIndex]);
       visited.add(outerIndex);
-      super.states.forEach((innerS, innerIndex) => {
+      originalStates.forEach((innerS, innerIndex) => {
         if (visited.has(innerIndex)) {
           return;
         }
@@ -49,8 +50,25 @@ export default class LALR1DFA extends LR1DFA {
         super.getStateByNumber(num)
       );
       const newState = initialState.merge(allStates);
-      this.#states.add(newState);
+      this.#mergedStates.add(newState);
     });
+  }
+
+  getStateByNumber(number) {
+    return this.#mergedStates.values()[number].clone();
+  }
+
+  /**
+   *
+   * @param {LRState} state
+   * @returns {number}
+   */
+  getStateNumber(state) {
+    return this.#mergedStates
+      .values()
+      .findIndex(
+        (s) => s.hashWithoutLookahead() === state.hashWithoutLookahead()
+      );
   }
 
   /**
@@ -58,11 +76,11 @@ export default class LALR1DFA extends LR1DFA {
    */
   get states() {
     return new HashSet(
-      this.#states.values().map((state) => state.clone())
+      this.#mergedStates.values().map((state) => state.clone())
     );
   }
 
   get startState() {
-    return this.#states.values()[0].clone();
+    return this.#mergedStates.values()[0].clone();
   }
 }
