@@ -81,7 +81,7 @@ export default class LR1DFA {
       .findIndex((s) => s.hash() === state.hash());
   }
 
-  getStateLevels() {
+  #getStateLevels() {
     /**
      * @type {LRState[][]}
      */
@@ -127,6 +127,39 @@ export default class LR1DFA {
       }
     }
     return levels;
+  }
+
+  /**
+   * @returns {{nodes:{label:string|number,data:LRState,layer:number}[],edges:{from:number,to:number|string,label:string}[]}}
+   */
+  get graph() {
+    const nodes = [];
+    const edges = [];
+    const levels = this.#getStateLevels();
+    levels.forEach((level, index) => {
+      level.forEach((stateNumber) => {
+        const state = this.getStateByNumber(stateNumber);
+        nodes.push({ label: stateNumber, data: state, layer: index });
+        state.actions.forEach((action) => {
+          const { type } = action;
+          if (type === 'S' || type === 'G') {
+            const isShift = type === 'S';
+            const symbol = [...action.inputs][0];
+            const target = isShift
+              ? state.shift(symbol)
+              : state.goto(symbol);
+            const targetNumber = this.getStateNumber(target);
+            edges.push({
+              from: stateNumber,
+              to: targetNumber,
+              label: symbol,
+            });
+          }
+        });
+      });
+    });
+
+    return { nodes, edges };
   }
 
   /**
