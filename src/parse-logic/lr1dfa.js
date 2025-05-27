@@ -139,7 +139,9 @@ export default class LR1DFA {
     levels.forEach((level, index) => {
       level.forEach((stateNumber) => {
         const state = this.getStateByNumber(stateNumber);
-        nodes.push({ label: stateNumber, data: state, layer: index });
+        if (!nodes.find((n) => n.label == stateNumber)) {
+          nodes.push({ label: stateNumber, data: state, layer: index });
+        }
         state.actions.forEach((action) => {
           const { type } = action;
           if (type === 'S' || type === 'G') {
