@@ -7,7 +7,7 @@ import styles from './item.module.css';
  */
 export default function Item({
   item,
-  isLastBaseItem = true,
+  isLastBaseItem = false,
   onClick = () => {},
 }) {
   const dottedRhs = item.rule.rhs;
