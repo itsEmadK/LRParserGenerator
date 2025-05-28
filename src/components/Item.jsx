@@ -5,11 +5,16 @@ import styles from './item.module.css';
  * @param {{item:LRItem}} props
  * @returns
  */
-export default function Item({ item, isLastBaseItem = true }) {
+export default function Item({
+  item,
+  isLastBaseItem = true,
+  onClick = () => {},
+}) {
   const dottedRhs = item.rule.rhs;
   dottedRhs.splice(item.dotPosition, 0, '•');
   return (
-    <p
+    <div
+      onClick={onClick}
       className={`${styles['item']} ${isLastBaseItem ? styles['bottom-div'] : ''}`}
     >
       <p className={styles['lhs']}>{item.rule.lhs}</p>
@@ -19,6 +24,6 @@ export default function Item({ item, isLastBaseItem = true }) {
         {' ,'}
         {`{${[...item.lookahead].join(', ')}}`}
       </p>
-    </p>
+    </div>
   );
 }
