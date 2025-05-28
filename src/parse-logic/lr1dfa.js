@@ -151,11 +151,17 @@ export default class LR1DFA {
               ? state.shift(symbol)
               : state.goto(symbol);
             const targetNumber = this.getStateNumber(target);
-            edges.push({
-              from: stateNumber,
-              to: targetNumber,
-              label: symbol,
-            });
+            if (
+              !edges.find(
+                (e) => e.from === stateNumber && e.to === targetNumber
+              )
+            ) {
+              edges.push({
+                from: stateNumber,
+                to: targetNumber,
+                label: symbol,
+              });
+            }
           }
         });
       });
