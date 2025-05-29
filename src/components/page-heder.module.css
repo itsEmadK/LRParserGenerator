@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.header {
+  padding: 16px 64px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-bottom: 1px solid rgb(183, 183, 183);
+}
+
+.header h1 {
+  font-size: 3rem;
+  font-weight: 600;
+}
+
+.header h3 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.container a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.name {
+  font-weight: 600;
+}
