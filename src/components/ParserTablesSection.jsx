@@ -1,0 +1,94 @@
+import styles from './parser-tables-section.module.css';
+import ParseTable from '../parse-logic/parse-table';
+import Grammar from '../parse-logic/grammar';
+
+/**
+ *
+ * @param {{parseTable:ParseTable,grammar:Grammar}} param0
+ */
+export default function ParserTablesSection({ parseTable, grammar }) {
+  return (
+    <section>
+      <LRParseTable parseTable={parseTable} />
+    </section>
+  );
+}
+
+/**
+ *
+ * @param {{parseTable:ParseTable}} param0
+ */
+function LRParseTable({ parseTable }) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th
+            colSpan={
+              1 +
+              parseTable.actionsSymbols.length +
+              parseTable.gotoSymbols.length
+            }
+          >
+            LR1 Parse Table
+          </th>
+        </tr>
+        <tr>
+          <th rowSpan={2}>State</th>
+          <th colSpan={parseTable.actionsSymbols.length}>ACTION</th>
+          <th colSpan={parseTable.gotoSymbols.length}>GOTO</th>
+        </tr>
+        <tr>
+          {parseTable.actionsSymbols.map((s) => (
+            <th key={s}>{s}</th>
+          ))}
+          {parseTable.gotoSymbols.map((s) => (
+            <th key={s}>{s}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {console.log(parseTable.rows)}
+        {parseTable.rows.map((_, stateNumber) => {
+          return (
+            <tr key={stateNumber}>
+              <th>{stateNumber}</th>
+              {[
+                ...parseTable.actionsSymbols,
+                ...parseTable.gotoSymbols,
+              ].map((s) => {
+                const actions = parseTable.getCell(stateNumber, s);
+                let className = '';
+                if (actions.length === 0) {
+                  className = 'error';
+                } else if (actions.length > 1) {
+                  className = 'conflict';
+                } else {
+                  className = {
+                    S: 'shift',
+                    G: 'goto',
+                    R: 'reduce',
+                    A: 'accept',
+                  }[actions[0].action];
+                }
+
+                const cellContent = actions
+                  .map(
+                    (act) =>
+                      `${act.action}${act.action === 'A' ? '' : act.destination}`
+                  )
+                  .join(', ');
+
+                return (
+                  <td className={className} key={s}>
+                    {cellContent}
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
