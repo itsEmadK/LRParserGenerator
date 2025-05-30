@@ -12,14 +12,16 @@ export default function GrammarInfoSection({ grammar }) {
   }));
   return (
     <section className={styles['grammar-info-section']}>
-      <RulesTable numberedRules={numberedRules}></RulesTable>
+      <h2 className={styles['heading']}>Grammar info:</h2>
+      <RulesTable numberedRules={numberedRules} />
+      <TerminalsTable terminals={[...grammar.terminals]} />
     </section>
   );
 }
 
 function RulesTable({ numberedRules }) {
   return (
-    <table>
+    <table className={styles['rules']}>
       <thead>
         <tr>
           <th colSpan={2}>Rules</th>
@@ -38,6 +40,23 @@ function RulesTable({ numberedRules }) {
             </tr>
           );
         })}
+      </tbody>
+    </table>
+  );
+}
+
+function TerminalsTable({ terminals }) {
+  return (
+    <table className={styles['terminals']}>
+      <thead>
+        <th>Terminals</th>
+      </thead>
+      <tbody>
+        {terminals.map((t) => (
+          <tr key={t}>
+            <td>{t}</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );
