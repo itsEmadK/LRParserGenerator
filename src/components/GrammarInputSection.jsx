@@ -6,19 +6,26 @@ export default function GrammarInputSection({ onSubmit }) {
   function handleInputChange(e) {
     setInput(e.target.value);
   }
+  function handleSubmit(e) {
+    e.preventDefault();
+    //TODO: Form validation
+    onSubmit(input);
+  }
   return (
     <section className={styles['grammar']}>
       <h2 className={styles['heading']}>Enter your Grammar:</h2>
-      <div className={styles['grammar-box-container']}>
+      <form className={styles['grammar-box-container']}>
         <textarea
-          cols={30}
-          rows={15}
+          cols={25}
+          rows={13}
           onChange={handleInputChange}
           value={input}
           className={styles['grammar-box']}
         />
-        <button className={styles['gen-btn']}>Generate Tables</button>
-      </div>
+        <button onClick={handleSubmit} className={styles['gen-btn']}>
+          Generate Tables
+        </button>
+      </form>
 
       <div className={styles['instructions']}>
         <h3>Formatting Instructions:</h3>
