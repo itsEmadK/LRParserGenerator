@@ -8,9 +8,12 @@ import Grammar from '../parse-logic/grammar';
  */
 export default function ParserTablesSection({ parseTable, grammar }) {
   return (
-    <section>
-      <LRParseTable parseTable={parseTable} />
-      <LRTable grammar={grammar} />
+    <section className={styles['parser-tables']}>
+      <h2>Parser Tables:</h2>
+      <div className={styles['tables']}>
+        <LRParseTable parseTable={parseTable} />
+        <LRTable grammar={grammar} />
+      </div>
     </section>
   );
 }

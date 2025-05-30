@@ -1,0 +1,10 @@
+.tables {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  gap: 3rem;
+}
+
+.parser-tables h2 {
+  margin-bottom: 2rem;
+}
