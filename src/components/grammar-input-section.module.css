@@ -11,6 +11,7 @@ section.grammar {
 .heading {
   grid-area: heading;
   font-weight: 600;
+  font-size: 1.75rem;
 }
 
 .grammar-box {
