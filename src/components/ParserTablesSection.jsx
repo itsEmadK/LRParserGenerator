@@ -49,7 +49,6 @@ function LRParseTable({ parseTable }) {
         </tr>
       </thead>
       <tbody>
-        {console.log(parseTable.rows)}
         {parseTable.rows.map((_, stateNumber) => {
           return (
             <tr key={stateNumber}>
