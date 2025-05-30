@@ -61,15 +61,15 @@ function LRParseTable({ parseTable }) {
                 const actions = parseTable.getCell(stateNumber, s);
                 let className = '';
                 if (actions.length === 0) {
-                  className = 'error';
+                  className = styles['error'];
                 } else if (actions.length > 1) {
-                  className = 'conflict';
+                  className = styles['conflict'];
                 } else {
                   className = {
-                    S: 'shift',
-                    G: 'goto',
-                    R: 'reduce',
-                    A: 'accept',
+                    S: styles['shift'],
+                    G: styles['goto'],
+                    R: styles['reduce'],
+                    A: styles['accept'],
                   }[actions[0].action];
                 }
 
