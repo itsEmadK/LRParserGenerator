@@ -2,6 +2,7 @@ section.grammar {
   --border-radius: 8px;
   display: grid;
   padding: 1rem;
+  grid-template-columns: auto 1fr;
   margin-top: 1rem;
   row-gap: 1.5rem;
   column-gap: 5rem;
@@ -35,6 +36,8 @@ section.grammar {
   padding: 0.75rem 1rem;
 }
 .instructions ul > li {
+  max-width: 55ch;
+  line-height: 1.5;
   margin-bottom: 0.75rem;
 }
 
