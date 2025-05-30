@@ -13,9 +13,11 @@ export default function GrammarInfoSection({ grammar }) {
   return (
     <section className={styles['grammar-info-section']}>
       <h2 className={styles['heading']}>Grammar info:</h2>
-      <RulesTable numberedRules={numberedRules} />
-      <TerminalsTable terminals={[...grammar.terminals]} />
-      <NonTerminalsTable grammar={grammar} />
+      <div className={styles['tables']}>
+        <RulesTable numberedRules={numberedRules} />
+        <TerminalsTable terminals={[...grammar.terminals]} />
+        <NonTerminalsTable grammar={grammar} />
+      </div>
     </section>
   );
 }
