@@ -13,20 +13,38 @@ import { useState } from 'react';
 import GrammarInfoSection from './components/GrammarInfoSection.jsx';
 import ParserTablesSection from './components/ParserTablesSection.jsx';
 
+const initialRulesStr = `E -> T E'
+E' ->
+E' -> + T E'
+T -> F T'
+T' ->
+T' -> * F T'
+F -> id
+F -> ( E )`;
+
+const initialGrammar = new Grammar(
+  initialRulesStr.split('\n').map((r) => Production.fromString(r))
+);
+const initialDFA = new LALR1DFA(initialGrammar);
+const initialPT = new ParseTable(initialDFA);
+
 function App() {
-  const [grammar, setGrammar] = useState(null);
-  const [parseTable, setParseTable] = useState(null);
+  const [grammar, setGrammar] = useState(initialGrammar);
+  const [parseTable, setParseTable] = useState(initialPT);
   function handleRulesSubmission(rules) {
     const gr = new Grammar(rules);
     const dfa = new LR1DFA(gr);
-    const pt = new ParseTable(dfa, true);
+    const pt = new ParseTable(dfa, false);
     setGrammar(gr);
     setParseTable(pt);
   }
   return (
     <>
       <PageHeader />
-      <GrammarInputSection onSubmit={handleRulesSubmission} />
+      <GrammarInputSection
+        initialRules={initialRulesStr}
+        onSubmit={handleRulesSubmission}
+      />
       {grammar && (
         <>
           <GrammarInfoSection grammar={grammar} />
