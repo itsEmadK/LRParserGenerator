@@ -51,13 +51,14 @@ export default function GrammarInputSection({ onSubmit }) {
         </ul>
         <h3>An example of a correct grammar:</h3>
         <ul>
-          <li>S -{'>'} a S b</li>
-          <li>S -{'>'} ST;</li>
-          <li>A -{'>'} a b</li>
-          <li>ST -{'>'} if BE then ST EP</li>
-          <li>ST -{'>'} st</li>
-          <li>EP -{'>'} </li>
-          <li>EP -{'>'} else ST</li>
+          <li>E -{'>'} T E'</li>
+          <li>E' -{'>'}</li>
+          <li>E' -{'>'} + T E'</li>
+          <li>T -{'>'} F T'</li>
+          <li>T' -{'>'}</li>
+          <li>T' -{'>'} * F T'</li>
+          <li>F -{'>'} id</li>
+          <li>F -{'>'} ( E )</li>
         </ul>
       </div>
     </section>
