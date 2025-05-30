@@ -49,4 +49,11 @@ export default class Production {
   toString() {
     return `${this.#lhs} -> ${this.#rhs.join('')}`;
   }
+
+  static fromString(ruleStr) {
+    const arrowIndex = ruleStr.split(' ').indexOf('->');
+    const lhs = ruleStr.split(' ').slice(0, arrowIndex)[0];
+    const rhs = ruleStr.split(' ').slice(arrowIndex + 1);
+    return new Production(lhs, rhs);
+  }
 }
