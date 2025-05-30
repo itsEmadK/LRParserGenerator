@@ -28,7 +28,7 @@ export default function ParserTablesSection({
         </select>
       </div>
       <div className={styles['tables']}>
-        <LRParseTable parseTable={parseTable} />
+        <LRParseTable parseTable={parseTable} parserType={parserType} />
         <LRTable grammar={grammar} />
       </div>
     </section>
@@ -39,7 +39,7 @@ export default function ParserTablesSection({
  *
  * @param {{parseTable:ParseTable}} param0
  */
-function LRParseTable({ parseTable }) {
+function LRParseTable({ parseTable, parserType }) {
   return (
     <table>
       <thead>
@@ -51,7 +51,7 @@ function LRParseTable({ parseTable }) {
               parseTable.gotoSymbols.length
             }
           >
-            LR1 Parse Table
+            {parserType + ' Parse Table'}
           </th>
         </tr>
         <tr>
