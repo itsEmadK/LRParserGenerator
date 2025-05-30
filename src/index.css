@@ -6,3 +6,8 @@
   box-sizing: border-box;
   font-family: jbmono;
 }
+
+button {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
