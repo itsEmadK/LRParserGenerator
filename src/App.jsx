@@ -83,6 +83,9 @@ function App() {
       />
       {grammar && (
         <>
+          {
+            // TODO: Optimization; should fix the keys on the table cells and table rows
+          }
           <GrammarInfoSection key={grammar.toString()} grammar={grammar} />
           <ParserTablesSection
             key={parseTable.toString()}
