@@ -10,6 +10,7 @@ export default function ParserTablesSection({ parseTable, grammar }) {
   return (
     <section>
       <LRParseTable parseTable={parseTable} />
+      <LRTable grammar={grammar} />
     </section>
   );
 }
@@ -85,6 +86,41 @@ function LRParseTable({ parseTable }) {
                   </td>
                 );
               })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ *
+ * @param {{grammar:Grammar}} param0
+ */
+function LRTable({ grammar }) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th colSpan={3}>LR Table</th>
+        </tr>
+        <tr>
+          <th>Number</th>
+          <th>LHS</th>
+          <th>RHSL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {grammar.rules.values().map((rule) => {
+          const ruleNumber = grammar.findRuleNumber(rule);
+          const lhs = rule.lhs;
+          const rhsl = rule.rhs.length;
+          return (
+            <tr key={ruleNumber}>
+              <td>{ruleNumber}</td>
+              <td>{lhs}</td>
+              <td>{rhsl}</td>
             </tr>
           );
         })}
