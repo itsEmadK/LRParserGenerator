@@ -1,0 +1,65 @@
+section.grammar {
+  --border-radius: 8px;
+  display: grid;
+  padding: 1rem;
+  margin-top: 1rem;
+  row-gap: 1.5rem;
+  column-gap: 5rem;
+  grid-template-areas: 'heading heading' 'input instructions';
+}
+
+.heading {
+  grid-area: heading;
+  font-weight: 600;
+}
+
+.grammar-box {
+  grid-area: input;
+  padding: 0.5rem 0.25rem;
+  font-size: 1.25rem;
+  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+  height: max-content;
+}
+.grammar-box:focus {
+  outline: none;
+  border: 2px solid black;
+  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+}
+.instructions {
+  grid-area: instructions;
+}
+
+.instructions ul {
+  list-style-position: inside;
+  padding: 0.75rem 1rem;
+}
+.instructions ul > li {
+  margin-bottom: 0.75rem;
+}
+
+.instructions h3 {
+  font-weight: 600;
+}
+
+.grammar-box-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.gen-btn {
+  background-color: rgb(31, 155, 31);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-radius: 0px 0px var(--border-radius) var(--border-radius);
+  border: none;
+}
+
+.gen-btn:hover {
+  background-color: rgb(24, 140, 24);
+}
+.gen-btn:active {
+  background-color: rgb(18, 120, 18);
+}
