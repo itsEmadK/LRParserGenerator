@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './grammar-input-section.module.css';
+import Production from '../parse-logic/prod';
 
 export default function GrammarInputSection({ onSubmit }) {
   const [input, setInput] = useState('');
@@ -9,7 +10,10 @@ export default function GrammarInputSection({ onSubmit }) {
   function handleSubmit(e) {
     e.preventDefault();
     //TODO: Form validation
-    onSubmit(input);
+    const rules = input
+      .split('\n')
+      .map((ruleStr) => Production.fromString(ruleStr));
+    onSubmit(rules);
   }
   return (
     <section className={styles['grammar']}>
