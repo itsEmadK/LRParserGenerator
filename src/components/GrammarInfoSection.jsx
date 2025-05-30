@@ -50,7 +50,9 @@ function TerminalsTable({ terminals }) {
   return (
     <table className={styles['terminals']}>
       <thead>
-        <th>Terminals</th>
+        <tr>
+          <th>Terminals</th>
+        </tr>
       </thead>
       <tbody>
         {terminals.map((t) => (
