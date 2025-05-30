@@ -12,6 +12,7 @@ export default function GrammarInputSection({ onSubmit, initialRules }) {
     //TODO: Form validation
     const rules = input
       .split('\n')
+      .filter((ruleStr) => ruleStr.length > 0)
       .map((ruleStr) => Production.fromString(ruleStr));
     onSubmit(rules);
   }
