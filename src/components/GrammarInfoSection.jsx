@@ -15,6 +15,7 @@ export default function GrammarInfoSection({ grammar }) {
       <h2 className={styles['heading']}>Grammar info:</h2>
       <RulesTable numberedRules={numberedRules} />
       <TerminalsTable terminals={[...grammar.terminals]} />
+      <NonTerminalsTable grammar={grammar} />
     </section>
   );
 }
@@ -57,6 +58,41 @@ function TerminalsTable({ terminals }) {
             <td>{t}</td>
           </tr>
         ))}
+      </tbody>
+    </table>
+  );
+}
+
+/**
+ *
+ * @param {{grammar:Grammar}} grammar
+ * @returns
+ */
+function NonTerminalsTable({ grammar }) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th colSpan={4}>Non Terminals</th>
+        </tr>
+        <tr>
+          <th>Non Terminal</th>
+          <th>Nullable</th>
+          <th>First Set</th>
+          <th>Follow Set</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[...grammar.nonTerminals].map((nt) => {
+          return (
+            <tr key={nt}>
+              <td>{nt}</td>
+              <td>{grammar.isNullable([nt]) ? '✔' : '✖'}</td>
+              <td>{[...grammar.getFirst([nt])].join(', ')}</td>
+              <td>{[...grammar.getFollow([nt])].join(', ')}</td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
