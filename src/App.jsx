@@ -31,13 +31,49 @@ const initialPT = new ParseTable(initialDFA);
 function App() {
   const [grammar, setGrammar] = useState(initialGrammar);
   const [parseTable, setParseTable] = useState(initialPT);
+  const [parserType, setParserType] = useState('LALR1');
   function handleRulesSubmission(rules) {
     const gr = new Grammar(rules);
-    const dfa = new LR1DFA(gr);
-    const pt = new ParseTable(dfa, false);
+    let dfa;
+    switch (parserType) {
+      case 'LR0':
+        dfa = new LR0DFA(gr);
+        break;
+      case 'SLR1':
+        dfa = new SLR1DFA(gr);
+        break;
+      case 'LALR1':
+        dfa = new LALR1DFA(gr);
+        break;
+      case 'LR1':
+        dfa = new LR1DFA(gr);
+        break;
+    }
+    const pt = new ParseTable(dfa, parserType === 'LR1');
     setGrammar(gr);
     setParseTable(pt);
   }
+  function handleParserTypeChange(newType) {
+    let newDFA;
+    switch (newType) {
+      case 'LR0':
+        newDFA = new LR0DFA(grammar);
+        break;
+      case 'SLR1':
+        newDFA = new SLR1DFA(grammar);
+        break;
+      case 'LALR1':
+        newDFA = new LALR1DFA(grammar);
+        break;
+      case 'LR1':
+        newDFA = new LR1DFA(grammar);
+        break;
+    }
+    let newParseTable = new ParseTable(newDFA, newType === 'LR1');
+    setParserType(newType);
+    setParseTable(newParseTable);
+  }
+
   return (
     <>
       <PageHeader />
@@ -47,8 +83,14 @@ function App() {
       />
       {grammar && (
         <>
-          <GrammarInfoSection grammar={grammar} />
-          <ParserTablesSection parseTable={parseTable} grammar={grammar} />
+          <GrammarInfoSection key={grammar.toString()} grammar={grammar} />
+          <ParserTablesSection
+            key={parseTable.toString()}
+            parserType={parserType}
+            parseTable={parseTable}
+            grammar={grammar}
+            onParserTypeChange={handleParserTypeChange}
+          />
         </>
       )}
     </>

@@ -6,10 +6,27 @@ import Grammar from '../parse-logic/grammar';
  *
  * @param {{parseTable:ParseTable,grammar:Grammar}} param0
  */
-export default function ParserTablesSection({ parseTable, grammar }) {
+export default function ParserTablesSection({
+  parseTable,
+  grammar,
+  parserType,
+  onParserTypeChange,
+}) {
+  function handleParserTypeChange(e) {
+    onParserTypeChange(e.target.value);
+  }
   return (
     <section className={styles['parser-tables']}>
       <h2>Parser Tables:</h2>
+      <div className={styles['parser-type-container']}>
+        <h3>Parser Type:</h3>
+        <select value={parserType} onChange={handleParserTypeChange}>
+          <option>LR0</option>
+          <option>SLR1</option>
+          <option>LALR1</option>
+          <option>LR1</option>
+        </select>
+      </div>
       <div className={styles['tables']}>
         <LRParseTable parseTable={parseTable} />
         <LRTable grammar={grammar} />
