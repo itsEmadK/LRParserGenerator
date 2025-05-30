@@ -18,6 +18,8 @@ export default class ParseTable {
    */
   #isLR1;
 
+  #rowCount;
+
   /**
    *
    * @param {LR1DFA} dfa
@@ -25,6 +27,7 @@ export default class ParseTable {
    */
   constructor(dfa, isLR1) {
     this.#dfa = dfa;
+    this.#rowCount = dfa.states.size;
     this.#isLR1 = isLR1;
     this.#generateParseTable();
   }
@@ -173,5 +176,23 @@ export default class ParseTable {
     }
 
     return output;
+  }
+
+  get rowCount() {
+    return this.#rowCount;
+  }
+
+  get actionsSymbols() {
+    return [...this.#dfa.grammar.terminals, '$'];
+  }
+
+  get gotoSymbols() {
+    return [...this.#dfa.grammar.nonTerminals];
+  }
+
+  get rows() {
+    return this.#dfa.states.values().map((s, i) => {
+      return this.getRow(i);
+    });
   }
 }
