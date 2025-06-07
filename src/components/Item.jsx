@@ -19,7 +19,7 @@ export default function Item({
     >
       <div onClick={onClick} className={`${styles['item']} }`}>
         <p className={styles['lhs']}>{item.rule.lhs}</p>
-        <p className={styles['arrow']}>{' → '}</p>
+        <p className={styles['arrow']}>{' -> '}</p>
         <p className={styles['rhs']}>{dottedRhs.join(' ')}</p>
         <p className={styles['lookahead']}>
           {' ,'}
