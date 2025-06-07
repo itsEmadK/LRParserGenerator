@@ -1,0 +1,26 @@
+.base-items,
+.derived-items {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.state {
+  border: 2px solid black;
+  padding: 4px;
+  background-color: beige;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 8px;
+  position: relative;
+}
+
+li.first span {
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  font-weight: 700;
+  font-size: 18px;
+}
