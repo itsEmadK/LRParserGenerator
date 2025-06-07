@@ -1,12 +1,15 @@
 import styles from './state.module.css';
 import LRState from '../parse-logic/lrstate.js';
 import Item from './Item.jsx';
+import { useRef } from 'react';
+import { useEffect } from 'react';
 
 /**
  *
  * @param {{state:LRState}}
  */
-export default function State({ state, stateNumber }) {
+export default function State({ state, stateNumber, onRectSpecified }) {
+  const stateRef = useRef(null);
   const baseItems = state.baseItems.values().map((bi, index) => {
     return (
       <li className={index === 0 ? styles['first'] : ''} key={bi.hash()}>
@@ -24,8 +27,14 @@ export default function State({ state, stateNumber }) {
   const derivedItems = state.derivedItems.values().map((di) => {
     return <Item key={di.hash()} item={di} isLastBaseItem={false} />;
   });
+
+  useEffect(() => {
+    const rect = stateRef.current.getBoundingClientRect();
+    onRectSpecified({ width: rect.width, height: rect.height });
+  }, []);
+
   return (
-    <div className={styles['state']}>
+    <div ref={stateRef} className={styles['state']}>
       {[
         <ul className={styles['base-items']} key={'base'}>
           {[...baseItems]}
