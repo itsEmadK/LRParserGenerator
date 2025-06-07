@@ -6,12 +6,12 @@ import LR0DFA from './parse-logic/lr0dfa.js';
 import LR1DFA from './parse-logic/lr1dfa.js';
 import ParseTable from './parse-logic/parse-table.js';
 import SLR1DFA from './parse-logic/slr1dfa.js';
-import Item from './components/Item.jsx';
 import PageHeader from './components/PageHeader.jsx';
 import GrammarInputSection from './components/GrammarInputSection.jsx';
 import { useState } from 'react';
 import GrammarInfoSection from './components/GrammarInfoSection.jsx';
 import ParserTablesSection from './components/ParserTablesSection.jsx';
+import AutomataSection from './components/AutomataSection.jsx';
 
 const initialRulesStr = `E -> T E'
 E' ->
@@ -32,26 +32,28 @@ function App() {
   const [grammar, setGrammar] = useState(initialGrammar);
   const [parseTable, setParseTable] = useState(initialPT);
   const [parserType, setParserType] = useState('LALR1');
+  const [dfa, setDfa] = useState(initialDFA);
   function handleRulesSubmission(rules) {
     const gr = new Grammar(rules);
-    let dfa;
+    let newDFA;
     switch (parserType) {
       case 'LR0':
-        dfa = new LR0DFA(gr);
+        newDFA = new LR0DFA(gr);
         break;
       case 'SLR1':
-        dfa = new SLR1DFA(gr);
+        newDFA = new SLR1DFA(gr);
         break;
       case 'LALR1':
-        dfa = new LALR1DFA(gr);
+        newDFA = new LALR1DFA(gr);
         break;
       case 'LR1':
-        dfa = new LR1DFA(gr);
+        newDFA = new LR1DFA(gr);
         break;
     }
-    const pt = new ParseTable(dfa, parserType === 'LR1');
+    const pt = new ParseTable(newDFA, parserType === 'LR1');
     setGrammar(gr);
     setParseTable(pt);
+    setDfa(newDFA);
   }
   function handleParserTypeChange(newType) {
     let newDFA;
@@ -72,6 +74,7 @@ function App() {
     let newParseTable = new ParseTable(newDFA, newType === 'LR1');
     setParserType(newType);
     setParseTable(newParseTable);
+    setDfa(newDFA);
   }
 
   return (
@@ -94,6 +97,7 @@ function App() {
             grammar={grammar}
             onParserTypeChange={handleParserTypeChange}
           />
+          <AutomataSection dfa={dfa} />
         </>
       )}
     </>
