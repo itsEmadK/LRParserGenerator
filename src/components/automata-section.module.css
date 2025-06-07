@@ -1,0 +1,13 @@
+ul.states {
+  list-style-type: none;
+  display: flex;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 12px;
+  text-align: center;
+}
+
+section.automata {
+  display: grid;
+  place-content: center;
+}
