@@ -1,6 +1,17 @@
+.item-container {
+  display: flex;
+}
+
 .item {
   display: flex;
   gap: 8px;
+  flex: 1;
+}
+
+.number {
+  margin-left: 20px;
+  font-weight: 700;
+  font-size: 18px;
 }
 
 .bottom-div {

@@ -16,8 +16,8 @@ export default function State({ state, stateNumber }) {
             index === state.baseItems.size - 1 &&
             state.derivedItems.size > 0
           }
+          number={index === 0 ? stateNumber : null}
         />
-        {index === 0 && <span>{stateNumber}</span>}
       </li>
     );
   });
