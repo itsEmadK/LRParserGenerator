@@ -3,6 +3,68 @@ import LR1DFA from '../parse-logic/lr1dfa';
 import State from './State';
 import styles from './automata-section.module.css';
 
+function getStateElkGraph(stateNumber, dfa, width, height) {
+  const targetStateNumbers = dfa.graph.edges
+    .filter((e) => e.from === stateNumber)
+    .map((e) => e.to);
+  const elkGraph = {};
+  elkGraph.layoutOptions = {
+    'spacing.nodeNodeBetweenLayers': '120.0',
+    portConstraints: 'FIXED_SIDE',
+    edgeRouting: 'POLYLINE',
+    'spacing.nodeNode': '0.0',
+    'spacing.nodeSelfLoop': '30.0',
+  };
+  elkGraph.id = 'g';
+  elkGraph.children = [];
+  elkGraph.edges = [];
+  const nodeId = 'n' + stateNumber;
+  const n = { id: nodeId, ports: [] };
+  targetStateNumbers.forEach((t) => {
+    const portId = 'p' + stateNumber + t;
+    const edgeId = 'e' + stateNumber + t;
+    const targetId = 'n' + t;
+    const targetPortId = 'p' + targetId;
+    n.layoutOptions = { portConstraints: 'FIXED_SIDE' };
+
+    if (t !== stateNumber) {
+      n.ports.push({
+        id: portId,
+        layoutOptions: {
+          'port.side': t < stateNumber ? 'WEST' : 'EAST',
+        },
+      });
+      elkGraph.children.push({
+        id: targetId,
+        ports: [
+          {
+            id: 'p' + targetId,
+            layoutOptions: {
+              'port.side': t < stateNumber ? 'EAST' : 'WEST',
+            },
+          },
+        ],
+        layoutOptions: { portConstraints: 'FIXED_SIDE' },
+      });
+      elkGraph.edges.push({
+        id: edgeId,
+        sources: [portId],
+        targets: [targetPortId],
+      });
+    } else {
+      elkGraph.edges.push({
+        id: edgeId,
+        sources: [nodeId],
+        targets: [nodeId],
+      });
+    }
+  });
+  n.width = width;
+  n.height = height;
+  elkGraph.children.push(n);
+  return elkGraph;
+}
+
 /**
  *
  * @param {{dfa:LR1DFA}}
