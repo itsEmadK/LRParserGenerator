@@ -130,7 +130,7 @@ export default class LR1DFA {
   }
 
   /**
-   * @returns {{nodes:{label:string|number,data:LRState,layer:number}[],edges:{from:number,to:number|string,label:string}[]}}
+   * @returns {{nodes:{id:string|number,data:LRState,layer:number}[],edges:{from:number,to:number|string,label:string}[]}}
    */
   get graph() {
     const nodes = [];
@@ -139,8 +139,8 @@ export default class LR1DFA {
     levels.forEach((level, index) => {
       level.forEach((stateNumber) => {
         const state = this.getStateByNumber(stateNumber);
-        if (!nodes.find((n) => n.label == stateNumber)) {
-          nodes.push({ label: stateNumber, data: state, layer: index });
+        if (!nodes.find((n) => n.id == stateNumber)) {
+          nodes.push({ id: stateNumber, data: state, layer: index });
         }
         state.actions.forEach((action) => {
           const { type } = action;
@@ -162,6 +162,8 @@ export default class LR1DFA {
                 label: symbol,
               });
             }
+          } else if (type === 'A') {
+            edges.push({ from: stateNumber, to: 'acc', label: '$' });
           }
         });
       });
