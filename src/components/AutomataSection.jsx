@@ -19,6 +19,7 @@ export default function AutomataSection({ dfa }) {
     setHoveredTarget(null);
   };
   const handleTargetClick = (targetNumber) => {
+    setHoveredTarget(null);
     if (targetNumber !== 'A') {
       const targetState = dfa.getStateByNumber(targetNumber);
       const stateDivId = 's' + targetState.hash();
