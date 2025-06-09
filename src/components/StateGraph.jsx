@@ -8,7 +8,13 @@ import { Fragment, useState } from 'react';
  * @param {{state:LRState,stateNumber:number,targets:{number:number,input:string}[]}}
  * @returns
  */
-export default function StateGraph({ state, stateNumber, targets }) {
+export default function StateGraph({
+  state,
+  stateNumber,
+  targets,
+  onTargetClick,
+}) {
+
   const xMin = 0;
   const yMin = 0;
   const xMax = 100;
@@ -22,6 +28,9 @@ export default function StateGraph({ state, stateNumber, targets }) {
   });
   const backSegLength = virtualHeight / (backwardActions.length + 1);
 
+  const handleTargetClick = (targetNumber) => {
+    onTargetClick(targetNumber);
+  };
   const backwardLineCircles = backwardActions.map(
     ({ number, input }, index) => {
       const lineY = backSegLength * (index + 1);
@@ -41,6 +50,9 @@ export default function StateGraph({ state, stateNumber, targets }) {
             {input}
           </text>
           <circle
+            onClick={() => {
+              handleTargetClick(number);
+            }}
             className={styles['target']}
             cx={cx}
             cy={lineY}
@@ -50,6 +62,9 @@ export default function StateGraph({ state, stateNumber, targets }) {
             strokeWidth={circleStrokeWidth}
           />
           <text
+            onClick={() => {
+              handleTargetClick(number);
+            }}
             className={styles['target']}
             x={cx}
             y={lineY}
@@ -89,6 +104,9 @@ export default function StateGraph({ state, stateNumber, targets }) {
           </text>
           <circle
             className={styles['target']}
+            onClick={() => {
+              handleTargetClick(number);
+            }}
             cx={cx}
             cy={lineY}
             r={circleRadius}
@@ -98,6 +116,9 @@ export default function StateGraph({ state, stateNumber, targets }) {
           />
           <text
             className={styles['target']}
+            onClick={() => {
+              handleTargetClick(number);
+            }}
             x={cx}
             y={lineY}
             textAnchor="middle"

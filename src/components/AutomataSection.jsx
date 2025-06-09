@@ -10,6 +10,7 @@ import styles from './automata-section.module.css';
 export default function AutomataSection({ dfa }) {
   const states = dfa.states.values().map((s) => {
     const stateNumber = dfa.getStateNumber(s);
+
     return (
       <StateGraph
         key={s.hash()}
@@ -18,6 +19,12 @@ export default function AutomataSection({ dfa }) {
         targets={dfa.graph.edges
           .filter((e) => e.from === stateNumber)
           .map((e) => ({ number: e.to, input: e.label }))}
+        onTargetClick={(targetNumber) => {
+          const targetState = dfa.getStateByNumber(targetNumber);
+          const stateDivId = 's' + targetState.hash();
+          const stateDiv = document.querySelector('#' + stateDivId);
+          stateDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }}
       />
     );
   });

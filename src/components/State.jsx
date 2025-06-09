@@ -38,7 +38,11 @@ export default function State({
   }, []);
 
   return (
-    <div ref={stateRef} className={styles['state']}>
+    <div
+      id={'s' + state.hash()}
+      ref={stateRef}
+      className={styles['state']}
+    >
       {[
         <ul className={styles['base-items']} key={'base'}>
           {[...baseItems]}
