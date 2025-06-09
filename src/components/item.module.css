@@ -5,7 +5,9 @@
 .item {
   display: flex;
   gap: 8px;
+  /* font-size: 1.5vw; */
   flex: 1;
+  flex-shrink: 0;
 }
 
 .number {

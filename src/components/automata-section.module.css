@@ -1,13 +1,24 @@
 ul.states {
   list-style-type: none;
-  display: flex;
-  align-items: start;
+  display: grid;
+  /* align-items: center; */
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
   text-align: center;
 }
 
 section.automata {
   display: grid;
   place-content: center;
+}
+
+section.automata h2 {
+  margin-bottom: 2rem;
+}
+
+@media screen and (width <750px) {
+  ul.states {
+    grid-template-columns: 1fr;
+  }
 }

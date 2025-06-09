@@ -1,8 +1,8 @@
 .state-graph {
   display: flex;
   max-height: min-content;
-  flex-wrap: wrap;
   justify-content: center;
+  align-items: start;
 }
 
 .state-graph .backward,
@@ -13,10 +13,17 @@
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgb(240, 240, 240);
   /* align-items: center; */
 }
 
 .self-loop {
   margin-left: auto;
   margin-right: auto;
+}
+
+.target {
+  cursor: pointer;
 }

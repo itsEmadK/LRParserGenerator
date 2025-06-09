@@ -1,7 +1,7 @@
 import styles from './state-graph.module.css';
 import LRState from '../parse-logic/lrstate';
 import State from './State';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 
 /**
  *
@@ -15,7 +15,7 @@ export default function StateGraph({ state, stateNumber, targets }) {
   const [yMax, setYMax] = useState(100);
   const virtualHeight = yMax - yMin;
   const circleStrokeWidth = 2;
-  const circleRadius = yMax / 6 / 2 - circleStrokeWidth;
+  const circleRadius = 15 - circleStrokeWidth;
   const circleDiameter = circleRadius * 2;
   const backwardActions = targets.filter((t) => {
     return t.number < stateNumber;
@@ -41,6 +41,7 @@ export default function StateGraph({ state, stateNumber, targets }) {
             {input}
           </text>
           <circle
+            className={styles['target']}
             cx={cx}
             cy={lineY}
             r={circleRadius}
@@ -49,6 +50,7 @@ export default function StateGraph({ state, stateNumber, targets }) {
             strokeWidth={circleStrokeWidth}
           />
           <text
+            className={styles['target']}
             x={cx}
             y={lineY}
             textAnchor="middle"
@@ -86,6 +88,7 @@ export default function StateGraph({ state, stateNumber, targets }) {
             {input}
           </text>
           <circle
+            className={styles['target']}
             cx={cx}
             cy={lineY}
             r={circleRadius}
@@ -94,6 +97,7 @@ export default function StateGraph({ state, stateNumber, targets }) {
             fill="beige"
           />
           <text
+            className={styles['target']}
             x={cx}
             y={lineY}
             textAnchor="middle"
@@ -160,64 +164,67 @@ export default function StateGraph({ state, stateNumber, targets }) {
           {forwardLineCircles}
         </svg>
       </div>
-      <svg
-        overflow={'visible'}
-        width={selfLoopXMax}
-        height={selfLoopYMax}
-        viewBox={`0 0 ${selfLoopXMax} ${selfLoopYMax}`}
-        className={styles['self-loop']}
-      >
-        <marker
-          id="up-arrowhead"
-          markerWidth="6"
-          markerHeight="6"
-          refX="2.5"
-          refY="1"
-          // orient="auto"
-          markerUnits="strokeWidth"
+
+      {hasLoop && (
+        <svg
+          overflow={'visible'}
+          width={selfLoopXMax}
+          height={selfLoopYMax}
+          viewBox={`0 0 ${selfLoopXMax} ${selfLoopYMax}`}
+          className={styles['self-loop']}
         >
-          <polygon points="0 6, 2.5 0, 5 6" fill="black" />
-        </marker>
+          <marker
+            id="up-arrowhead"
+            markerWidth="6"
+            markerHeight="6"
+            refX="2.5"
+            refY="1"
+            // orient="auto"
+            markerUnits="strokeWidth"
+          >
+            <polygon points="0 6, 2.5 0, 5 6" fill="black" />
+          </marker>
 
-        {hasLoop && (
-          <>
-            <line
-              stroke="black"
-              strokeWidth={2}
-              x1={selfLoopXMax}
-              y1={0}
-              x2={selfLoopXMax}
-              y2={selfLoopYMax}
-            />
-            <line
-              stroke="black"
-              strokeWidth={2}
-              x1={selfLoopXMax}
-              y1={selfLoopYMax - 1}
-              x2={0}
-              y2={selfLoopYMax - 1}
-            />
-            <line
-              stroke="black"
-              strokeWidth={2}
-              x1={0}
-              y1={selfLoopYMax}
-              x2={0}
-              y2={0}
-              markerEnd="url(#up-arrowhead)"
-            />
+          {hasLoop && (
+            <>
+              <line
+                stroke="black"
+                strokeWidth={2}
+                x1={selfLoopXMax}
+                y1={0}
+                x2={selfLoopXMax}
+                y2={selfLoopYMax}
+              />
+              <line
+                stroke="black"
+                strokeWidth={2}
+                x1={selfLoopXMax}
+                y1={selfLoopYMax - 1}
+                x2={0}
+                y2={selfLoopYMax - 1}
+              />
+              <line
+                stroke="black"
+                strokeWidth={2}
+                x1={0}
+                y1={selfLoopYMax}
+                x2={0}
+                y2={0}
+                markerEnd="url(#up-arrowhead)"
+              />
 
-            <text
-              x={selfLoopXMax / 2}
-              y={selfLoopYMax - 12}
-              textAnchor="middle"
-              dominantBaseline="middle"
-            >
-              {targets.find((t) => t.number === stateNumber).input}
-            </text>
-          </>
-        )}
-      </svg>
+              <text
+                x={selfLoopXMax / 2}
+                y={selfLoopYMax - 12}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {targets.find((t) => t.number === stateNumber).input}
+              </text>
+            </>
+          )}
+        </svg>
+      )}
     </div>
   );
 }
