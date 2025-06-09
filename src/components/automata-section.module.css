@@ -22,3 +22,21 @@ section.automata h2 {
     grid-template-columns: 1fr;
   }
 }
+
+.backdrop {
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: fixed;
+  background-color: rgb(0 0 0 / 0.5);
+}
+
+.backdrop > * {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}

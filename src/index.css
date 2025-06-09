@@ -10,6 +10,7 @@
 body {
   display: grid;
   place-content: center;
+  position: relative;
 }
 
 #root {

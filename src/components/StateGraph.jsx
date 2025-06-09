@@ -13,6 +13,8 @@ export default function StateGraph({
   stateNumber,
   targets,
   onTargetClick,
+  onMouseEnterTarget,
+  onMouseLeaveTarget,
 }) {
   const xMin = 0;
   const yMin = 0;
@@ -29,6 +31,12 @@ export default function StateGraph({
 
   const handleTargetClick = (targetNumber) => {
     onTargetClick(targetNumber);
+  };
+  const handleTargetEnter = (number) => {
+    onMouseEnterTarget(number);
+  };
+  const handleTargetLeave = (number) => {
+    onMouseLeaveTarget(number);
   };
   const backwardLineCircles = backwardActions.map(
     ({ number, input }, index) => {
@@ -52,6 +60,12 @@ export default function StateGraph({
             onClick={() => {
               handleTargetClick(number);
             }}
+            onMouseEnter={() => {
+              handleTargetEnter(number);
+            }}
+            onMouseLeave={() => {
+              handleTargetLeave(number);
+            }}
             className={styles['target']}
             cx={cx}
             cy={lineY}
@@ -63,6 +77,12 @@ export default function StateGraph({
           <text
             onClick={() => {
               handleTargetClick(number);
+            }}
+            onMouseEnter={() => {
+              handleTargetEnter(number);
+            }}
+            onMouseLeave={() => {
+              handleTargetLeave(number);
             }}
             className={styles['target']}
             x={cx}
@@ -108,6 +128,12 @@ export default function StateGraph({
             onClick={() => {
               handleTargetClick(number);
             }}
+            onMouseEnter={() => {
+              handleTargetEnter(number);
+            }}
+            onMouseLeave={() => {
+              handleTargetLeave(number);
+            }}
             cx={cx}
             cy={lineY}
             r={circleRadius}
@@ -119,6 +145,12 @@ export default function StateGraph({
             className={styles['target']}
             onClick={() => {
               handleTargetClick(number);
+            }}
+            onMouseEnter={() => {
+              handleTargetEnter(number);
+            }}
+            onMouseLeave={() => {
+              handleTargetLeave(number);
             }}
             x={cx}
             y={lineY}
