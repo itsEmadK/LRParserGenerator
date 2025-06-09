@@ -20,10 +20,15 @@ export default function AutomataSection({ dfa }) {
           .filter((e) => e.from === stateNumber)
           .map((e) => ({ number: e.to, input: e.label }))}
         onTargetClick={(targetNumber) => {
-          const targetState = dfa.getStateByNumber(targetNumber);
-          const stateDivId = 's' + targetState.hash();
-          const stateDiv = document.querySelector('#' + stateDivId);
-          stateDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          if (targetNumber !== 'A') {
+            const targetState = dfa.getStateByNumber(targetNumber);
+            const stateDivId = 's' + targetState.hash();
+            const stateDiv = document.querySelector('#' + stateDivId);
+            stateDiv.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }
         }}
       />
     );

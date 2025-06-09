@@ -14,7 +14,6 @@ export default function StateGraph({
   targets,
   onTargetClick,
 }) {
-
   const xMin = 0;
   const yMin = 0;
   const xMax = 100;
@@ -78,9 +77,11 @@ export default function StateGraph({
     }
   );
 
-  const forwardActions = targets.filter((t) => {
-    return t.number > stateNumber;
-  });
+  const forwardActions = targets
+    .filter((t) => {
+      return t.number > stateNumber || t.number === 'acc';
+    })
+    .map((t) => (t.number === 'acc' ? { number: 'A', input: '$' } : t));
 
   const forSegLength = virtualHeight / (forwardActions.length + 1);
 
