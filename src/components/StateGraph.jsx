@@ -194,7 +194,9 @@ export default function StateGraph({
           stateNumber={stateNumber}
           state={state}
           onRectSpecified={({ height }) => {
-            setYMax(height);
+            if (height !== yMax) {
+              setYMax(height);
+            }
           }}
         />
         <svg
