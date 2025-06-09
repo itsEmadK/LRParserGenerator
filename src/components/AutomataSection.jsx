@@ -15,7 +15,7 @@ export default function AutomataSection({ dfa }) {
       setHoveredTarget(targetNumber);
     }
   };
-  const handleTargetLeave = (targetNumber) => {
+  const handleTargetLeave = () => {
     setHoveredTarget(null);
   };
   const handleTargetClick = (targetNumber) => {
