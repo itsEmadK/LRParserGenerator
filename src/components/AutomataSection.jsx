@@ -11,6 +11,8 @@ import State from './State';
 export default function AutomataSection({ dfa }) {
   const [hoveredTarget, setHoveredTarget] = useState(null);
   const [timeoutId, setTimeOutId] = useState(null);
+  const [highlightedStateNumber, setHighlightedStateNumber] =
+    useState(null);
   const handleTargetEnter = (targetNumber) => {
     const delay = 700;
     if (targetNumber !== 'A') {
@@ -29,6 +31,7 @@ export default function AutomataSection({ dfa }) {
     setHoveredTarget(null);
   };
   const handleTargetClick = (targetNumber) => {
+    const highlightDuration = 2000;
     setHoveredTarget(null);
     if (targetNumber !== 'A') {
       const targetState = dfa.getStateByNumber(targetNumber);
@@ -38,6 +41,10 @@ export default function AutomataSection({ dfa }) {
         behavior: 'smooth',
         block: 'center',
       });
+      setHighlightedStateNumber(targetNumber);
+      setTimeout(() => {
+        setHighlightedStateNumber(null);
+      }, highlightDuration);
     }
   };
   const states = dfa.states.values().map((s) => {
@@ -48,6 +55,7 @@ export default function AutomataSection({ dfa }) {
         key={s.hash()}
         state={s}
         stateNumber={stateNumber}
+        isHighlighted={highlightedStateNumber === stateNumber}
         targets={dfa.graph.edges
           .filter((e) => e.from === stateNumber)
           .map((e) => ({ number: e.to, input: e.label }))}

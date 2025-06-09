@@ -12,6 +12,7 @@ export default function StateGraph({
   state,
   stateNumber,
   targets,
+  isHighlighted,
   onTargetClick,
   onMouseEnterTarget,
   onMouseLeaveTarget,
@@ -156,7 +157,13 @@ export default function StateGraph({
   const selfLoopYMax = 30;
 
   return (
-    <div className={styles['container']}>
+    <div
+      className={
+        styles['container'] +
+        ' ' +
+        (isHighlighted ? styles['highlight'] : '')
+      }
+    >
       <div className={styles['state-graph']}>
         <svg
           width={xMax}

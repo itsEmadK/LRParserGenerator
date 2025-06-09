@@ -19,6 +19,10 @@
   /* align-items: center; */
 }
 
+.container.highlight {
+  outline: 2px solid black;
+}
+
 .self-loop {
   margin-left: auto;
   margin-right: auto;
