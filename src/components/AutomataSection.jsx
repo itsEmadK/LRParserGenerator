@@ -14,7 +14,7 @@ export default function AutomataSection({ dfa }) {
   const [highlightedStateNumber, setHighlightedStateNumber] =
     useState(null);
   const handleTargetEnter = (targetNumber) => {
-    const delay = 700;
+    const delay = 1000;
     if (targetNumber !== 'A') {
       if (timeoutId) {
         clearTimeout(timeoutId);
