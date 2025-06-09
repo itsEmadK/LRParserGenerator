@@ -10,12 +10,22 @@ import State from './State';
  */
 export default function AutomataSection({ dfa }) {
   const [hoveredTarget, setHoveredTarget] = useState(null);
+  const [timeoutId, setTimeOutId] = useState(null);
   const handleTargetEnter = (targetNumber) => {
+    const delay = 700;
     if (targetNumber !== 'A') {
-      setHoveredTarget(targetNumber);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      const id = setTimeout(() => {
+        setHoveredTarget(targetNumber);
+      }, delay);
+      setTimeOutId(id);
     }
   };
   const handleTargetLeave = () => {
+    clearTimeout(timeoutId);
+    setTimeOutId(null);
     setHoveredTarget(null);
   };
   const handleTargetClick = (targetNumber) => {
