@@ -1,0 +1,23 @@
+.state-graph {
+  display: flex;
+  max-height: min-content;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.state-graph .backward,
+.state-graph .forward {
+  max-width: 100px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+}
+
+.self-loop {
+  margin-left: auto;
+  margin-right: auto;
+}
