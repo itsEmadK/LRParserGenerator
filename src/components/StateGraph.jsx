@@ -56,7 +56,8 @@ export default function StateGraph({
           <text x={(xMin + xMax) / 2} y={lineY - 3}>
             {input}
           </text>
-          <circle
+          <g
+            className={styles['target']}
             onClick={() => {
               handleTargetClick(number);
             }}
@@ -66,32 +67,25 @@ export default function StateGraph({
             onMouseLeave={() => {
               handleTargetLeave(number);
             }}
-            className={styles['target']}
-            cx={cx}
-            cy={lineY}
-            r={circleRadius}
-            fill="beige"
-            stroke="black"
-            strokeWidth={circleStrokeWidth}
-          />
-          <text
-            onClick={() => {
-              handleTargetClick(number);
-            }}
-            onMouseEnter={() => {
-              handleTargetEnter(number);
-            }}
-            onMouseLeave={() => {
-              handleTargetLeave(number);
-            }}
-            className={styles['target']}
-            x={cx}
-            y={lineY}
-            textAnchor="middle"
-            dominantBaseline="middle"
           >
-            {number}
-          </text>
+            <circle
+              cx={cx}
+              cy={lineY}
+              r={circleRadius}
+              fill="beige"
+              stroke="black"
+              strokeWidth={circleStrokeWidth}
+            />
+            <text
+              className={styles['target']}
+              x={cx}
+              y={lineY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {number}
+            </text>
+          </g>
         </Fragment>
       );
     }
@@ -123,7 +117,7 @@ export default function StateGraph({
           <text x={(xMin + xMax - circleDiameter) / 2} y={lineY - 3}>
             {input}
           </text>
-          <circle
+          <g
             className={styles['target']}
             onClick={() => {
               handleTargetClick(number);
@@ -134,31 +128,24 @@ export default function StateGraph({
             onMouseLeave={() => {
               handleTargetLeave(number);
             }}
-            cx={cx}
-            cy={lineY}
-            r={circleRadius}
-            stroke="black"
-            strokeWidth={circleStrokeWidth}
-            fill="beige"
-          />
-          <text
-            className={styles['target']}
-            onClick={() => {
-              handleTargetClick(number);
-            }}
-            onMouseEnter={() => {
-              handleTargetEnter(number);
-            }}
-            onMouseLeave={() => {
-              handleTargetLeave(number);
-            }}
-            x={cx}
-            y={lineY}
-            textAnchor="middle"
-            dominantBaseline="middle"
           >
-            {number}
-          </text>
+            <circle
+              cx={cx}
+              cy={lineY}
+              r={circleRadius}
+              stroke="black"
+              strokeWidth={circleStrokeWidth}
+              fill="beige"
+            />
+            <text
+              x={cx}
+              y={lineY}
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {number}
+            </text>
+          </g>
         </Fragment>
       );
     }
