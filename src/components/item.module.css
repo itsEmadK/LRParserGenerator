@@ -1,0 +1,21 @@
+.item-container {
+  display: flex;
+}
+
+.item {
+  display: flex;
+  gap: 8px;
+  /* font-size: 1.5vw; */
+  flex: 1;
+  flex-shrink: 0;
+}
+
+.number {
+  margin-left: 20px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.bottom-div {
+  border-bottom: 2px solid black;
+}

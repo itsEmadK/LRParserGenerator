@@ -1,0 +1,33 @@
+.state-graph {
+  display: flex;
+  max-height: min-content;
+  justify-content: center;
+  align-items: start;
+}
+
+.state-graph .backward,
+.state-graph .forward {
+  max-width: 100px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  background-color: rgb(240, 240, 240);
+  /* align-items: center; */
+}
+
+.container.highlight {
+  outline: 2px solid black;
+}
+
+.self-loop {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.target {
+  cursor: pointer;
+}

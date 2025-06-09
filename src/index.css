@@ -1,0 +1,51 @@
+@import url('./fonts/fonts.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: jbmono;
+}
+
+body {
+  display: grid;
+  place-content: center;
+  position: relative;
+}
+
+#root {
+  max-width: 2000px;
+  display: grid;
+  place-content: center;
+}
+
+button {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+th,
+td {
+  text-align: center;
+  padding: 0.5rem;
+  border: 1px solid black;
+}
+
+th {
+  background-color: rgb(196, 196, 196);
+}
+
+table {
+  border-collapse: collapse;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 1.75rem;
+}
+
+section {
+  padding: 1rem;
+  margin-bottom: 2rem;
+  background-color: #f5f5f5;
+}
