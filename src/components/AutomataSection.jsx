@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import LR1DFA from '../parse-logic/lr1dfa';
 import StateGraph from './StateGraph';
 import styles from './automata-section.module.css';
@@ -11,6 +11,8 @@ import State from './State';
 export default function AutomataSection({ dfa }) {
   const [hoveredTarget, setHoveredTarget] = useState(null);
   const [timeoutId, setTimeOutId] = useState(null);
+  const states = useMemo(() => dfa.states.values(), [dfa]);
+  const graph = useMemo(() => dfa.graph, [dfa]);
   const [highlightedStateNumber, setHighlightedStateNumber] =
     useState(null);
   const handleTargetEnter = (targetNumber) => {
@@ -47,7 +49,7 @@ export default function AutomataSection({ dfa }) {
       }, highlightDuration);
     }
   };
-  const states = dfa.states.values().map((s) => {
+  const statesGraph = states.map((s) => {
     const stateNumber = dfa.getStateNumber(s);
 
     return (
@@ -56,7 +58,7 @@ export default function AutomataSection({ dfa }) {
         state={s}
         stateNumber={stateNumber}
         isHighlighted={highlightedStateNumber === stateNumber}
-        targets={dfa.graph.edges
+        targets={graph.edges
           .filter((e) => e.from === stateNumber)
           .map((e) => ({ number: e.to, input: e.label }))}
         onTargetClick={handleTargetClick}
@@ -69,7 +71,7 @@ export default function AutomataSection({ dfa }) {
   return (
     <section className={styles['automata']}>
       <h2>Handle Finding Automata States:</h2>
-      <ul className={styles['states']}>{states}</ul>
+      <ul className={styles['states']}>{statesGraph}</ul>
       {hoveredTarget !== null && (
         <div className={styles['backdrop']}>
           <State
