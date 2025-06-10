@@ -33,6 +33,10 @@ export default function AutomataSection({ dfa }) {
     setHoveredTarget(null);
   };
   const handleTargetClick = (targetNumber) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeOutId(null);
+    }
     const highlightDuration = 2000;
     setHoveredTarget(null);
     if (targetNumber !== 'A') {
