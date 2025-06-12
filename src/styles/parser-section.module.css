@@ -6,16 +6,25 @@ section.parser h2 {
   display: flex;
   gap: 8px;
   align-items: center;
+  margin-bottom: 1.5rem;
 }
 
-.input input {
+.input label {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.input label input {
   padding: 6px 4px;
+  flex: 1;
   font-size: 1rem;
   border-radius: 4px;
   appearance: none;
   border: 2px solid rgb(206, 206, 206);
 }
+
 .input button {
   appearance: none;
   border: none;
@@ -49,4 +58,57 @@ section.parser h2 {
 }
 .input .reset:active {
   background-color: rgb(197, 101, 79);
+}
+
+.parse-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.parse-info input:focus {
+  outline: none;
+}
+
+.parse-stack-container,
+.progress-container {
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+}
+
+.parse-stack,
+.progress {
+  background-color: rgb(235, 235, 235);
+  min-width: 4rem;
+  padding: 6px 4px;
+  border: 2px solid rgb(200, 200, 200);
+  border-radius: 4px;
+  min-height: 2rem;
+  cursor: default;
+  font-size: 1rem;
+}
+
+.current-state-container,
+.action-container,
+.next-token-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  align-self: stretch;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.current-state,
+.action,
+.next-token {
+  background-color: rgb(235, 235, 235);
+  padding: 8px;
+  border: 2px solid rgb(200, 200, 200);
+  border-radius: 4px;
+  align-self: stretch;
 }
