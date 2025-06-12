@@ -246,7 +246,7 @@ export default class Grammar {
   }
 
   /**
-   * @type {HashSet<rule:Production>}
+   * @type {HashSet<Production>}
    */
   get rules() {
     return new HashSet(this.#rules.values().map((rule) => rule.clone()));
