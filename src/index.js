@@ -10,27 +10,27 @@ import Parser from './parse-logic/parser.js';
 import Production from './parse-logic/prod.js';
 import SLR1DFA from './parse-logic/slr1dfa.js';
 
-// const rules = [
-//     new Production('E', ['T', "E'"]),
-//     new Production("E'", []),
-//     new Production("E'", ['+', 'T', "E'"]),
-//     new Production('T', ['F', "T'"]),
-//     new Production("T'", []),
-//     new Production("T'", ['*', 'F', "T'"]),
-//     new Production('F', ['id']),
-//     new Production('F', ['(', 'E', ')']),
-// ];
+const rules = [
+  new Production('E', ['T', "E'"]),
+  new Production("E'", []),
+  new Production("E'", ['+', 'T', "E'"]),
+  new Production('T', ['F', "T'"]),
+  new Production("T'", []),
+  new Production("T'", ['*', 'F', "T'"]),
+  new Production('F', ['id']),
+  new Production('F', ['(', 'E', ')']),
+];
 
 // hs.forEach((it) => console.log(it.toString()));
 
-const rules = [
-  new Production('E', ['E', '+', 'E']),
-  new Production('E', ['E', '*', 'E']),
-  new Production('E', ['id']),
-  new Production('E', ['id']),
-  new Production('E', ['-', 'E']),
-  new Production('E', ['(', 'E', ')']),
-];
+// const rules = [
+//   new Production('E', ['E', '+', 'E']),
+//   new Production('E', ['E', '*', 'E']),
+//   new Production('E', ['id']),
+//   new Production('E', ['id']),
+//   // new Production('E', ['-', 'E']),
+//   new Production('E', ['(', 'E', ')']),
+// ];
 // const rules = [
 //     new Production('E', ['L', '=', 'R']),
 //     new Production('E', ['R']),
@@ -62,7 +62,7 @@ const lalr1pt = new ParseTable(lalrdfa);
 const slr1pt = new ParseTable(slr1dfa, false);
 const lr0pt = new ParseTable(lr0dfa, false);
 
-const lr1Parser = new Parser(lr1pt, grammar);
+const lalr1Parser = new Parser(lalr1pt, grammar);
 
 console.log('\nLR0 Parse Table:\n');
 console.log(lr0pt.toString());
@@ -73,8 +73,32 @@ console.log(slr1pt.toString());
 console.log('\nLALR1 Parse Table:\n');
 console.log(lalr1pt.toString());
 
-console.log('\nLR1 Parse Table:\n');
-console.log(lr1pt.toString());
+// console.log('\nLR1 Parse Table:\n');
+// console.log(lr1pt.toString());
 
-lr1Parser.setInput('id + - id * id + id');
-console.log(lr1Parser.run());
+lalr1Parser.setInput('id + id *  id');
+// console.log(lr1Parser.run());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+
+lalr1Parser.reset();
+console.log(lalr1Parser.currentStatus);
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
+console.log(lalr1Parser.step());
