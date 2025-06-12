@@ -30,6 +30,8 @@ const initialGrammar = new Grammar(
 const initialDFA = new LALR1DFA(initialGrammar);
 const initialPT = new ParseTable(initialDFA);
 const initialParser = new Parser(initialPT, initialGrammar);
+initialParser.setInput('id + id * id');
+initialParser.run();
 
 function App() {
   const [grammar, setGrammar] = useState(initialGrammar);
