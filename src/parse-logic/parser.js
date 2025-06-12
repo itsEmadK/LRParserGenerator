@@ -87,33 +87,37 @@ export default class Parser {
   }
 
   run() {
+    this.reset();
     if (this.#input.length === 0) {
       return;
     }
 
     this.#parseStack = [0];
-    let dotPosition = 0;
     while (true) {
-      const token = this.#input[dotPosition];
+      const token = this.#input[this.#dotPosition];
       const stateNumber = this.#parseStack[this.#parseStack.length - 1];
       const actions = this.#parseTable.getCell(stateNumber, token);
       if (!actions) {
-        console.log('input is invalid.');
-        break;
+        this.#error = { errorCode: 0, desc: { stateNumber, token } };
+        return this.currentStatus;
       }
       if (actions.length > 1) {
-        throw new Error(
-          `Conflict at state ${stateNumber} with token ${token}. Possible actions: ${actions.toString()}`
-        );
+        this.#error = {
+          errorCode: 1,
+          desc: { stateNumber, token, actions },
+        };
+        return this.currentStatus;
       } else if (actions.length === 0) {
-        console.log('input is invalid.');
-        break;
+        this.#error = { errorCode: 0, desc: { stateNumber, token } };
+        return this.currentStatus;
       }
+
       const action = actions[0];
+      this.#lastAction = action;
       if (action.action === 'S') {
         this.#parseStack.push(action.destination);
         this.#treeStack.push({ symbol: token, children: null });
-        dotPosition++;
+        this.#dotPosition++;
       } else if (action.action === 'R') {
         const ruleNumber = action.destination;
         const { lhs, rhsl } = this.#lrTable[ruleNumber];
@@ -127,20 +131,24 @@ export default class Parser {
         const gotoAction = this.#parseTable.getCell(newTop, lhs)[0];
 
         if (!gotoAction) {
-          console.log('Input is invalid');
-          break;
+          this.#error = {
+            errorCode: 2,
+            desc: { stateNumber, symbol: lhs, rule: ruleNumber },
+          };
         }
 
         this.#parseStack.push(gotoAction.destination);
       } else if (action.action === 'A') {
-        console.log('Valid!');
-        return true;
+        this.#steppedToAccept = true;
+        this.#dotPosition++;
+        this.#lastAction = action;
+        return this.currentStatus;
       } else {
         break;
       }
     }
 
-    return false;
+    return this.currentStatus;
   }
 
   step() {
