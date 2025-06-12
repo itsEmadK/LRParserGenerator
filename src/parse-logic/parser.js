@@ -26,6 +26,12 @@ export default class Parser {
 
   #lastAction = null;
 
+  #treeStack = [];
+
+  get treeStack() {
+    return this.#treeStack.slice().map((node) => ({ ...node }));
+  }
+
   ERROR_CODES = {
     0: 'No action exists for next token at current state',
     1: 'Multiple actions exist for next token at current state ',
@@ -44,6 +50,7 @@ export default class Parser {
       accepted: this.#steppedToAccept,
       error: this.#error,
       lastAction: this.#lastAction,
+      treeStack: this.treeStack,
     };
   }
 
@@ -105,10 +112,13 @@ export default class Parser {
       const action = actions[0];
       if (action.action === 'S') {
         this.#parseStack.push(action.destination);
+        this.#treeStack.push({ symbol: token, children: null });
         dotPosition++;
       } else if (action.action === 'R') {
         const ruleNumber = action.destination;
         const { lhs, rhsl } = this.#lrTable[ruleNumber];
+        const children = this.#treeStack.splice(-rhsl);
+        this.#treeStack.push({ symbol: lhs, children });
         for (let i = 0; i < rhsl; i++) {
           this.#parseStack.pop();
         }
@@ -156,6 +166,7 @@ export default class Parser {
     }
     const action = actions[0];
     if (action.action === 'S') {
+      this.#treeStack.push({ symbol: token, children: null });
       this.#parseStack.push(action.destination);
       this.#dotPosition++;
       this.#lastAction = action;
@@ -163,6 +174,8 @@ export default class Parser {
       const ruleNumber = action.destination;
       this.#lastAction = action;
       const { lhs, rhsl } = this.#lrTable[ruleNumber];
+      const children = this.#treeStack.splice(-rhsl);
+      this.#treeStack.push({ symbol: lhs, children });
       for (let i = 0; i < rhsl; i++) {
         this.#parseStack.pop();
       }
@@ -193,5 +206,6 @@ export default class Parser {
     this.#steppedToAccept = false;
     this.#error = null;
     this.#lastAction = null;
+    this.#treeStack = [];
   }
 }
