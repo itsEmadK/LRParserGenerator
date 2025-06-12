@@ -79,7 +79,9 @@ export default function ParserSection({ parser }) {
           <div className={styles['action-container']}>
             <p>Action:</p>
             <div className={styles['action']}>
-              {currentStatus.lastAction && currentStatus.lastAction.action}
+              {currentStatus.lastAction
+                ? currentStatus.lastAction.action
+                : '?'}
               {currentStatus.lastAction &&
                 (currentStatus.lastAction.destination !== -1
                   ? currentStatus.lastAction.destination
