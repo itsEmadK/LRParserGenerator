@@ -6,8 +6,8 @@ export default class Parser {
   /**@type {ParseTable} */
   #parseTable;
 
-  /**@type {string} */
-  #input = '';
+  /**@type {string[]} */
+  #input = [];
 
   /**@type {number[]} */
   #parseStack = [0];
@@ -32,6 +32,12 @@ export default class Parser {
     return this.#treeStack.slice().map((node) => ({ ...node }));
   }
 
+  get progress() {
+    const temp = this.#input.slice();
+    temp.splice(this.#dotPosition, 0, '•');
+    return temp;
+  }
+
   ERROR_CODES = {
     0: 'No action exists for next token at current state',
     1: 'Multiple actions exist for next token at current state ',
@@ -51,6 +57,7 @@ export default class Parser {
       error: this.#error,
       lastAction: this.#lastAction,
       treeStack: this.treeStack,
+      progress: this.progress,
     };
   }
 

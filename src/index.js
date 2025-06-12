@@ -76,7 +76,7 @@ console.log(lalr1pt.toString());
 // console.log('\nLR1 Parse Table:\n');
 // console.log(lr1pt.toString());
 
-lalr1Parser.setInput('id - id *  id');
+lalr1Parser.setInput('id * id *  id');
 // console.log(lr1Parser.run());
 console.log(lalr1Parser.step());
 console.log(lalr1Parser.step());
