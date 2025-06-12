@@ -95,10 +95,9 @@ console.log(lalr1Parser.step());
 console.log(lalr1Parser.step());
 console.log(lalr1Parser.step());
 console.log(lalr1Parser.step());
-console.log(lalr1Parser.step());
 
 lalr1Parser.reset();
-console.log(lalr1Parser.currentStatus);
-console.log(lalr1Parser.step());
-console.log(lalr1Parser.step());
-console.log(lalr1Parser.step());
+
+lalr1Parser.run();
+
+console.log(lalr1Parser.treeStack);
