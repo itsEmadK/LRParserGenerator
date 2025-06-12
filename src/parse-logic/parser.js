@@ -88,6 +88,7 @@ export default class Parser {
    * @param {string} input
    */
   setInput(input) {
+    this.reset();
     this.#input = `${input} $`
       .split(' ')
       .filter((token) => token && token !== ' ');
@@ -222,5 +223,11 @@ export default class Parser {
     this.#error = null;
     this.#lastAction = null;
     this.#treeStack = [];
+  }
+
+  get input() {
+    const temp = this.#input.slice();
+    temp.splice(-1);
+    return temp.join(' ');
   }
 }
