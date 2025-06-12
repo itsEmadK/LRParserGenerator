@@ -12,6 +12,8 @@ import { useState } from 'react';
 import GrammarInfoSection from './components/GrammarInfoSection.jsx';
 import ParserTablesSection from './components/ParserTablesSection.jsx';
 import AutomataSection from './components/AutomataSection.jsx';
+import ParserSection from './components/ParserSection.jsx';
+import Parser from './parse-logic/parser.js';
 
 const initialRulesStr = `E -> T E'
 E' ->
@@ -27,12 +29,15 @@ const initialGrammar = new Grammar(
 );
 const initialDFA = new LALR1DFA(initialGrammar);
 const initialPT = new ParseTable(initialDFA);
+const initialParser = new Parser(initialPT, initialGrammar);
 
 function App() {
   const [grammar, setGrammar] = useState(initialGrammar);
   const [parseTable, setParseTable] = useState(initialPT);
   const [parserType, setParserType] = useState('LALR1');
   const [dfa, setDfa] = useState(initialDFA);
+  const [parser, setParser] = useState(initialParser);
+
   function handleRulesSubmission(rules) {
     const gr = new Grammar(rules);
     let newDFA;
@@ -51,9 +56,11 @@ function App() {
         break;
     }
     const pt = new ParseTable(newDFA, parserType === 'LR1');
+    const parser = new Parser(pt);
     setGrammar(gr);
     setParseTable(pt);
     setDfa(newDFA);
+    setParser(parser);
   }
   function handleParserTypeChange(newType) {
     let newDFA;
@@ -72,8 +79,10 @@ function App() {
         break;
     }
     let newParseTable = new ParseTable(newDFA, newType === 'LR1');
+    const parser = new Parser(newParseTable);
     setParserType(newType);
     setParseTable(newParseTable);
+    setParser(parser);
     setDfa(newDFA);
   }
 
@@ -98,6 +107,7 @@ function App() {
             onParserTypeChange={handleParserTypeChange}
           />
           <AutomataSection dfa={dfa} />
+          <ParserSection parser={parser} />
         </>
       )}
     </>

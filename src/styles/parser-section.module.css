@@ -1,0 +1,52 @@
+section.parser h2 {
+  margin-bottom: 2rem;
+}
+
+.input {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input input {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 1rem;
+  border-radius: 4px;
+  appearance: none;
+  border: 2px solid rgb(206, 206, 206);
+}
+.input button {
+  appearance: none;
+  border: none;
+  border-radius: 4px;
+  align-self: stretch;
+  font-weight: bold;
+}
+.input .step {
+  background-color: rgb(70, 188, 221);
+}
+.input .step:hover {
+  background-color: rgb(57, 171, 202);
+}
+.input .step:active {
+  background-color: rgb(34, 155, 188);
+}
+.input .run {
+  background-color: rgb(50, 195, 50);
+}
+.input .run:hover {
+  background-color: rgb(50, 171, 50);
+}
+.input .run:active {
+  background-color: rgb(38, 151, 38);
+}
+.input .reset {
+  background-color: rgb(242, 136, 112);
+}
+.input .reset:hover {
+  background-color: rgb(217, 117, 95);
+}
+.input .reset:active {
+  background-color: rgb(197, 101, 79);
+}
