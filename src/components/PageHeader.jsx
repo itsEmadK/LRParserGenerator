@@ -1,4 +1,4 @@
-import styles from './page-heder.module.css';
+import styles from '../styles/page-heder.module.css';
 
 export default function PageHeader() {
   return (

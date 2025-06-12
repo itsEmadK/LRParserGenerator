@@ -1,4 +1,4 @@
-import styles from './parser-tables-section.module.css';
+import styles from '../styles/parser-tables-section.module.css';
 import ParseTable from '../parse-logic/parse-table';
 import Grammar from '../parse-logic/grammar';
 

@@ -1,4 +1,4 @@
-import styles from './grammar-info-section.module.css';
+import styles from '../styles/grammar-info-section.module.css';
 import Grammar from '../parse-logic/grammar';
 
 /**

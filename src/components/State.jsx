@@ -1,4 +1,4 @@
-import styles from './state.module.css';
+import styles from '../styles/state.module.css';
 import LRState from '../parse-logic/lrstate.js';
 import Item from './Item.jsx';
 import { useRef } from 'react';

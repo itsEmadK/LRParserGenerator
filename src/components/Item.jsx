@@ -1,5 +1,5 @@
 import LRItem from '../parse-logic/lritem';
-import styles from './item.module.css';
+import styles from '../styles/item.module.css';
 /**
  *
  * @param {{item:LRItem}} props
