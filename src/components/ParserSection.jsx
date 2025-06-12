@@ -77,7 +77,7 @@ export default function ParserSection({ parser }) {
             </div>
           </div>
           <div className={styles['action-container']}>
-            <p>Action:</p>
+            <p>Last action:</p>
             <div className={styles['action']}>
               {currentStatus.lastAction
                 ? currentStatus.lastAction.action
