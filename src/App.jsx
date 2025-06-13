@@ -58,7 +58,7 @@ function App() {
         break;
     }
     const pt = new ParseTable(newDFA, parserType === 'LR1');
-    const parser = new Parser(pt);
+    const parser = new Parser(pt, grammar);
     setGrammar(gr);
     setParseTable(pt);
     setDfa(newDFA);
@@ -81,7 +81,7 @@ function App() {
         break;
     }
     let newParseTable = new ParseTable(newDFA, newType === 'LR1');
-    const parser = new Parser(newParseTable);
+    const parser = new Parser(newParseTable, grammar);
     setParserType(newType);
     setParseTable(newParseTable);
     setParser(parser);
