@@ -35,7 +35,7 @@ export default function State({
   useEffect(() => {
     const rect = stateRef.current.getBoundingClientRect();
     onRectSpecified({ width: rect.width, height: rect.height });
-  }, []);
+  }, [onRectSpecified]);
 
   return (
     <div
