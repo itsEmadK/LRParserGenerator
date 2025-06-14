@@ -125,3 +125,20 @@ section.parser h2 {
   font-weight: bold;
   font-size: 1.2rem;
 }
+
+.parse-tree-container {
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+}
+
+.parse-tree-container.no-tree {
+  flex-direction: row;
+  gap: 8px;
+}
+
+.parse-tree {
+  align-self: center;
+  border: 1px solid #ccc;
+  background-color: #fefefe;
+}

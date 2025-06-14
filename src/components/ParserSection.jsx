@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from '../styles/parser-section.module.css';
 import Parser from '../parse-logic/parser.js';
+import ParseTree from './ParseTree.jsx';
 
 /**
  *
@@ -104,6 +105,24 @@ export default function ParserSection({ parser }) {
             </p>
           </div>
         )}
+        <div
+          className={
+            styles['parse-tree-container'] +
+            (currentStatus.treeStack.length === 0
+              ? ' ' + styles['no-tree']
+              : '')
+          }
+        >
+          <p>Parse tree:</p>
+          {currentStatus.treeStack.length > 0 ? (
+            <ParseTree
+              parseTreeClassName={styles['parse-tree']}
+              treeStack={currentStatus.treeStack}
+            />
+          ) : (
+            <p>No trees yet.</p>
+          )}
+        </div>
       </div>
     </section>
   );
