@@ -94,6 +94,16 @@ export default function ParserSection({ parser }) {
             </div>
           </div>
         </div>
+        {currentStatus.error && (
+          <div className={styles['error-container']}>
+            <p>Error:</p>
+            <p>
+              {parser.ERROR_CODES[currentStatus.error.errorCode]}
+              {currentStatus.error.errorCode === 1 &&
+                ` : ${currentStatus.error.desc.actions.map((a) => a.action + a.destination).join(', ')}`}
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

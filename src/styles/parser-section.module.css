@@ -117,3 +117,11 @@ section.parser h2 {
   background-color: rgb(149, 243, 149);
   border-color: rgb(123, 211, 123);
 }
+
+.error-container {
+  display: flex;
+  gap: 8px;
+  color: rgb(235, 84, 84);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
