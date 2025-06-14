@@ -57,12 +57,12 @@ function App() {
         newDFA = new LR1DFA(gr);
         break;
     }
-    const pt = new ParseTable(newDFA, parserType === 'LR1');
-    const parser = new Parser(pt, grammar);
+    const newParseTable = new ParseTable(newDFA, parserType === 'LR1');
+    const newParser = new Parser(newParseTable, gr);
     setGrammar(gr);
-    setParseTable(pt);
+    setParseTable(newParseTable);
     setDfa(newDFA);
-    setParser(parser);
+    setParser(newParser);
   }
   function handleParserTypeChange(newType) {
     let newDFA;
@@ -81,10 +81,10 @@ function App() {
         break;
     }
     let newParseTable = new ParseTable(newDFA, newType === 'LR1');
-    const parser = new Parser(newParseTable, grammar);
+    const newParser = new Parser(newParseTable, grammar);
     setParserType(newType);
     setParseTable(newParseTable);
-    setParser(parser);
+    setParser(newParser);
     setDfa(newDFA);
   }
 
