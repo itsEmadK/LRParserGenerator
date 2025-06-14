@@ -129,7 +129,10 @@ export default class Parser {
       } else if (action.action === 'R') {
         const ruleNumber = action.destination;
         const { lhs, rhsl } = this.#lrTable[ruleNumber];
-        const children = this.#treeStack.splice(-rhsl);
+        const children =
+          rhsl === 0
+            ? [{ symbol: 'λ', children: null, isLambda: true }]
+            : this.#treeStack.splice(-rhsl);
         this.#treeStack.push({ symbol: lhs, children });
         for (let i = 0; i < rhsl; i++) {
           this.#parseStack.pop();
@@ -191,7 +194,10 @@ export default class Parser {
       const ruleNumber = action.destination;
       this.#lastAction = action;
       const { lhs, rhsl } = this.#lrTable[ruleNumber];
-      const children = this.#treeStack.splice(-rhsl);
+      const children =
+        rhsl === 0
+          ? [{ symbol: 'λ', children: null, isLambda: true }]
+          : this.#treeStack.splice(-rhsl);
       this.#treeStack.push({ symbol: lhs, children });
       for (let i = 0; i < rhsl; i++) {
         this.#parseStack.pop();

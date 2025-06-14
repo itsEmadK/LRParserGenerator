@@ -117,6 +117,7 @@ export default function ParserSection({ parser }) {
           {currentStatus.treeStack.length > 0 ? (
             <ParseTree
               parseTreeClassName={styles['parse-tree']}
+              hideLambdaNodes={true}
               treeStack={currentStatus.treeStack}
             />
           ) : (

@@ -39,7 +39,11 @@ function calculateMaxDepth(node) {
  * @param {number} props.x - x position of the node's center
  * @param {number} props.y - y position of the node's top
  */
-function TreeNodeSVG({ node, x, y }) {
+function TreeNodeSVG({ node, x, y, hideLambdaNodes }) {
+  if (node.isLambda && hideLambdaNodes) {
+    return null;
+  }
+
   const children = node.children || [];
   const isLeaf = children.length === 0;
   const subtreeWidths = children.map(calculateSubtreeWidth);
@@ -77,32 +81,39 @@ function TreeNodeSVG({ node, x, y }) {
       </text>
 
       {/* Lines and children */}
-      {children.map((child, i) => {
-        const childWidth = subtreeWidths[i];
-        const childX = currentX + childWidth / 2;
-        const childY = y + NODE_HEIGHT + VERTICAL_SPACING;
+      {children
+        .filter((child) => !child.isLambda || !hideLambdaNodes)
+        .map((child, i) => {
+          const childWidth = subtreeWidths[i];
+          const childX = currentX + childWidth / 2;
+          const childY = y + NODE_HEIGHT + VERTICAL_SPACING;
 
-        const line = (
-          <line
-            key={`line-${i}`}
-            x1={x}
-            y1={y + NODE_HEIGHT}
-            x2={childX}
-            y2={childY}
-            stroke="#555"
-            strokeWidth={2}
-          />
-        );
+          const line = (
+            <line
+              key={`line-${i}`}
+              x1={x}
+              y1={y + NODE_HEIGHT}
+              x2={childX}
+              y2={childY}
+              stroke="#555"
+              strokeWidth={2}
+            />
+          );
 
-        currentX += childWidth + HORIZONTAL_SPACING;
+          currentX += childWidth + HORIZONTAL_SPACING;
 
-        return (
-          <React.Fragment key={`node-${i}`}>
-            {line}
-            <TreeNodeSVG node={child} x={childX} y={childY} />
-          </React.Fragment>
-        );
-      })}
+          return (
+            <React.Fragment key={`node-${i}`}>
+              {line}
+              <TreeNodeSVG
+                hideLambdaNodes={hideLambdaNodes}
+                node={child}
+                x={childX}
+                y={childY}
+              />
+            </React.Fragment>
+          );
+        })}
     </>
   );
 }
@@ -110,7 +121,11 @@ function TreeNodeSVG({ node, x, y }) {
  * The main component to render the full forest (treeStack)
  * @param {{ treeStack: array }} props
  */
-export default function ParseTree({ treeStack, parseTreeClassName }) {
+export default function ParseTree({
+  treeStack,
+  parseTreeClassName,
+  hideLambdaNodes,
+}) {
   // Calculate total width for all trees side-by-side
   const forestWidth =
     treeStack.reduce((sum, tree) => sum + calculateSubtreeWidth(tree), 0) +
@@ -135,7 +150,15 @@ export default function ParseTree({ treeStack, parseTreeClassName }) {
         const x = currentX + treeWidth / 2 + 20;
         currentX += treeWidth + HORIZONTAL_SPACING;
 
-        return <TreeNodeSVG key={i} node={tree} x={x} y={20} />;
+        return (
+          <TreeNodeSVG
+            key={i}
+            node={tree}
+            hideLambdaNodes={hideLambdaNodes}
+            x={x}
+            y={20}
+          />
+        );
       })}
     </svg>
   );
