@@ -112,3 +112,8 @@ section.parser h2 {
   border-radius: 4px;
   align-self: stretch;
 }
+
+.accepted {
+  background-color: rgb(149, 243, 149);
+  border-color: rgb(123, 211, 123);
+}

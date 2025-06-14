@@ -62,12 +62,17 @@ export default function ParserSection({ parser }) {
         <div className={styles['flex']}>
           <div className={styles['current-state-container']}>
             <p>Current state:</p>
-            <div className={styles['current-state']}>
-              {
-                currentStatus.parseStack[
-                  currentStatus.parseStack.length - 1
-                ]
+            <div
+              className={
+                styles['current-state'] +
+                `${currentStatus.accepted ? ` ${styles['accepted']}` : ''}`
               }
+            >
+              {currentStatus.accepted
+                ? 'Accept'
+                : currentStatus.parseStack[
+                    currentStatus.parseStack.length - 1
+                  ]}
             </div>
           </div>
           <div className={styles['next-token-container']}>
