@@ -143,6 +143,7 @@ export default class Parser {
             errorCode: 2,
             desc: { stateNumber, symbol: lhs, rule: ruleNumber },
           };
+          return this.currentStatus;
         }
 
         this.#parseStack.push(gotoAction.destination);
