@@ -75,6 +75,12 @@ export default function AutomataSection({ dfa }) {
   return (
     <section className={styles['automata']}>
       <h2>Handle Finding Automata States:</h2>
+      <ul className={styles['tips']}>
+        <li>
+          * Click on a circle to scroll into its corresponding state.
+        </li>
+        <li>* Hover on a circle to reveal its corresponding state.</li>
+      </ul>
       <ul className={styles['states']}>{statesGraph}</ul>
       {hoveredTarget !== null && (
         <div className={styles['backdrop']}>

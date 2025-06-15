@@ -1,3 +1,12 @@
+ul.tips {
+  list-style-type: none;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 ul.states {
   list-style-type: none;
   display: grid;
@@ -14,7 +23,7 @@ section.automata {
 }
 
 section.automata h2 {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 @media screen and (width <750px) {
