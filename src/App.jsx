@@ -89,6 +89,40 @@ function App() {
     setParser(newParser);
     setDfa(newDFA);
   }
+  function handleParserInputChange(newInput) {
+    const newParser = new Parser(parseTable, grammar, newInput);
+    setParser(newParser);
+  }
+  function handleParserStep() {
+    const newParser = new Parser(
+      parseTable,
+      grammar,
+      parser.input,
+      parser.currentStatus
+    );
+    newParser.step();
+    setParser(newParser);
+  }
+  function handleParserRun() {
+    const newParser = new Parser(
+      parseTable,
+      grammar,
+      parser.input,
+      parser.currentStatus
+    );
+    newParser.run();
+    setParser(newParser);
+  }
+  function handleParserReset() {
+    const newParser = new Parser(
+      parseTable,
+      grammar,
+      parser.input,
+      parser.currentStatus
+    );
+    newParser.reset();
+    setParser(newParser);
+  }
 
   return (
     <>
@@ -111,7 +145,13 @@ function App() {
             onParserTypeChange={handleParserTypeChange}
           />
           <AutomataSection dfa={dfa} />
-          <ParserSection parser={parser} />
+          <ParserSection
+            parser={parser}
+            onReset={handleParserReset}
+            onStep={handleParserStep}
+            onRun={handleParserRun}
+            onInputChange={handleParserInputChange}
+          />
         </>
       )}
     </>

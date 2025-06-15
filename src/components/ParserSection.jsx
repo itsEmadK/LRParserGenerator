@@ -1,30 +1,20 @@
-import { useState } from 'react';
 import styles from '../styles/parser-section.module.css';
-import Parser from '../parse-logic/parser.js';
 import ParseTree from './ParseTree.jsx';
 
-/**
- *
- * @param {{parser:Parser}} param0
- */
-export default function ParserSection({ parser }) {
-  const [input, setInput] = useState(parser.input);
-  const [currentStatus, setCurrentStatus] = useState(parser.currentStatus);
+export default function ParserSection({
+  parser,
+  onStep,
+  onRun,
+  onReset,
+  onInputChange,
+}) {
+  const input = parser.input;
+  const parserStatus = parser.currentStatus;
+  const errors = parser.ERROR_CODES;
   const handleInputChange = (e) => {
-    parser.setInput(e.target.value);
-    setCurrentStatus(parser.currentStatus);
-    setInput(e.target.value);
+    onInputChange(e.target.value);
   };
-  const onStep = () => {
-    setCurrentStatus(parser.step());
-  };
-  const onReset = () => {
-    parser.reset();
-    setCurrentStatus(parser.currentStatus);
-  };
-  const onRun = () => {
-    setCurrentStatus(parser.run());
-  };
+
   return (
     <section className={styles['parser']}>
       <h2>Parsing:</h2>
@@ -47,7 +37,7 @@ export default function ParserSection({ parser }) {
         <div className={styles['parse-stack-container']}>
           <p>Parse stack:</p>
           <input
-            value={currentStatus.parseStack.join(' ')}
+            value={parserStatus.parseStack.join(' ')}
             readOnly
             className={styles['parse-stack']}
           />
@@ -55,7 +45,7 @@ export default function ParserSection({ parser }) {
         <div className={styles['progress-container']}>
           <p>Progress:</p>
           <input
-            value={currentStatus.progress.join(' ')}
+            value={parserStatus.progress.join(' ')}
             readOnly
             className={styles['progress']}
           />
@@ -66,59 +56,59 @@ export default function ParserSection({ parser }) {
             <div
               className={
                 styles['current-state'] +
-                `${currentStatus.accepted ? ` ${styles['accepted']}` : ''}`
+                `${parserStatus.accepted ? ` ${styles['accepted']}` : ''}`
               }
             >
-              {currentStatus.accepted
+              {parserStatus.accepted
                 ? 'Accept'
-                : currentStatus.parseStack[
-                    currentStatus.parseStack.length - 1
+                : parserStatus.parseStack[
+                    parserStatus.parseStack.length - 1
                   ]}
             </div>
           </div>
           <div className={styles['next-token-container']}>
             <p>Next token:</p>
             <div className={styles['next-token']}>
-              {currentStatus.nextToken || 'Finished!'}
+              {parserStatus.nextToken || 'Finished!'}
             </div>
           </div>
           <div className={styles['action-container']}>
             <p>Last action:</p>
             <div className={styles['action']}>
-              {currentStatus.lastAction
-                ? currentStatus.lastAction.action
+              {parserStatus.lastAction
+                ? parserStatus.lastAction.action
                 : '?'}
-              {currentStatus.lastAction &&
-                (currentStatus.lastAction.destination !== -1
-                  ? currentStatus.lastAction.destination
+              {parserStatus.lastAction &&
+                (parserStatus.lastAction.destination !== -1
+                  ? parserStatus.lastAction.destination
                   : '')}
             </div>
           </div>
         </div>
-        {currentStatus.error && (
+        {parserStatus.error && (
           <div className={styles['error-container']}>
             <p>Error:</p>
             <p>
-              {parser.ERROR_CODES[currentStatus.error.errorCode]}
-              {currentStatus.error.errorCode === 1 &&
-                ` : ${currentStatus.error.desc.actions.map((a) => a.action + a.destination).join(', ')}`}
+              {errors[parserStatus.error.errorCode]}
+              {parserStatus.error.errorCode === 1 &&
+                ` : ${parserStatus.error.desc.actions.map((a) => a.action + a.destination).join(', ')}`}
             </p>
           </div>
         )}
         <div
           className={
             styles['parse-tree-container'] +
-            (currentStatus.treeStack.length === 0
+            (parserStatus.treeStack.length === 0
               ? ' ' + styles['no-tree']
               : '')
           }
         >
           <p>Parse tree:</p>
-          {currentStatus.treeStack.length > 0 ? (
+          {parserStatus.treeStack.length > 0 ? (
             <ParseTree
               parseTreeClassName={styles['parse-tree']}
               hideLambdaNodes={false}
-              treeStack={currentStatus.treeStack}
+              treeStack={parserStatus.treeStack}
             />
           ) : (
             <p>No trees yet.</p>

@@ -7,7 +7,9 @@ export default class Parser {
   #parseTable;
 
   /**@type {string[]} */
-  #input = [];
+  #tokenStream = [];
+
+  #rawInput = [];
 
   /**@type {number[]} */
   #parseStack = [0];
@@ -33,7 +35,7 @@ export default class Parser {
   }
 
   get progress() {
-    const temp = this.#input.slice();
+    const temp = this.#tokenStream.slice();
     temp.splice(this.#dotPosition, 0, '•');
     return temp;
   }
@@ -50,8 +52,8 @@ export default class Parser {
       parseStack: this.#parseStack.slice(),
       dotPosition: this.#dotPosition,
       nextToken:
-        this.#dotPosition < this.#input.length
-          ? this.#input[this.#dotPosition]
+        this.#dotPosition < this.#tokenStream.length
+          ? this.#tokenStream[this.#dotPosition]
           : null,
       accepted: this.#steppedToAccept,
       error: this.#error,
@@ -65,11 +67,17 @@ export default class Parser {
    *
    * @param {ParseTable} parseTable
    * @param {Grammar} grammar
+   * @param {string} [input='']
+   * @param {object | null} [status=null]
    */
-  constructor(parseTable, grammar) {
+  constructor(parseTable, grammar, input = '', status = null) {
     this.#parseTable = parseTable;
     this.grammar = grammar;
     this.#constructLRTable();
+    this.setInput(input);
+    if (status) {
+      this.setCurrentStatus(status);
+    }
   }
 
   #constructLRTable() {
@@ -89,20 +97,21 @@ export default class Parser {
    */
   setInput(input) {
     this.reset();
-    this.#input = `${input} $`
+    this.#rawInput = input;
+    this.#tokenStream = `${input} $`
       .split(' ')
       .filter((token) => token && token !== ' ');
   }
 
   run() {
     this.reset();
-    if (this.#input.length === 0) {
+    if (this.#tokenStream.length === 0) {
       return;
     }
 
     this.#parseStack = [0];
     while (true) {
-      const token = this.#input[this.#dotPosition];
+      const token = this.#tokenStream[this.#dotPosition];
       const stateNumber = this.#parseStack[this.#parseStack.length - 1];
       const actions = this.#parseTable.getCell(stateNumber, token);
       if (!actions) {
@@ -167,7 +176,7 @@ export default class Parser {
     if (this.#error || this.#steppedToAccept) {
       return this.currentStatus;
     }
-    const token = this.#input[this.#dotPosition];
+    const token = this.#tokenStream[this.#dotPosition];
     const stateNumber = this.#parseStack[this.#parseStack.length - 1];
     const actions = this.#parseTable.getCell(stateNumber, token);
     if (!actions) {
@@ -232,9 +241,16 @@ export default class Parser {
     this.#treeStack = [];
   }
 
+  setCurrentStatus(status) {
+    this.#parseStack = status.parseStack.slice();
+    this.#dotPosition = status.dotPosition;
+    this.#steppedToAccept = status.accepted;
+    this.#error = status.error;
+    this.#lastAction = status.lastAction;
+    this.#treeStack = status.treeStack.slice();
+  }
+
   get input() {
-    const temp = this.#input.slice();
-    temp.splice(-1);
-    return temp.join(' ');
+    return this.#rawInput;
   }
 }
