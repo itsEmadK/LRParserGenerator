@@ -30,3 +30,7 @@
 .name {
   font-weight: 600;
 }
+
+section.heading {
+  background-color: white;
+}
