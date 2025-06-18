@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: start;
   gap: 3rem;
+  flex-wrap: wrap;
 }
 
 .parser-tables h2 {
@@ -23,4 +24,10 @@
   font-size: 1rem;
   font-weight: 600;
   padding: 0.25rem;
+}
+
+@media screen and (width <750px) {
+  .tables {
+    font-size: 1.25rem;
+  }
 }

@@ -26,12 +26,6 @@ section.automata h2 {
   margin-bottom: 1rem;
 }
 
-@media screen and (width <750px) {
-  ul.states {
-    grid-template-columns: 1fr;
-  }
-}
-
 .backdrop {
   width: 100vw;
   height: 100vh;
@@ -48,4 +42,14 @@ section.automata h2 {
   position: absolute;
   bottom: 10px;
   right: 20px;
+}
+
+@media screen and (width <750px) {
+  ul.states {
+    grid-template-columns: 1fr;
+    font-size: 1.25rem;
+  }
+  .tips {
+    font-size: 1.25rem;
+  }
 }

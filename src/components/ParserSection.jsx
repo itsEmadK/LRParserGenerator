@@ -23,19 +23,21 @@ export default function ParserSection({
           <h4> Token stream separated by spaces:</h4>
           <input value={input} onChange={handleInputChange} type="text" />
         </label>
-        <button onClick={onStep} className={styles['step']}>
-          Step
-        </button>
-        <button onClick={onRun} className={styles['run']}>
-          Run
-        </button>
-        <button onClick={onReset} className={styles['reset']}>
-          Reset
-        </button>
+        <div className={styles['buttons']}>
+          <button onClick={onStep} className={styles['step']}>
+            Step
+          </button>
+          <button onClick={onRun} className={styles['run']}>
+            Run
+          </button>
+          <button onClick={onReset} className={styles['reset']}>
+            Reset
+          </button>
+        </div>
       </div>
       <div className={styles['parse-info']}>
         <div className={styles['parse-stack-container']}>
-          <p>Parse stack:</p>
+          <h4>Parse stack:</h4>
           <input
             value={parserStatus.parseStack.join(' ')}
             readOnly
@@ -43,7 +45,7 @@ export default function ParserSection({
           />
         </div>
         <div className={styles['progress-container']}>
-          <p>Progress:</p>
+          <h4>Progress:</h4>
           <input
             value={parserStatus.progress.join(' ')}
             readOnly
@@ -52,7 +54,7 @@ export default function ParserSection({
         </div>
         <div className={styles['flex']}>
           <div className={styles['current-state-container']}>
-            <p>Current state:</p>
+            <h4>Current state:</h4>
             <div
               className={
                 styles['current-state'] +
@@ -67,13 +69,13 @@ export default function ParserSection({
             </div>
           </div>
           <div className={styles['next-token-container']}>
-            <p>Next token:</p>
+            <h4>Next token:</h4>
             <div className={styles['next-token']}>
               {parserStatus.nextToken || 'Finished!'}
             </div>
           </div>
           <div className={styles['action-container']}>
-            <p>Last action:</p>
+            <h4>Last action:</h4>
             <div className={styles['action']}>
               {parserStatus.lastAction
                 ? parserStatus.lastAction.action
@@ -87,7 +89,7 @@ export default function ParserSection({
         </div>
         {parserStatus.error && (
           <div className={styles['error-container']}>
-            <p>Error:</p>
+            <h4>Error:</h4>
             <p>
               {errors[parserStatus.error.errorCode]}
               {parserStatus.error.errorCode === 1 &&
@@ -103,7 +105,7 @@ export default function ParserSection({
               : '')
           }
         >
-          <p>Parse tree:</p>
+          <h4>Parse tree:</h4>
           {parserStatus.treeStack.length > 0 ? (
             <ParseTree
               parseTreeClassName={styles['parse-tree']}

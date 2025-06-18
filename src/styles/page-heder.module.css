@@ -34,3 +34,15 @@
 section.heading {
   background-color: white;
 }
+
+@media screen and (width < 750px) {
+  .header h1 {
+    font-size: 2.5rem;
+  }
+  .header h3 {
+    font-size: 1.25rem;
+  }
+  .header p {
+    font-size: 1.25rem;
+  }
+}

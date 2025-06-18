@@ -67,3 +67,20 @@ section.grammar {
 .gen-btn:active {
   background-color: rgb(18, 120, 18);
 }
+
+@media screen and (width<750px) {
+  section.grammar {
+    place-content: center;
+    grid-template-columns: 1fr;
+    grid-template-areas: 'heading' 'input' 'instructions';
+  }
+  .grammar-box {
+    font-size: 2rem;
+  }
+  .gen-btn {
+    font-size: 2rem;
+  }
+  .instructions {
+    font-size: 1.25rem;
+  }
+}
