@@ -9,7 +9,7 @@
 
 body {
   display: grid;
-  place-content: center;
+  /* place-content: center; */
   position: relative;
 }
 
