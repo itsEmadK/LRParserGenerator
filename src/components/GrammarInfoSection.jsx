@@ -35,9 +35,9 @@ function RulesTable({ numberedRules }) {
         </tr>
       </thead>
       <tbody>
-        {numberedRules.map(({ number, rule }) => {
+        {numberedRules.map(({ number, rule }, index) => {
           return (
-            <tr key={number}>
+            <tr key={index}>
               <td>{number}</td>
               <td>{`${rule.lhs} -> ${rule.rhs.length > 0 ? rule.rhs.join(' ') : 'λ'}`}</td>
             </tr>
@@ -57,8 +57,8 @@ function TerminalsTable({ terminals }) {
         </tr>
       </thead>
       <tbody>
-        {terminals.map((t) => (
-          <tr key={t}>
+        {terminals.map((t, index) => (
+          <tr key={index}>
             <td>{t}</td>
           </tr>
         ))}
@@ -87,9 +87,9 @@ function NonTerminalsTable({ grammar }) {
         </tr>
       </thead>
       <tbody>
-        {[...grammar.nonTerminals].map((nt) => {
+        {[...grammar.nonTerminals].map((nt, index) => {
           return (
-            <tr key={nt}>
+            <tr key={index}>
               <td>{nt}</td>
               <td>{grammar.isNullable([nt]) ? '✔' : '✖'}</td>
               <td>{[...grammar.getFirst([nt])].join(', ')}</td>

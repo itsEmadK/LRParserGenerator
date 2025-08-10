@@ -60,11 +60,11 @@ function LRParseTable({ parseTable, parserType }) {
           <th colSpan={parseTable.gotoSymbols.length}>GOTO</th>
         </tr>
         <tr>
-          {parseTable.actionsSymbols.map((s) => (
-            <th key={s}>{s}</th>
+          {parseTable.actionsSymbols.map((s, index) => (
+            <th key={index}>{s}</th>
           ))}
-          {parseTable.gotoSymbols.map((s) => (
-            <th key={s}>{s}</th>
+          {parseTable.gotoSymbols.map((s, index) => (
+            <th key={index}>{s}</th>
           ))}
         </tr>
       </thead>
@@ -76,7 +76,7 @@ function LRParseTable({ parseTable, parserType }) {
               {[
                 ...parseTable.actionsSymbols,
                 ...parseTable.gotoSymbols,
-              ].map((s) => {
+              ].map((s, index) => {
                 const actions = parseTable.getCell(stateNumber, s);
                 let className = '';
                 if (actions.length === 0) {
@@ -100,7 +100,7 @@ function LRParseTable({ parseTable, parserType }) {
                   .join(', ');
 
                 return (
-                  <td className={className} key={s}>
+                  <td className={className} key={index}>
                     {cellContent}
                   </td>
                 );
