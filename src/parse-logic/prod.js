@@ -51,9 +51,12 @@ export default class Production {
   }
 
   static fromString(ruleStr) {
-    const arrowIndex = ruleStr.split(' ').indexOf('->');
-    const lhs = ruleStr.split(' ').slice(0, arrowIndex)[0];
-    const rhs = ruleStr.split(' ').slice(arrowIndex + 1);
+    const arrowIndex = ruleStr.trim().split(' ').indexOf('->');
+    const lhs = ruleStr.trim().split(' ').slice(0, arrowIndex)[0];
+    const rhs = ruleStr
+      .trim()
+      .split(' ')
+      .slice(arrowIndex + 1);
     return new Production(lhs, rhs);
   }
 }
