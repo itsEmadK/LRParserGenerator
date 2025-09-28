@@ -1,3 +1,3 @@
-export interface Hashable<T> {
-  hash(this: T): string;
+export interface Hashable {
+  hash(): string;
 }

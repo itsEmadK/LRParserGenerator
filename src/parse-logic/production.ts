@@ -1,6 +1,6 @@
 import type { Hashable } from './types';
 
-export default class Production implements Hashable<Production> {
+export default class Production implements Hashable {
   declare private _lhs: string;
   declare private _rhs: string[];
   constructor(lhs: string, rhs: string[]) {
