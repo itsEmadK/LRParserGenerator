@@ -36,7 +36,7 @@ export default class HashSet<T extends Hashable> {
     this.map.clear();
   }
 
-  get values(): T[] {
+  get values(): readonly T[] {
     let mapItems: MapItem<T>[] = [];
     this.map.forEach((mapItem) => {
       mapItems = [...mapItems, mapItem];
