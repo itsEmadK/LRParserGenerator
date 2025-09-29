@@ -1,7 +1,7 @@
 import HashSet, { ReadonlyHashSet } from './hashset.js';
 import Production from './production.js';
 
-export default class CfgGrammar {
+export default class Grammar {
   declare private _productions: HashSet<Production>;
   declare private _startSymbol: string;
   private _terminals: Set<string> = new Set();
