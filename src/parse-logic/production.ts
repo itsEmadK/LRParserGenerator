@@ -17,7 +17,7 @@ export default class Production implements Hashable {
   }
 
   hash(): string {
-    return `${this._lhs}->${this._rhs.join('')}`;
+    return `${this._lhs}->${this._rhs.join(' ')}`;
   }
 
   static fromString(rule: string, separator: string = '->'): Production {
