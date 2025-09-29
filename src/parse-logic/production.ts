@@ -20,6 +20,10 @@ export default class Production implements Hashable {
     return `${this._lhs}->${this._rhs.join(' ')}`;
   }
 
+  isLambdaProduction(): boolean {
+    return this.rhs.length === 0;
+  }
+
   static fromString(rule: string, separator: string = '->'): Production {
     const separatorIndex = rule.trim().split(' ').indexOf(separator);
     if (separatorIndex === -1) {
