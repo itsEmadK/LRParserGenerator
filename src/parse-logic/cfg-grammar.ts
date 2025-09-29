@@ -1,11 +1,11 @@
-import HashSet, { ReadonlyHashSet } from './hashset';
-import Production from './production';
+import HashSet, { ReadonlyHashSet } from './hashset.js';
+import Production from './production.js';
 
 export default class CfgGrammar {
   declare private _productions: HashSet<Production>;
   declare private _startSymbol: string;
-  declare private _terminals: Set<string>;
-  declare private _nonTerminals: Set<string>;
+  private _terminals: Set<string> = new Set();
+  private _nonTerminals: Set<string> = new Set();
 
   constructor(rules: HashSet<Production>, startSymbol: string) {
     this._productions = rules;
