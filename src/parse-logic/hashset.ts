@@ -59,3 +59,8 @@ export default class HashSet<T extends Hashable> {
     return this.values.length;
   }
 }
+
+export type ReadonlyHashSet<T extends Hashable> = Omit<
+  HashSet<T>,
+  'add' | 'delete' | 'clear'
+>;
