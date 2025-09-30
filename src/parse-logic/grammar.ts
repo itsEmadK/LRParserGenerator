@@ -54,4 +54,8 @@ export default class Grammar {
   get nonTerminals(): ReadonlySet<string> {
     return this._nonTerminals;
   }
+
+  get startSymbol(): string {
+    return this._startSymbol;
+  }
 }
