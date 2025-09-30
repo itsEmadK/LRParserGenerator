@@ -1,3 +1,5 @@
+import { Hashable } from './types';
+
 export interface GotoAction {
   type: 'goto';
   nonTerminal: string;
@@ -21,7 +23,7 @@ export interface ReduceAction {
 
 export type Action = GotoAction | ShiftAction | ReduceAction;
 
-export default class HashableAction {
+export default class HashableAction implements Hashable {
   value: Action;
   constructor(action: Action) {
     this.value = action;
