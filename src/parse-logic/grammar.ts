@@ -35,6 +35,14 @@ export default class Grammar {
     });
   }
 
+  isTerminal(symbol: string): boolean {
+    return this._terminals.has(symbol);
+  }
+
+  isNonTerminal(symbol: string): boolean {
+    return this._nonTerminals.has(symbol);
+  }
+
   get productions(): ReadonlyHashSet<Production> {
     return this._productions;
   }
