@@ -2,8 +2,8 @@ import Production from './production';
 import { Hashable } from './types';
 
 export default class Item implements Hashable {
-  production: Production;
-  declare readonly dotPosition: number;
+  readonly production: Production;
+  readonly dotPosition: number;
   constructor(production: Production, dotPosition: number) {
     this.production = production;
     this.dotPosition = dotPosition;

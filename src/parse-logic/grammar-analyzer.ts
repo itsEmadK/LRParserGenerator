@@ -1,15 +1,15 @@
 import Grammar from './grammar.js';
 
 export default class GrammarAnalyzer {
-  declare grammar: Grammar;
+  readonly grammar: Grammar;
   private _firstSets: Map<string, Set<string>> = new Map();
   private _followSets: Map<string, Set<string>> = new Map();
   private _nullables: Set<string> = new Set();
-  declare private _endMarker: string;
+  readonly endMarker: string;
 
   constructor(grammar: Grammar, endMarker: string = '$') {
     this.grammar = grammar;
-    this._endMarker = endMarker;
+    this.endMarker = endMarker;
     this.updateNullables();
     this.updateFirstSets();
     this.updateFollowSets();
@@ -79,7 +79,7 @@ export default class GrammarAnalyzer {
 
     this._followSets.set(
       this.grammar.startSymbol,
-      new Set([this._endMarker])
+      new Set([this.endMarker])
     );
 
     while (true) {
@@ -204,10 +204,6 @@ export default class GrammarAnalyzer {
     } else {
       return this._followSets.get(input) || new Set<string>();
     }
-  }
-
-  get endMarker(): string {
-    return this._endMarker;
   }
 
   get nullables(): ReadonlySet<string> {

@@ -1,23 +1,15 @@
 import type { Hashable } from './types';
 
 export default class Production implements Hashable {
-  declare private _lhs: string;
-  declare private _rhs: string[];
+  readonly lhs: string;
+  readonly rhs: readonly string[];
   constructor(lhs: string, rhs: string[]) {
-    this._lhs = lhs;
-    this._rhs = rhs;
-  }
-
-  get rhs(): readonly string[] {
-    return this._rhs;
-  }
-
-  get lhs(): string {
-    return this._lhs;
+    this.lhs = lhs;
+    this.rhs = rhs;
   }
 
   hash(): string {
-    return `${this._lhs}->${this._rhs.join(' ')}`;
+    return `${this.lhs}->${this.rhs.join(' ')}`;
   }
 
   isLambdaProduction(): boolean {
