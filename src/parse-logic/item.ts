@@ -46,4 +46,8 @@ export default class Item implements Hashable {
   get symbolAfterDot(): string | undefined {
     return this.production.rhs[this.dotPosition];
   }
+
+  get exprAfterDot(): readonly string[] {
+    return this.production.rhs.slice(this.dotPosition);
+  }
 }
