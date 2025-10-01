@@ -1,4 +1,4 @@
-import HashSet, { ReadonlyHashSet } from './hashset.js';
+import HashSet, { type ReadonlyHashSet } from './hashset.js';
 import Production from './production.js';
 
 export default class Grammar {

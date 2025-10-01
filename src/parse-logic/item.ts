@@ -1,5 +1,5 @@
 import Production from './production';
-import { Hashable } from './types';
+import { type Hashable } from './types';
 
 export default class Item implements Hashable {
   readonly production: Production;
