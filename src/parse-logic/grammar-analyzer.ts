@@ -176,7 +176,7 @@ export default class GrammarAnalyzer {
       }
       return first;
     } else {
-      if (this.grammar.isTerminal(input)) {
+      if (this.grammar.isTerminal(input) || input === this.endMarker) {
         return new Set([input]);
       } else {
         return this.firstSets.get(input) || new Set();
