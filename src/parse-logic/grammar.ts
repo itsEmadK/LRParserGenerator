@@ -43,6 +43,13 @@ export default class Grammar {
     return this._nonTerminals.has(symbol);
   }
 
+  getProductionsForNonTerminal(nt: string): ReadonlyHashSet<Production> {
+    const filteredProds = [...this._productions].filter(
+      (prod) => prod.lhs === nt
+    );
+    return new HashSet(filteredProds);
+  }
+
   get productions(): ReadonlyHashSet<Production> {
     return this._productions;
   }
