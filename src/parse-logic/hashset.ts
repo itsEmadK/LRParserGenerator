@@ -55,6 +55,10 @@ export default class HashSet<T extends Hashable> {
     items.forEach(callback);
   }
 
+  [Symbol.iterator](): Iterator<T> {
+    return this.values[Symbol.iterator]();
+  }
+
   get size(): number {
     return this.values.length;
   }
