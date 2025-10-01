@@ -9,7 +9,7 @@ export default class HashSet<T extends Hashable> {
   private map = new Map<string, MapItem<T>>();
   private counter = 0;
 
-  constructor(items: T[]) {
+  constructor(items: T[] = []) {
     items.forEach((item) => {
       this.add(item);
     });
