@@ -36,7 +36,7 @@ export default class DfaGenerator {
     return startSymbol;
   }
 
-  getTransitionsForState(state: State): HashSet<Transition | Accept> {
+  getOutgoingTransitions(state: State): HashSet<Transition | Accept> {
     const transitions = new HashSet<Transition | Accept>();
     const symbolsAfterDot = new Set<string>();
     [...state.baseItems, ...state.derivedItems].forEach((item) => {
@@ -198,7 +198,7 @@ export default class DfaGenerator {
 
     while (statesToProcess.length > 0) {
       const stateToProcess = statesToProcess.shift()!;
-      const transitions = this.getTransitionsForState(stateToProcess);
+      const transitions = this.getOutgoingTransitions(stateToProcess);
 
       transitions.forEach((transition) => {
         if (transition.type !== 'accept') {
