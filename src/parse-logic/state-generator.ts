@@ -38,6 +38,7 @@ export default class StateGenerator {
       }
     }
     return new State(
+      state.type,
       new HashSet([...state.baseItems]),
       new HashSet([...derivedItems])
     );
@@ -87,13 +88,18 @@ export default class StateGenerator {
     }
 
     return new State(
+      state.type,
       new HashSet([...state.baseItems]),
       new HashSet([...derivedItems])
     );
   }
 
   generate(type: ParserType, baseItems: HashSet<Item>): State {
-    let state = new State(new HashSet([...baseItems]), new HashSet());
+    let state = new State(
+      type,
+      new HashSet([...baseItems]),
+      new HashSet()
+    );
     state = this.computeDerivedItems(state);
     state = this.computeLookahead(state);
     return state;
