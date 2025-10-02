@@ -8,6 +8,6 @@ export default class Lalr1State extends State {
   }
   hash(): string {
     const items = [...this.baseItems, ...this.derivedItems];
-    return items.map((item) => item.hash()).join('\n');
+    return items.map((item) => item.hashWithoutLookahead()).join('\n');
   }
 }

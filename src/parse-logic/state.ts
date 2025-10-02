@@ -12,7 +12,7 @@ export default class State implements Hashable {
 
   hash(): string {
     const items = [...this._baseItems, ...this._derivedItems];
-    return items.map((item) => item.hashWithoutLookahead()).join('\n');
+    return items.map((item) => item.hash()).join('\n');
   }
 
   get baseItems(): ReadonlyHashSet<Item> {
