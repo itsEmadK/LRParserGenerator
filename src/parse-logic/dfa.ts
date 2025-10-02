@@ -26,7 +26,6 @@ type ReadonlyTransitionTable = (
 )[][];
 
 export default class DFA {
-  readonly type = 'lr1' as const;
   private _states: HashSet<NumberedState>;
   readonly initialState: NumberedState;
   private _transitions: HashSet<Transition>;
