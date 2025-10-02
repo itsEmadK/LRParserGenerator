@@ -89,6 +89,58 @@ export default class DfaGenerator {
     return transitions;
   }
 
+  convertLr1DfaToLalr1(dfa: DFA): DFA | undefined {
+    const lalr1States = new HashSet<State>();
+    const pools = dfa.getSimilarLalr1States();
+    pools.forEach((pool) => {
+      let mergedState = this.stateGenerator.mergeStates(...pool);
+      mergedState = new State(
+        'lalr1',
+        new HashSet([...mergedState.baseItems]),
+        new HashSet([...mergedState.derivedItems])
+      );
+      lalr1States.add(mergedState);
+    });
+
+    const initialState = lalr1States.values.find(
+      (state) => state.hash(false) === dfa.initialState.hash(false)
+    );
+    const acceptState = lalr1States.values.find(
+      (state) => state.hash(false) === dfa.acceptState.hash(false)
+    );
+
+    const newTransitions = dfa.transitions.values.map((transition) => {
+      const source = lalr1States.values.find(
+        (state) => state.hash(false) === transition.source.hash(false)
+      );
+      const destination = lalr1States.values.find(
+        (state) => state.hash(false) === transition.destination.hash(false)
+      );
+      const newTransition =
+        transition.type === 'goto'
+          ? new GotoTransition(
+              source!,
+              destination!,
+              transition.nonTerminal,
+              transition.originatingItems
+            )
+          : new ShiftTransition(
+              source!,
+              destination!,
+              transition.terminal,
+              transition.originatingItems
+            );
+      return newTransition;
+    });
+
+    return new DFA(
+      lalr1States,
+      initialState!,
+      new HashSet([...newTransitions]),
+      acceptState!
+    );
+  }
+
   generate(type: ParserType = 'lr1') {
     const dfaStates = new HashSet<State>();
     const dfaTransitions = new HashSet<Transition>();
@@ -145,5 +197,8 @@ export default class DfaGenerator {
     if (type === 'lr1') {
       return lr1Dfa;
     }
+
+    const lalr1Dfa = this.convertLr1DfaToLalr1(lr1Dfa);
+    return lalr1Dfa;
   }
 }
