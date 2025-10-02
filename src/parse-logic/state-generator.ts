@@ -95,13 +95,91 @@ export default class StateGenerator {
   }
 
   generate(type: ParserType, baseItems: HashSet<Item>): State {
+    switch (type) {
+      case 'lr1': {
+        return this.generateLr1State(baseItems);
+      }
+      case 'lalr1': {
+        return this.generateLalr1State(baseItems);
+      }
+      case 'slr1': {
+        return this.generateSlr1State(baseItems);
+      }
+      case 'lr0': {
+        return this.generateLr0State(baseItems);
+      }
+    }
+  }
+
+  private generateLr1State(baseItems: HashSet<Item>): State {
     let state = new State(
-      type,
+      'lr1',
       new HashSet([...baseItems]),
       new HashSet()
     );
     state = this.computeDerivedItems(state);
     state = this.computeLookahead(state);
+    return state;
+  }
+
+  private generateLalr1State(baseItems: HashSet<Item>): State {
+    let state = new State(
+      'lalr1',
+      new HashSet([...baseItems]),
+      new HashSet()
+    );
+    state = this.computeDerivedItems(state);
+    state = this.computeLookahead(state);
+    return state;
+  }
+
+  private generateSlr1State(baseItems: HashSet<Item>): State {
+    let state = new State(
+      'slr1',
+      new HashSet([...baseItems]),
+      new HashSet()
+    );
+    state = this.computeDerivedItems(state);
+    const newBaseItems = state.baseItems.values.map((item) => {
+      const lhsFollowSet = new Set(
+        this.grammarAnalyzer.getFollow(item.production.lhs)
+      );
+      return new Item(item.production, item.dotPosition, lhsFollowSet);
+    });
+    const newDerivedItems = state.derivedItems.values.map((item) => {
+      const lhsFollowSet = new Set(
+        this.grammarAnalyzer.getFollow(item.production.lhs)
+      );
+      return new Item(item.production, item.dotPosition, lhsFollowSet);
+    });
+    state = new State(
+      state.type,
+      new HashSet(newBaseItems),
+      new HashSet(newDerivedItems)
+    );
+    return state;
+  }
+
+  private generateLr0State(baseItems: HashSet<Item>): State {
+    let state = new State(
+      'lr0',
+      new HashSet([...baseItems]),
+      new HashSet()
+    );
+    state = this.computeDerivedItems(state);
+    const newBaseItems = state.baseItems.values.map((item) => {
+      const terminals = new Set(this.grammar.terminals);
+      return new Item(item.production, item.dotPosition, terminals);
+    });
+    const newDerivedItems = state.derivedItems.values.map((item) => {
+      const terminals = new Set(this.grammar.terminals);
+      return new Item(item.production, item.dotPosition, terminals);
+    });
+    state = new State(
+      state.type,
+      new HashSet(newBaseItems),
+      new HashSet(newDerivedItems)
+    );
     return state;
   }
 }
