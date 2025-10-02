@@ -16,9 +16,9 @@ export default class State implements Hashable {
     this._derivedItems = derivedItems;
   }
 
-  hash(): string {
+  hash(includeItemsLookahead: boolean = true): string {
     const items = [...this._baseItems, ...this._derivedItems];
-    if (this.type === 'lr1') {
+    if (this.type === 'lr1' && includeItemsLookahead) {
       return items.map((item) => item.hash()).join('\n');
     } else {
       return items.map((item) => item.hashWithoutLookahead()).join('\n');
