@@ -89,7 +89,7 @@ export default class DfaGenerator {
     return transitions;
   }
 
-  convertLr1DfaToLalr1(dfa: DFA): DFA | undefined {
+  private convertLr1DfaToLalr1(dfa: DFA): DFA {
     const lalr1States = new HashSet<State>();
     const pools = dfa.getSimilarLalr1States();
     pools.forEach((pool) => {
@@ -139,6 +139,38 @@ export default class DfaGenerator {
       new HashSet([...newTransitions]),
       acceptState!
     );
+  }
+
+  private stripLookaheadsSlr1(dfa: DFA): DFA {
+    const slr1States = dfa.states.values.map((state) =>
+      this.stateGenerator.generate(
+        'slr1',
+        new HashSet([...state.baseItems])
+      )
+    );
+    const slr1Dfa = new DFA(
+      new HashSet(slr1States),
+      dfa.initialState,
+      new HashSet([...dfa.transitions]),
+      dfa.acceptState
+    );
+    return slr1Dfa;
+  }
+
+  private stripLookaheadsToLr0(dfa: DFA): DFA {
+    const lr0States = dfa.states.values.map((state) =>
+      this.stateGenerator.generate(
+        'lr0',
+        new HashSet([...state.baseItems])
+      )
+    );
+    const lr0Dfa = new DFA(
+      new HashSet(lr0States),
+      dfa.initialState,
+      new HashSet([...dfa.transitions]),
+      dfa.acceptState
+    );
+    return lr0Dfa;
   }
 
   generate(type: ParserType = 'lr1') {
@@ -193,12 +225,18 @@ export default class DfaGenerator {
       dfaTransitions,
       acceptState!
     );
+    const lalr1Dfa = this.convertLr1DfaToLalr1(lr1Dfa);
+    const slr1Dfa = this.stripLookaheadsSlr1(lalr1Dfa);
+    const lr0Dfa = this.stripLookaheadsToLr0(lalr1Dfa);
 
-    if (type === 'lr1') {
+    if (type === 'lr0') {
+      return lr0Dfa;
+    } else if (type === 'slr1') {
+      return slr1Dfa;
+    } else if (type === 'lalr1') {
+      return lalr1Dfa;
+    } else {
       return lr1Dfa;
     }
-
-    const lalr1Dfa = this.convertLr1DfaToLalr1(lr1Dfa);
-    return lalr1Dfa;
   }
 }
