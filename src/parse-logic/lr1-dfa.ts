@@ -5,8 +5,13 @@ import type { ReadonlyHashSet } from './hashset';
 
 class NumberedState extends State {
   readonly stateNumber: number;
-  constructor(stateNumber: number, state: State) {
+  constructor(
+    type: 'lr1' | 'lalr1' | 'slr1' | 'lr0',
+    stateNumber: number,
+    state: State
+  ) {
     super(
+      type,
       new HashSet([...state.baseItems]),
       new HashSet([...state.derivedItems])
     );
@@ -41,9 +46,9 @@ export default class Lr1Dfa {
     this._states = new HashSet(
       [...states].map((state) => {
         if (state.hash() === initialState.hash()) {
-          return new NumberedState(1, state);
+          return new NumberedState(state.type, 1, state);
         } else {
-          return new NumberedState(this.index++, state);
+          return new NumberedState(state.type, this.index++, state);
         }
       })
     );
