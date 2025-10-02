@@ -3,10 +3,7 @@ import type Item from './item';
 import State from './state';
 import type { Hashable } from './types';
 
-export type Transition =
-  | GotoTransition
-  | ShiftTransition
-  | AcceptTransition;
+export type Transition = GotoTransition | ShiftTransition;
 export class GotoTransition implements Hashable {
   readonly type = 'goto' as const;
   readonly source: State;
@@ -61,18 +58,5 @@ export class ShiftTransition implements Hashable {
       '\n to \n ' +
       this.destination.hash()
     );
-  }
-}
-
-export class AcceptTransition implements Hashable {
-  readonly type = 'accept' as const;
-  readonly source: State;
-  readonly originatingItems: HashSet<Item>;
-  constructor(source: State, originatingItems: Iterable<Item>) {
-    this.source = source;
-    this.originatingItems = new HashSet([...originatingItems]);
-  }
-  hash(): string {
-    return this.type + '\n' + this.source.hash();
   }
 }

@@ -1,7 +1,6 @@
 import type Grammar from './grammar';
 import {
   type Transition,
-  AcceptTransition,
   GotoTransition,
   ShiftTransition,
 } from './transition';
@@ -12,6 +11,9 @@ import State from './state';
 import StateGenerator from './state-generator';
 import DFA from './dfa';
 import type { ParserType } from './types';
+
+const acceptAction = { type: 'accept' as const, hash: () => 'accept' };
+type Accept = typeof acceptAction;
 
 export default class DfaGenerator {
   readonly grammar: Grammar;
@@ -34,8 +36,8 @@ export default class DfaGenerator {
     return startSymbol;
   }
 
-  getTransitionsForState(state: State): HashSet<Transition> {
-    const transitions = new HashSet<Transition>();
+  getTransitionsForState(state: State): HashSet<Transition | Accept> {
+    const transitions = new HashSet<Transition | Accept>();
     const symbolsAfterDot = new Set<string>();
     [...state.baseItems, ...state.derivedItems].forEach((item) => {
       if (item.symbolAfterDot) {
@@ -50,11 +52,7 @@ export default class DfaGenerator {
       ].filter((item) => item.symbolAfterDot === symbol);
 
       if (symbol === this.endMarker) {
-        const acceptTransition = new AcceptTransition(
-          state,
-          correspondingItems
-        );
-        transitions.add(acceptTransition);
+        transitions.add(acceptAction);
         return;
       }
 
@@ -128,10 +126,10 @@ export default class DfaGenerator {
             statesToProcess.push(newState);
           }
           dfaStates.add(newState);
+          dfaTransitions.add(transition);
         } else {
-          acceptState = transition.source;
+          acceptState = stateToProcess;
         }
-        dfaTransitions.add(transition);
       });
 
       processedStates.add(stateToProcess);
