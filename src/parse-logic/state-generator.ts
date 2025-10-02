@@ -111,6 +111,33 @@ export default class StateGenerator {
     }
   }
 
+  mergeStates(...states: State[]): State {
+    let finalState = states[0];
+    for (let i = 1; i < states.length; i++) {
+      const state = states[i];
+      if (state.hash(false) === finalState.hash(false)) {
+        const mergedBaseItems = new HashSet<Item>();
+        finalState.baseItems.forEach((outerItem) => {
+          const lookaheadToMerge =
+            state.baseItems.values.find(
+              (innerItem) =>
+                innerItem.hashWithoutLookahead() ===
+                outerItem.hashWithoutLookahead()
+            )?.lookahead || new Set<string>();
+          const newBaseItem = new Item(
+            outerItem.production,
+            outerItem.dotPosition,
+            new Set([...outerItem.lookahead, ...lookaheadToMerge])
+          );
+          mergedBaseItems.add(newBaseItem);
+        });
+
+        finalState = this.generate(finalState.type, mergedBaseItems);
+      }
+    }
+    return finalState;
+  }
+
   private generateLr1State(baseItems: HashSet<Item>): State {
     let state = new State(
       'lr1',
