@@ -1,13 +1,13 @@
 import HashSet, { type ReadonlyHashSet } from './hashset';
 import Item from './item';
-import { type Hashable } from './types';
+import { type Hashable, type ParserType } from './types';
 
 export default class State implements Hashable {
   private _baseItems: HashSet<Item>;
   private _derivedItems: HashSet<Item>;
-  readonly type: 'lr1' | 'lalr1' | 'slr1' | 'lr0';
+  readonly type: ParserType;
   constructor(
-    type: 'lr1' | 'lalr1' | 'slr1' | 'lr0',
+    type: ParserType,
     baseItems: HashSet<Item>,
     derivedItems: HashSet<Item>
   ) {

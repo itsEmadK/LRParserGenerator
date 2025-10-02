@@ -3,6 +3,7 @@ import GrammarAnalyzer from './grammar-analyzer';
 import HashSet from './hashset';
 import Item from './item';
 import State from './state';
+import type { ParserType } from './types';
 
 export default class StateGenerator {
   readonly grammar: Grammar;
@@ -91,7 +92,7 @@ export default class StateGenerator {
     );
   }
 
-  generate(baseItems: HashSet<Item>): State {
+  generate(type: ParserType, baseItems: HashSet<Item>): State {
     let state = new State(new HashSet([...baseItems]), new HashSet());
     state = this.computeDerivedItems(state);
     state = this.computeLookahead(state);

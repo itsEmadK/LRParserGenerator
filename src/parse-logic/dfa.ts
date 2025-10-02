@@ -2,11 +2,12 @@ import HashSet from './hashset';
 import State from './state';
 import { type Transition } from './transition';
 import type { ReadonlyHashSet } from './hashset';
+import type { ParserType } from './types';
 
 class NumberedState extends State {
   readonly stateNumber: number;
   constructor(
-    type: 'lr1' | 'lalr1' | 'slr1' | 'lr0',
+    type: ParserType,
     stateNumber: number,
     state: State
   ) {
