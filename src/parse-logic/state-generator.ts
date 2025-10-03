@@ -144,9 +144,4 @@ export default class StateGenerator {
     state = this.computeLookahead(state);
     return state;
   }
-  private generateWithoutLookaheads(baseItems: Iterable<Item>): State {
-    let state = new State(baseItems, []);
-    state = this.computeDerivedItems(state);
-    return state;
-  }
 }
