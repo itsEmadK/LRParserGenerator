@@ -1,0 +1,94 @@
+import type {
+  ParseTable,
+  ReadonlyParseTableCell,
+  ReadonlyParseTable,
+} from './types';
+
+export default class ParseTableAnalyzer {
+  private _table: ParseTable;
+  constructor(table: ParseTable) {
+    this._table = table;
+  }
+
+  get table(): ReadonlyParseTable {
+    return this._table as ReadonlyParseTable;
+  }
+
+  get conflicts(): Array<{ stateNumber: number; symbol: string }> {
+    const conflicts: Array<{ stateNumber: number; symbol: string }> = [];
+    Object.keys(this._table).forEach((stateNumber) => {
+      Object.keys(this._table[+stateNumber]).forEach((symbol) => {
+        if (this.isConflict(+stateNumber, symbol)) {
+          conflicts.push({ stateNumber: +stateNumber, symbol });
+        }
+      });
+    });
+    return conflicts;
+  }
+
+  get(stateNumber: number, symbol: string): ReadonlyParseTableCell {
+    return this.table[stateNumber][symbol];
+  }
+
+  hasConflict() {
+    Object.keys(this._table).forEach((stateNumber) => {
+      Object.keys(this._table[+stateNumber]).forEach((symbol) => {
+        if (this.isConflict(+stateNumber, symbol)) {
+          return true;
+        }
+      });
+    });
+  }
+
+  isConflict(stateNumber: number, symbol: string): boolean {
+    return Array.isArray(this._table[stateNumber][symbol]!);
+  }
+
+  isShift(stateNumber: number, symbol: string): boolean {
+    const cell = this._table[stateNumber][symbol];
+    if (cell) {
+      if (Array.isArray(cell)) {
+        return false;
+      } else {
+        return cell.type === 'shift';
+      }
+    }
+    return false;
+  }
+
+  isGoto(stateNumber: number, symbol: string): boolean {
+    const cell = this._table[stateNumber][symbol];
+    if (cell) {
+      if (Array.isArray(cell)) {
+        return false;
+      } else {
+        return cell.type === 'goto';
+      }
+    }
+    return false;
+  }
+
+  isReduce(stateNumber: number, symbol: string): boolean {
+    const cell = this._table[stateNumber][symbol];
+    if (cell) {
+      if (Array.isArray(cell)) {
+        return false;
+      } else {
+        return cell.type === 'reduce';
+      }
+    }
+    return false;
+  }
+
+  isAccept(stateNumber: number, symbol: string): boolean {
+    const cell = this._table[stateNumber][symbol];
+    if (cell) {
+      if (Array.isArray(cell)) {
+        return false;
+      } else {
+        return cell.type === 'accept';
+      }
+    }
+    return false;
+  }
+}
