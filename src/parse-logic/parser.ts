@@ -197,4 +197,5 @@ enum ParserErrorCodes {
   CONFLICTING_ACTIONS = 'there are more than one action for the current state with next token.',
   EMPTY_PARSE_STACK_AFTER_REDUCING = 'parse stack is empty after popping the last #rhsl states.',
   NO_WHERE_TO_GOTO = 'goto action for this non-terminal does not exist.',
+  NO_ACTIONS = 'no actions exist for the next token at the current state.',
 }

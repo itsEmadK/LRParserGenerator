@@ -91,4 +91,9 @@ export default class ParseTableAnalyzer {
     }
     return false;
   }
+
+  isError(stateNumber: number, symbol: string): boolean {
+    const cell = this._table[stateNumber][symbol];
+    return !cell;
+  }
 }
