@@ -3,7 +3,6 @@ import GrammarAnalyzer from './grammar-analyzer';
 import HashSet from './hashset';
 import Item from './item';
 import State from './state';
-import type { ParserType } from './types';
 
 export default class StateGenerator {
   readonly grammar: Grammar;
@@ -38,7 +37,6 @@ export default class StateGenerator {
       }
     }
     return new State(
-      state.type,
       new HashSet([...state.baseItems]),
       new HashSet([...derivedItems])
     );
@@ -51,7 +49,7 @@ export default class StateGenerator {
     const calcTerminalCount = () => {
       let count = 0;
       derivedItems.forEach((item) => {
-        count += item.lookahead.size;
+        count += item.lookahead?.size || 0;
       });
       return count;
     };
@@ -62,20 +60,27 @@ export default class StateGenerator {
       for (let i = 0; i < derivedItems.length; i++) {
         for (let j = 0; j < derivedItems.length + baseItems.length; j++) {
           const item = [...baseItems, ...derivedItems][j];
-          if (item.symbolAfterDot === derivedItems[i].production.lhs) {
-            const rest = [...item.exprAfterDot];
-            rest.shift();
-            let lookahead = new Set([
-              ...this.grammarAnalyzer.getFirst(rest),
-            ]);
+          if (item.lookahead) {
+            if (item.symbolAfterDot === derivedItems[i].production.lhs) {
+              const rest = [...item.exprAfterDot];
+              rest.shift();
+              let lookahead = new Set([
+                ...this.grammarAnalyzer.getFirst(rest),
+              ]);
 
-            if (this.grammarAnalyzer.isNullable(rest)) {
-              lookahead = new Set([...lookahead, ...item.lookahead]);
+              if (this.grammarAnalyzer.isNullable(rest)) {
+                lookahead = new Set([...lookahead, ...item.lookahead]);
+              }
+              derivedItems[i] = new Item(
+                derivedItems[i].production,
+                derivedItems[i].dotPosition,
+                lookahead
+              );
             }
+          } else {
             derivedItems[i] = new Item(
               derivedItems[i].production,
-              derivedItems[i].dotPosition,
-              lookahead
+              derivedItems[i].dotPosition
             );
           }
         }
@@ -88,125 +93,60 @@ export default class StateGenerator {
     }
 
     return new State(
-      state.type,
       new HashSet([...state.baseItems]),
       new HashSet([...derivedItems])
     );
   }
 
-  generate(type: ParserType, baseItems: Iterable<Item>): State {
-    switch (type) {
-      case 'lr1': {
-        return this.generateLr1State(baseItems);
-      }
-      case 'lalr1': {
-        return this.generateLalr1State(baseItems);
-      }
-      case 'slr1': {
-        return this.generateSlr1State(baseItems);
-      }
-      case 'lr0': {
-        return this.generateLr0State(baseItems);
-      }
-    }
+  generate(baseItems: Iterable<Item>): State {
+    return this.generateWithLookaheads(baseItems);
   }
 
   mergeStates(...states: State[]): State {
     let finalState = states[0];
     for (let i = 1; i < states.length; i++) {
       const state = states[i];
-      if (state.hash(false) === finalState.hash(false)) {
+      if (state.hash() === finalState.hash()) {
         const mergedBaseItems = new HashSet<Item>();
         finalState.baseItems.forEach((outerItem) => {
           const lookaheadToMerge =
             state.baseItems.values.find(
               (innerItem) =>
-                innerItem.hashWithoutLookahead() ===
-                outerItem.hashWithoutLookahead()
-            )?.lookahead || new Set<string>();
-          const newBaseItem = new Item(
-            outerItem.production,
-            outerItem.dotPosition,
-            new Set([...outerItem.lookahead, ...lookaheadToMerge])
-          );
-          mergedBaseItems.add(newBaseItem);
+                innerItem.withoutLookahead().hash() ===
+                outerItem.withoutLookahead().hash()
+            )?.lookahead || [];
+
+          if (outerItem.lookahead) {
+            const newBaseItem = new Item(
+              outerItem.production,
+              outerItem.dotPosition,
+              [...outerItem.lookahead, ...lookaheadToMerge]
+            );
+            mergedBaseItems.add(newBaseItem);
+          } else {
+            const newBaseItem = new Item(
+              outerItem.production,
+              outerItem.dotPosition
+            );
+            mergedBaseItems.add(newBaseItem);
+          }
         });
 
-        finalState = this.generate(finalState.type, mergedBaseItems);
+        finalState = this.generate(mergedBaseItems);
       }
     }
     return finalState;
   }
 
-  private generateLr1State(baseItems: Iterable<Item>): State {
-    let state = new State(
-      'lr1',
-      new HashSet(baseItems),
-      new HashSet()
-    );
+  private generateWithLookaheads(baseItems: Iterable<Item>): State {
+    let state = new State(baseItems, []);
     state = this.computeDerivedItems(state);
     state = this.computeLookahead(state);
     return state;
   }
-
-  private generateLalr1State(baseItems: Iterable<Item>): State {
-    let state = new State(
-      'lalr1',
-      new HashSet(baseItems),
-      new HashSet()
-    );
+  private generateWithoutLookaheads(baseItems: Iterable<Item>): State {
+    let state = new State(baseItems, []);
     state = this.computeDerivedItems(state);
-    state = this.computeLookahead(state);
-    return state;
-  }
-
-  private generateSlr1State(baseItems: Iterable<Item>): State {
-    let state = new State(
-      'slr1',
-      new HashSet(baseItems),
-      new HashSet()
-    );
-    state = this.computeDerivedItems(state);
-    const newBaseItems = state.baseItems.values.map((item) => {
-      const lhsFollowSet = new Set(
-        this.grammarAnalyzer.getFollow(item.production.lhs)
-      );
-      return new Item(item.production, item.dotPosition, lhsFollowSet);
-    });
-    const newDerivedItems = state.derivedItems.values.map((item) => {
-      const lhsFollowSet = new Set(
-        this.grammarAnalyzer.getFollow(item.production.lhs)
-      );
-      return new Item(item.production, item.dotPosition, lhsFollowSet);
-    });
-    state = new State(
-      state.type,
-      new HashSet(newBaseItems),
-      new HashSet(newDerivedItems)
-    );
-    return state;
-  }
-
-  private generateLr0State(baseItems: Iterable<Item>): State {
-    let state = new State(
-      'lr0',
-      new HashSet(baseItems),
-      new HashSet()
-    );
-    state = this.computeDerivedItems(state);
-    const newBaseItems = state.baseItems.values.map((item) => {
-      const terminals = new Set(this.grammar.terminals);
-      return new Item(item.production, item.dotPosition, terminals);
-    });
-    const newDerivedItems = state.derivedItems.values.map((item) => {
-      const terminals = new Set(this.grammar.terminals);
-      return new Item(item.production, item.dotPosition, terminals);
-    });
-    state = new State(
-      state.type,
-      new HashSet(newBaseItems),
-      new HashSet(newDerivedItems)
-    );
     return state;
   }
 }

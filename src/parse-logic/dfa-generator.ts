@@ -36,7 +36,7 @@ export default class DfaGenerator {
     return startSymbol;
   }
 
-  getOutgoingTransitions(state: State): HashSet<Transition | Accept> {
+  private getOutgoingTransitions(state: State): HashSet<Transition | Accept> {
     const transitions = new HashSet<Transition | Accept>();
     const symbolsAfterDot = new Set<string>();
     [...state.baseItems, ...state.derivedItems].forEach((item) => {
@@ -61,12 +61,11 @@ export default class DfaGenerator {
           new Item(
             item.production,
             item.dotPosition + 1,
-            new Set([...item.lookahead])
+            new Set([...(item.lookahead || [])])
           )
       );
       const destinationState = this.stateGenerator.generate(
-        'lr1',
-        new HashSet([...destinationStateBaseItems])
+        destinationStateBaseItems
       );
 
       const isGoto = this.grammar.isNonTerminal(symbol);
@@ -89,32 +88,39 @@ export default class DfaGenerator {
     return transitions;
   }
 
-  private convertLr1DfaToLalr1(dfa: DFA): DFA {
-    const lalr1States = new HashSet<State>();
+  private mergeSimilarDfaStates(dfa: DFA): DFA {
+    const mergedStates = new HashSet<State>();
     const pools = dfa.getSimilarLalr1States();
     pools.forEach((pool) => {
       let mergedState = this.stateGenerator.mergeStates(...pool);
       mergedState = new State(
-        'lalr1',
         new HashSet([...mergedState.baseItems]),
         new HashSet([...mergedState.derivedItems])
       );
-      lalr1States.add(mergedState);
+      mergedStates.add(mergedState);
     });
 
-    const initialState = lalr1States.values.find(
-      (state) => state.hash(false) === dfa.initialState.hash(false)
+    const initialState = mergedStates.values.find(
+      (state) =>
+        state.withoutLookaheads().hash() ===
+        dfa.initialState.withoutLookaheads().hash()
     );
-    const acceptState = lalr1States.values.find(
-      (state) => state.hash(false) === dfa.acceptState.hash(false)
+    const acceptState = mergedStates.values.find(
+      (state) =>
+        state.withoutLookaheads().hash() ===
+        dfa.acceptState.withoutLookaheads().hash()
     );
 
     const newTransitions = dfa.transitions.values.map((transition) => {
-      const source = lalr1States.values.find(
-        (state) => state.hash(false) === transition.source.hash(false)
+      const source = mergedStates.values.find(
+        (state) =>
+          state.withoutLookaheads().hash() ===
+          transition.source.withoutLookaheads().hash()
       );
-      const destination = lalr1States.values.find(
-        (state) => state.hash(false) === transition.destination.hash(false)
+      const destination = mergedStates.values.find(
+        (state) =>
+          state.withoutLookaheads().hash() ===
+          transition.destination.withoutLookaheads().hash()
       );
       const newTransition =
         transition.type === 'goto'
@@ -134,46 +140,44 @@ export default class DfaGenerator {
     });
 
     return new DFA(
-      lalr1States,
+      mergedStates,
       initialState!,
       new HashSet([...newTransitions]),
       acceptState!
     );
   }
 
-  private stripLookaheadsSlr1(dfa: DFA): DFA {
+  private removeAllLookaheads(dfa: DFA): DFA {
     const slr1States = dfa.states.values.map((state) =>
-      this.stateGenerator.generate(
-        'slr1',
-        new HashSet([...state.baseItems])
-      )
+      state.withoutLookaheads()
     );
+    const slr1Transitions = dfa.transitions.values.map((transition) => {
+      if (transition.type === 'goto') {
+        return new GotoTransition(
+          transition.source.withoutLookaheads(),
+          transition.destination.withoutLookaheads(),
+          transition.nonTerminal,
+          transition.originatingItems
+        );
+      } else {
+        return new GotoTransition(
+          transition.source.withoutLookaheads(),
+          transition.destination.withoutLookaheads(),
+          transition.terminal,
+          transition.originatingItems
+        );
+      }
+    });
     const slr1Dfa = new DFA(
-      new HashSet(slr1States),
-      dfa.initialState,
-      new HashSet([...dfa.transitions]),
-      dfa.acceptState
+      slr1States,
+      dfa.initialState.withoutLookaheads(),
+      slr1Transitions,
+      dfa.acceptState.withoutLookaheads()
     );
     return slr1Dfa;
   }
 
-  private stripLookaheadsToLr0(dfa: DFA): DFA {
-    const lr0States = dfa.states.values.map((state) =>
-      this.stateGenerator.generate(
-        'lr0',
-        new HashSet([...state.baseItems])
-      )
-    );
-    const lr0Dfa = new DFA(
-      new HashSet(lr0States),
-      dfa.initialState,
-      new HashSet([...dfa.transitions]),
-      dfa.acceptState
-    );
-    return lr0Dfa;
-  }
-
-  generate(type: ParserType = 'lr1') {
+  generate(parserType: ParserType) {
     const dfaStates = new HashSet<State>();
     const dfaTransitions = new HashSet<Transition>();
 
@@ -182,11 +186,8 @@ export default class DfaGenerator {
       this.grammar.startSymbol,
       this.endMarker,
     ]);
-    const baseItem = new Item(artificialProduction, 0);
-    const initialState = this.stateGenerator.generate(
-      'lr1',
-      new HashSet([baseItem])
-    );
+    const baseItem = new Item(artificialProduction, 0, []);
+    const initialState = this.stateGenerator.generate([baseItem]);
     let acceptState: State;
 
     dfaStates.add(initialState);
@@ -225,18 +226,23 @@ export default class DfaGenerator {
       dfaTransitions,
       acceptState!
     );
-    const lalr1Dfa = this.convertLr1DfaToLalr1(lr1Dfa);
-    const slr1Dfa = this.stripLookaheadsSlr1(lalr1Dfa);
-    const lr0Dfa = this.stripLookaheadsToLr0(lalr1Dfa);
+    const lalr1Dfa = this.mergeSimilarDfaStates(lr1Dfa);
+    const slr1Dfa = this.removeAllLookaheads(lalr1Dfa);
+    const lr0Dfa = slr1Dfa;
 
-    if (type === 'lr0') {
-      return lr0Dfa;
-    } else if (type === 'slr1') {
-      return slr1Dfa;
-    } else if (type === 'lalr1') {
-      return lalr1Dfa;
-    } else {
-      return lr1Dfa;
+    switch (parserType) {
+      case 'lr1': {
+        return lr1Dfa;
+      }
+      case 'lalr1': {
+        return lalr1Dfa;
+      }
+      case 'slr1': {
+        return slr1Dfa;
+      }
+      case 'lr0': {
+        return lr0Dfa;
+      }
     }
   }
 }

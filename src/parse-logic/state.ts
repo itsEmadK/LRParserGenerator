@@ -1,28 +1,29 @@
 import HashSet, { type ReadonlyHashSet } from './hashset';
 import Item from './item';
-import { type Hashable, type ParserType } from './types';
+import { type Hashable } from './types';
 
 export default class State implements Hashable {
   private _baseItems: HashSet<Item>;
   private _derivedItems: HashSet<Item>;
-  readonly type: ParserType;
-  constructor(
-    type: ParserType,
-    baseItems: Iterable<Item>,
-    derivedItems: Iterable<Item>
-  ) {
-    this.type = type;
+  constructor(baseItems: Iterable<Item>, derivedItems: Iterable<Item>) {
     this._baseItems = new HashSet(baseItems);
     this._derivedItems = new HashSet(derivedItems);
   }
 
-  hash(includeItemsLookahead: boolean = true): string {
+  hash(): string {
     const items = [...this._baseItems, ...this._derivedItems];
-    if (this.type === 'lr1' && includeItemsLookahead) {
-      return items.map((item) => item.hash()).join('\n');
-    } else {
-      return items.map((item) => item.hashWithoutLookahead()).join('\n');
-    }
+    return items.map((item) => item.hash()).join('\n');
+  }
+
+  withoutLookaheads(): State {
+    return new State(
+      this.baseItems.values.map(
+        (item) => new Item(item.production, item.dotPosition),
+      ),
+      this.derivedItems.values.map(
+        (item) => new Item(item.production, item.dotPosition),
+      )
+    );
   }
 
   get baseItems(): ReadonlyHashSet<Item> {

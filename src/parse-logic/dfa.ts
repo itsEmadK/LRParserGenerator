@@ -2,13 +2,11 @@ import HashSet from './hashset';
 import State from './state';
 import { type Transition } from './transition';
 import type { ReadonlyHashSet } from './hashset';
-import type { ParserType } from './types';
 
 class NumberedState extends State {
   readonly stateNumber: number;
-  constructor(type: ParserType, stateNumber: number, state: State) {
+  constructor(stateNumber: number, state: State) {
     super(
-      type,
       new HashSet([...state.baseItems]),
       new HashSet([...state.derivedItems])
     );
@@ -42,9 +40,9 @@ export default class DFA {
     this._states = new HashSet(
       [...states].map((state) => {
         if (state.hash() === initialState.hash()) {
-          return new NumberedState(state.type, 1, state);
+          return new NumberedState(1, state);
         } else {
-          return new NumberedState(state.type, this.index++, state);
+          return new NumberedState(this.index++, state);
         }
       })
     );
@@ -83,7 +81,8 @@ export default class DFA {
     this.states.forEach((state) => {
       const pool: Set<number> = new Set();
       const sameStates = this.states.values.filter(
-        (s) => s.hash(false) === state.hash(false)
+        (s) =>
+          s.withoutLookaheads().hash() === state.withoutLookaheads().hash()
       );
       sameStates.forEach((s) => {
         if (!visited.has(s.stateNumber)) {

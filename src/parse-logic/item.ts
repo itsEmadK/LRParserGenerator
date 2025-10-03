@@ -4,39 +4,33 @@ import { type Hashable } from './types';
 export default class Item implements Hashable {
   readonly production: Production;
   readonly dotPosition: number;
-  readonly lookahead: ReadonlySet<string>;
+  readonly lookahead?: ReadonlySet<string>;
 
   constructor(
     production: Production,
     dotPosition: number,
-    lookahead: Set<string> = new Set()
+    lookahead?: Iterable<string>
   ) {
     this.production = production;
     this.dotPosition = dotPosition;
     if (dotPosition > production.rhs.length || dotPosition < 0) {
       throw new Error(`invalid dot position(${dotPosition}).`);
     }
-    this.lookahead = lookahead;
+    this.lookahead = new Set(lookahead);
   }
 
   hash(): string {
     const dottedRhs = this.production.rhs.slice();
     dottedRhs.splice(this.dotPosition, 0, '•');
     const rhsStr = dottedRhs.join(' ');
-    return (
-      this.production.lhs +
-      ' -> ' +
-      rhsStr +
-      ' , ' +
-      `${[...this.lookahead].join(', ')}`
-    );
+    const lookaheadStr = this.lookahead
+      ? [...this.lookahead].join(', ')
+      : '';
+    return `${this.production.lhs} -> ${rhsStr} , {${lookaheadStr}}`;
   }
 
-  hashWithoutLookahead(): string {
-    const dottedRhs = this.production.rhs.slice();
-    dottedRhs.splice(this.dotPosition, 0, '•');
-    const rhsStr = dottedRhs.join(' ');
-    return this.production.lhs + ' -> ' + rhsStr;
+  withoutLookahead(): Item {
+    return new Item(this.production, this.dotPosition);
   }
 
   isReducible(): boolean {
