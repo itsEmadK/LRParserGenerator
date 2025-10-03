@@ -87,7 +87,7 @@ export default class DFA {
     );
   }
 
-  getSimilarLalr1States(): HashSet<State>[] {
+  findStatesWithSimilarItems(): HashSet<State>[] {
     const visited: Set<number> = new Set();
     const pools: Set<number>[] = [];
 
