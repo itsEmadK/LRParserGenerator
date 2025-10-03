@@ -1,13 +1,13 @@
-import Production from './production';
+import type { NumberedProduction } from './grammar';
 import { type Hashable } from './types';
 
 export default class Item implements Hashable {
-  readonly production: Production;
+  readonly production: NumberedProduction;
   readonly dotPosition: number;
   readonly lookahead?: ReadonlySet<string>;
 
   constructor(
-    production: Production,
+    production: NumberedProduction,
     dotPosition: number,
     lookahead?: Iterable<string>
   ) {
