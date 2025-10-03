@@ -28,8 +28,8 @@ export default class State implements Hashable {
 
   get reducibleItems(): HashSet<Item> {
     return new HashSet(
-      [...this.baseItems, ...this.derivedItems].filter(
-        (item) => item.isReducible
+      [...this.baseItems, ...this.derivedItems].filter((item) =>
+        item.isReducible()
       )
     );
   }
