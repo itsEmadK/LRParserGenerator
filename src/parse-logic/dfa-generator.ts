@@ -36,7 +36,9 @@ export default class DfaGenerator {
     return startSymbol;
   }
 
-  private getOutgoingTransitions(state: State): HashSet<Transition | Accept> {
+  private getOutgoingTransitions(
+    state: State
+  ): HashSet<Transition | Accept> {
     const transitions = new HashSet<Transition | Accept>();
     const symbolsAfterDot = new Set<string>();
     [...state.baseItems, ...state.derivedItems].forEach((item) => {
