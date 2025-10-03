@@ -8,12 +8,12 @@ export default class State implements Hashable {
   readonly type: ParserType;
   constructor(
     type: ParserType,
-    baseItems: HashSet<Item>,
-    derivedItems: HashSet<Item>
+    baseItems: Iterable<Item>,
+    derivedItems: Iterable<Item>
   ) {
     this.type = type;
-    this._baseItems = baseItems;
-    this._derivedItems = derivedItems;
+    this._baseItems = new HashSet(baseItems);
+    this._derivedItems = new HashSet(derivedItems);
   }
 
   hash(includeItemsLookahead: boolean = true): string {

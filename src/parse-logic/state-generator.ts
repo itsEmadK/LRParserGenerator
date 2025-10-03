@@ -94,7 +94,7 @@ export default class StateGenerator {
     );
   }
 
-  generate(type: ParserType, baseItems: HashSet<Item>): State {
+  generate(type: ParserType, baseItems: Iterable<Item>): State {
     switch (type) {
       case 'lr1': {
         return this.generateLr1State(baseItems);
@@ -138,10 +138,10 @@ export default class StateGenerator {
     return finalState;
   }
 
-  private generateLr1State(baseItems: HashSet<Item>): State {
+  private generateLr1State(baseItems: Iterable<Item>): State {
     let state = new State(
       'lr1',
-      new HashSet([...baseItems]),
+      new HashSet(baseItems),
       new HashSet()
     );
     state = this.computeDerivedItems(state);
@@ -149,10 +149,10 @@ export default class StateGenerator {
     return state;
   }
 
-  private generateLalr1State(baseItems: HashSet<Item>): State {
+  private generateLalr1State(baseItems: Iterable<Item>): State {
     let state = new State(
       'lalr1',
-      new HashSet([...baseItems]),
+      new HashSet(baseItems),
       new HashSet()
     );
     state = this.computeDerivedItems(state);
@@ -160,10 +160,10 @@ export default class StateGenerator {
     return state;
   }
 
-  private generateSlr1State(baseItems: HashSet<Item>): State {
+  private generateSlr1State(baseItems: Iterable<Item>): State {
     let state = new State(
       'slr1',
-      new HashSet([...baseItems]),
+      new HashSet(baseItems),
       new HashSet()
     );
     state = this.computeDerivedItems(state);
@@ -187,10 +187,10 @@ export default class StateGenerator {
     return state;
   }
 
-  private generateLr0State(baseItems: HashSet<Item>): State {
+  private generateLr0State(baseItems: Iterable<Item>): State {
     let state = new State(
       'lr0',
-      new HashSet([...baseItems]),
+      new HashSet(baseItems),
       new HashSet()
     );
     state = this.computeDerivedItems(state);

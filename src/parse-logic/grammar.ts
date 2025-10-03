@@ -7,9 +7,9 @@ export default class Grammar {
   private _terminals: Set<string> = new Set();
   private _nonTerminals: Set<string> = new Set();
 
-  constructor(rules: HashSet<Production>, startSymbol: string) {
+  constructor(rules: Iterable<Production>, startSymbol: string) {
     this.startSymbol = startSymbol;
-    this._productions = rules;
+    this._productions = new HashSet(rules);
     this.updateNonTerminals();
     this.updateTerminals();
   }

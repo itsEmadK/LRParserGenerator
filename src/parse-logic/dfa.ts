@@ -34,9 +34,9 @@ export default class DFA {
   private _transitionTable: TransitionTable = [];
 
   constructor(
-    states: HashSet<State>,
+    states: Iterable<State>,
     initialState: State,
-    transitions: HashSet<Transition>,
+    transitions: Iterable<Transition>,
     acceptState: State
   ) {
     this._states = new HashSet(
@@ -51,7 +51,7 @@ export default class DFA {
     this.initialState = this._states.values.find(
       (state) => state.hash() === initialState.hash()
     )!;
-    this._transitions = transitions;
+    this._transitions = new HashSet(transitions);
     this.acceptState = this._states.values.find(
       (state) => state.hash() === acceptState.hash()
     )!;
