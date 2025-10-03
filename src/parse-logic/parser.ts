@@ -92,6 +92,13 @@ export default class Parser {
         errorCode: ParserErrorCodes.NO_MORE_TOKENS,
       };
     } else if (
+      this.parseTableAnalyzer.isError(currentStateNumber, nextToken)
+    ) {
+      status = {
+        ...status,
+        errorCode: ParserErrorCodes.NO_ACTIONS,
+      };
+    } else if (
       this.parseTableAnalyzer.isConflict(currentStateNumber, nextToken)
     ) {
       status = {
