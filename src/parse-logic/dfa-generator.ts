@@ -11,6 +11,7 @@ import State from './state';
 import StateGenerator from './state-generator';
 import DFA from './dfa';
 import type { ParserType } from './types';
+import { NumberedProduction } from './grammar';
 
 const acceptAction = { type: 'accept' as const, hash: () => 'accept' };
 type Accept = typeof acceptAction;
@@ -92,7 +93,7 @@ export default class DfaGenerator {
 
   private mergeSimilarDfaStates(dfa: DFA): DFA {
     const mergedStates = new HashSet<State>();
-    const pools = dfa.getSimilarLalr1States();
+    const pools = dfa.findStatesWithSimilarItems();
     pools.forEach((pool) => {
       let mergedState = this.stateGenerator.mergeStates(...pool);
       mergedState = new State(
@@ -184,10 +185,13 @@ export default class DfaGenerator {
     const dfaTransitions = new HashSet<Transition>();
 
     const artificialStartSymbol = this.generateArtificialStartSymbol();
-    const artificialProduction = new Production(artificialStartSymbol, [
-      this.grammar.startSymbol,
-      this.endMarker,
-    ]);
+    const artificialProduction = new NumberedProduction(
+      -1,
+      new Production(artificialStartSymbol, [
+        this.grammar.startSymbol,
+        this.endMarker,
+      ])
+    );
     const baseItem = new Item(artificialProduction, 0, []);
     const initialState = this.stateGenerator.generate([baseItem]);
     let acceptState: State;
