@@ -14,14 +14,27 @@ class NumberedState extends State {
   }
 }
 
-type TransitionTable = (
-  | { type: 'shift' | 'goto'; symbol: string }
-  | undefined
-)[][];
-type ReadonlyTransitionTable = (
-  | { type: 'shift' | 'goto'; symbol: string }
-  | undefined
-)[][];
+type TransitionTable = {
+  [sourceStateNumber: number]: {
+    [destinationStateNumber: number]:
+      | {
+          type: 'shift' | 'goto';
+          symbol: string;
+        }
+      | undefined;
+  };
+};
+
+type ReadonlyTransitionTable = {
+  readonly [sourceStateNumber: number]: {
+    readonly [destinationStateNumber: number]:
+      | Readonly<{
+          type: 'shift' | 'goto';
+          symbol: string;
+        }>
+      | undefined;
+  };
+};
 
 export default class DFA {
   private _states: HashSet<NumberedState>;
@@ -29,7 +42,7 @@ export default class DFA {
   private _transitions: HashSet<Transition>;
   readonly acceptState: NumberedState;
   private index: number = 2;
-  private _transitionTable: TransitionTable = [];
+  private _transitionTable: TransitionTable = {};
 
   constructor(
     states: Iterable<State>,
@@ -117,13 +130,13 @@ export default class DFA {
   }
 
   private constructTransitionTable(): void {
-    for (let i = 0; i <= this.index; i++) {
-      const temp = [];
-      for (let j = 0; j <= this.index; j++) {
-        temp.push(undefined);
+    for (let i = 1; i < this.index; i++) {
+      this._transitionTable[i] = {};
+      for (let j = 1; j < this.index; j++) {
+        this._transitionTable[i][j] = undefined;
       }
-      this._transitionTable.push(temp);
     }
+
     this._transitions.forEach((transition) => {
       switch (transition.type) {
         case 'goto': {
