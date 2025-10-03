@@ -2,25 +2,13 @@ import type DFA from './dfa';
 import type Grammar from './grammar';
 import type GrammarAnalyzer from './grammar-analyzer';
 import type {
-  Action,
   GotoAction,
-  ParserType,
+  ParseTable,
   ReduceAction,
   ShiftAction,
 } from './types';
 
-type ParseTable = {
-  [stateNumber: number]: {
-    [symbol: string]: Action | Array<Action> | undefined;
-  };
-};
-type ReadonlyParseTable = {
-  readonly [stateNumber: number]: {
-    readonly [symbol: string]: Readonly<
-      Action | Array<Action> | undefined
-    >;
-  };
-};
+type ReduceOverType = 'lookahead' | 'follow' | 'terminals';
 
 export default class ParseTableGenerator {
   readonly grammarAnalyzer: GrammarAnalyzer;
@@ -36,12 +24,12 @@ export default class ParseTableGenerator {
     this.dfa = dfa;
   }
 
-  generate(parserType: ParserType): ReadonlyParseTable {
-    const parseTable: ParseTable = {};
+  generate(reduceOver: ReduceOverType): ParseTable {
+    const table: ParseTable = {};
     //shift and goto:
     this.dfa.states.forEach((rowState) => {
       const rowNumber = rowState.stateNumber;
-      parseTable[rowNumber] = {};
+      table[rowNumber] = {};
       this.dfa.states.forEach((columnState) => {
         const columnNumber = columnState.stateNumber;
         const transition =
@@ -52,21 +40,13 @@ export default class ParseTableGenerator {
               type: 'goto',
               destination: columnNumber,
             };
-            const oldContent = parseTable[rowNumber][transition.symbol];
-            parseTable[rowNumber][transition.symbol] = {
-              ...oldContent,
-              ...action,
-            };
+            table[rowNumber][transition.symbol] = action;
           } else {
             const action: ShiftAction = {
               type: 'shift',
               destination: columnNumber,
             };
-            const oldContent = parseTable[rowNumber][transition.symbol];
-            parseTable[rowNumber][transition.symbol] = {
-              ...oldContent,
-              ...action,
-            };
+            table[rowNumber][transition.symbol] = action;
           }
         }
       });
@@ -77,9 +57,9 @@ export default class ParseTableGenerator {
       const rowNumber = state.stateNumber;
       state.reducibleItems.forEach((item) => {
         let symbolsToReduceOver: Set<string>;
-        if (parserType === 'lr1' || parserType === 'lalr1') {
+        if (reduceOver === 'lookahead') {
           symbolsToReduceOver = new Set(item.lookahead || []);
-        } else if (parserType === 'slr1') {
+        } else if (reduceOver === 'follow') {
           symbolsToReduceOver = new Set(
             this.grammarAnalyzer.getFollow(item.production.lhs)
           );
@@ -93,18 +73,15 @@ export default class ParseTableGenerator {
             ruleNumber: item.production.productionNumber,
           };
 
-          const oldContent = parseTable[rowNumber][terminal];
+          const oldContent = table[rowNumber][terminal];
           if (oldContent) {
             if (Array.isArray(oldContent)) {
-              parseTable[rowNumber][terminal] = [
-                ...oldContent,
-                reduceAction,
-              ];
+              table[rowNumber][terminal] = [...oldContent, reduceAction];
             } else {
-              parseTable[rowNumber][terminal] = [oldContent, reduceAction];
+              table[rowNumber][terminal] = [oldContent, reduceAction];
             }
           } else {
-            parseTable[rowNumber][terminal] = reduceAction;
+            table[rowNumber][terminal] = reduceAction;
           }
         });
       });
@@ -112,10 +89,10 @@ export default class ParseTableGenerator {
 
     //accept:
     const acceptStateNumber = this.dfa.acceptState.stateNumber;
-    parseTable[acceptStateNumber][this.grammarAnalyzer.endMarker] = {
+    table[acceptStateNumber][this.grammarAnalyzer.endMarker] = {
       type: 'accept',
     };
 
-    return parseTable;
+    return table;
   }
 }
