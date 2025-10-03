@@ -106,7 +106,10 @@ export default class StateGenerator {
     let finalState = states[0];
     for (let i = 1; i < states.length; i++) {
       const state = states[i];
-      if (state.hash() === finalState.hash()) {
+      if (
+        state.withoutLookaheads().hash() ===
+        finalState.withoutLookaheads().hash()
+      ) {
         const mergedBaseItems = new HashSet<Item>();
         finalState.baseItems.forEach((outerItem) => {
           const lookaheadToMerge =
