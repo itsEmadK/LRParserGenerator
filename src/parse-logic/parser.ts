@@ -62,130 +62,18 @@ export default class Parser {
       status = tokenStreamOrParserStatus;
     }
 
+    let newStatus;
     while (true) {
-      const nextToken = status.tokenStream.at(status.dotPosition);
-
-      const currentStateNumber = status.parseStack.at(-1);
-
-      if (!currentStateNumber) {
-        status = {
-          ...status,
-          errorCode: ParserErrorCodes.EMPTY_PARSE_STACK,
-        };
+      newStatus = this.step(newStatus || status);
+      if (newStatus.isAccepted) {
         break;
       }
-
-      if (!nextToken) {
-        status = {
-          ...status,
-          errorCode: ParserErrorCodes.NO_MORE_TOKENS,
-        };
+      if (newStatus.errorCode) {
         break;
-      }
-
-      if (
-        this.parseTableAnalyzer.isConflict(currentStateNumber, nextToken)
-      ) {
-        status = {
-          ...status,
-          errorCode: ParserErrorCodes.CONFLICTING_ACTIONS,
-        };
-        break;
-      }
-
-      if (
-        this.parseTableAnalyzer.isAccept(currentStateNumber, nextToken)
-      ) {
-        status = {
-          ...status,
-          errorCode: undefined,
-        };
-        break;
-      }
-
-      if (this.parseTableAnalyzer.isShift(currentStateNumber, nextToken)) {
-        const shiftAction = this.parseTableAnalyzer.get(
-          currentStateNumber,
-          nextToken
-        ) as ShiftAction;
-        const newParseStack = [
-          ...status.parseStack,
-          shiftAction.destination,
-        ];
-        const newDotPosition = status.dotPosition + 1;
-
-        status = {
-          ...status,
-          parseStack: newParseStack,
-          dotPosition: newDotPosition,
-          errorCode: undefined,
-        };
-        continue;
-      }
-
-      if (
-        this.parseTableAnalyzer.isReduce(currentStateNumber, nextToken)
-      ) {
-        const reduceAction = this.parseTableAnalyzer.get(
-          currentStateNumber,
-          nextToken
-        ) as ReduceAction;
-        const newParseStack = status.parseStack.slice();
-        const { lhs, rhsl } = this._lrTable[reduceAction.ruleNumber];
-        if (rhsl > 0) {
-          newParseStack.splice(-rhsl);
-        }
-        const newStateNumber = newParseStack.at(-1);
-
-        if (!newStateNumber) {
-          status = {
-            ...status,
-            errorCode: ParserErrorCodes.EMPTY_PARSE_STACK_AFTER_REDUCING,
-          };
-          break;
-        }
-
-        if (!this.parseTableAnalyzer.isGoto(newStateNumber, lhs)) {
-          status = {
-            ...status,
-            errorCode: ParserErrorCodes.NO_WHERE_TO_GOTO,
-          };
-          break;
-        }
-        const gotoAction = this.parseTableAnalyzer.get(
-          newStateNumber,
-          lhs
-        ) as GotoAction;
-
-        newParseStack.push(gotoAction.destination);
-
-        status = {
-          ...status,
-          parseStack: newParseStack,
-          errorCode: undefined,
-        };
-        continue;
       }
     }
 
-    const progress = status.tokenStream.slice();
-    const newStateNumber = status.parseStack.at(-1) || -1;
-    const newNextToken = status.tokenStream.at(status.dotPosition);
-    const isAccepted = newNextToken
-      ? this.parseTableAnalyzer.isAccept(newStateNumber, newNextToken)
-      : false;
-    progress.splice(
-      isAccepted ? status.dotPosition + 1 : status.dotPosition,
-      0,
-      '•'
-    );
-    return {
-      ...status,
-      progress,
-      isAccepted,
-      stateNumber: newStateNumber,
-      nextToken: isAccepted ? undefined : newNextToken,
-    };
+    return newStatus;
   }
 
   step(status: ParserBaseStatus): ParserStatus {
