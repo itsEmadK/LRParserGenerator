@@ -163,7 +163,7 @@ export default class DfaGenerator {
           transition.originatingItems
         );
       } else {
-        return new GotoTransition(
+        return new ShiftTransition(
           transition.source.withoutLookaheads(),
           transition.destination.withoutLookaheads(),
           transition.terminal,
