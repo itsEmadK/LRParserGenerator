@@ -54,7 +54,7 @@ export default function GrammarInfoSection() {
 
 function ProductionsTable({ productions }: ProductionsTableProps) {
   return (
-    <table>
+    <table className={styles['rules']}>
       <thead>
         <tr>
           <th colSpan={2}>Productions</th>
@@ -94,7 +94,7 @@ function NonTerminalsTable({
     <table>
       <thead>
         <tr>
-          <th colSpan={3}>Non Terminals</th>
+          <th colSpan={4}>Non Terminals</th>
         </tr>
         <tr>
           <th>Non Terminal</th>
@@ -121,9 +121,11 @@ function NonTerminalsTable({
 
 function TerminalsTable({ terminals }: TerminalsTableProps) {
   return (
-    <table>
+    <table className={styles['terminals']}>
       <thead>
-        <tr>Terminals</tr>
+        <tr>
+          <th>Terminals</th>
+        </tr>
       </thead>
       <tbody>
         {terminals.map((terminal, index) => (
