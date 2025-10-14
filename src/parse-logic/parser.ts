@@ -9,7 +9,7 @@ type LrTable = {
   };
 };
 
-type ParserBaseStatus = {
+export type ParserBaseStatus = {
   dotPosition: number;
   tokenStream: string[];
   parseStack: number[];
@@ -22,7 +22,7 @@ type ParserDerivedStatus = {
   isAccepted: boolean;
 };
 
-type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
+export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
 
 export default class Parser {
   private _lrTable: LrTable = {};

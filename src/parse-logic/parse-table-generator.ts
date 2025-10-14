@@ -8,7 +8,8 @@ import type {
   ShiftAction,
 } from './types';
 
-type ReduceOverType = 'lookahead' | 'follow' | 'terminals';
+//TODO: get rid of this piece of shit
+export type ReduceOverType = 'lookahead' | 'follow' | 'terminals';
 
 export default class ParseTableGenerator {
   readonly grammarAnalyzer: GrammarAnalyzer;
