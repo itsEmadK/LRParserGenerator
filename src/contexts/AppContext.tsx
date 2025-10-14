@@ -260,7 +260,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
     }
     case 'updateParserType': {
       const newDfaGenerator = new DfaGenerator(state.grammar, END_MARKER);
-      const newDfa = newDfaGenerator.generate(state.parserType);
+      const newDfa = newDfaGenerator.generate(action.newParserType);
       const newParseTableGenerator = new ParseTableGenerator(
         state.grammar,
         state.grammarAnalyzer,
