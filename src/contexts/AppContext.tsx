@@ -187,26 +187,30 @@ export default function AppProvider({
 }
 
 function reducerFn(state: AppData, action: ReducerAction): AppData {
+  function createInitialParserStatus(tokenStream: string[]): ParserStatus {
+    const progress = tokenStream.slice();
+    progress.splice(state.parserStatus.dotPosition, 0, '•');
+    const nextToken = tokenStream[0];
+    return {
+      dotPosition: 0,
+      isAccepted: false,
+      parseStack: [1],
+      tokenStream,
+      progress,
+      nextToken,
+      stateNumber: 1,
+    };
+  }
+
   switch (action.type) {
     case 'parse': {
       const newParserStatus = state.parser.parse(state.parserStatus);
       return { ...state, parserStatus: newParserStatus };
     }
     case 'reset': {
-      const progress = state.tokenStream.slice();
-      progress.splice(state.parserStatus.dotPosition, 0, '•');
-      const nextToken = state.tokenStream[0];
       return {
         ...state,
-        parserStatus: {
-          dotPosition: 0,
-          isAccepted: false,
-          parseStack: [1],
-          tokenStream: state.tokenStream,
-          progress,
-          nextToken,
-          stateNumber: 1,
-        },
+        parserStatus: createInitialParserStatus(state.tokenStream),
       };
     }
     case 'step': {
@@ -241,9 +245,6 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         newParseTableAnalyzer,
         newGrammar.productions
       );
-      const progress = state.tokenStream.slice();
-      progress.splice(state.parserStatus.dotPosition, 0, '•');
-      const nextToken = state.tokenStream[0];
       return {
         ...state,
         dfa: newDfa,
@@ -252,24 +253,50 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         grammarAnalyzer: newGrammarAnalyzer,
         parser: newParser,
         parseTable: newParseTable,
-        parserStatus: {
-          dotPosition: 0,
-          isAccepted: false,
-          parseStack: [1],
-          tokenStream: state.tokenStream,
-          progress,
-          nextToken,
-          stateNumber: 1,
-        },
+        parserStatus: createInitialParserStatus(state.tokenStream),
         parseTableAnalyzer: newParseTableAnalyzer,
         parseTableGenerator: newParseTableGenerator,
       };
     }
     case 'updateParserType': {
-      return { ...state, parserType: action.newParserType };
+      const newDfaGenerator = new DfaGenerator(state.grammar, END_MARKER);
+      const newDfa = newDfaGenerator.generate(state.parserType);
+      const newParseTableGenerator = new ParseTableGenerator(
+        state.grammar,
+        state.grammarAnalyzer,
+        newDfa
+      );
+      const reduceOver = {
+        lalr1: 'lookahead',
+        lr1: 'lookahead',
+        lr0: 'terminals',
+        slr1: 'follow',
+      }[action.newParserType] as ReduceOverType;
+      const newParseTable = newParseTableGenerator.generate(reduceOver);
+      const newParseTableAnalyzer = new ParseTableAnalyzer(newParseTable);
+      const newParser = new Parser(
+        newParseTableAnalyzer,
+        state.grammar.productions
+      );
+
+      return {
+        ...state,
+        dfa: newDfa,
+        dfaGenerator: newDfaGenerator,
+        parserStatus: createInitialParserStatus(state.tokenStream),
+        parser: newParser,
+        parseTable: newParseTable,
+        parserType: action.newParserType,
+        parseTableAnalyzer: newParseTableAnalyzer,
+        parseTableGenerator: newParseTableGenerator,
+      };
     }
     case 'updateTokenStream': {
-      return { ...state, tokenStream: action.newStream };
+      return {
+        ...state,
+        tokenStream: action.newStream,
+        parserStatus: createInitialParserStatus(action.newStream),
+      };
     }
     default:
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
