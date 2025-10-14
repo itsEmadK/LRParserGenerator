@@ -1,5 +1,5 @@
-import HashSet, { type ReadonlyHashSet } from './hashset.js';
-import Production from './production.js';
+import HashSet, { type ReadonlyHashSet } from './hashset';
+import Production from './production';
 
 export class NumberedProduction extends Production {
   readonly productionNumber: number;

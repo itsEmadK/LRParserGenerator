@@ -1,4 +1,4 @@
-import Grammar from './grammar.js';
+import Grammar from './grammar';
 
 export default class GrammarAnalyzer {
   readonly grammar: Grammar;
