@@ -76,7 +76,19 @@ export default class Parser {
     return newStatus;
   }
 
-  step(status: ParserBaseStatus): ParserStatus {
+  step(tokenStream: string[]): ParserStatus;
+  step(status: ParserBaseStatus): ParserStatus;
+  step(statusOrTokenStream: string[] | ParserBaseStatus): ParserStatus {
+    let status: ParserBaseStatus;
+    if (Array.isArray(statusOrTokenStream)) {
+      status = {
+        dotPosition: 0,
+        parseStack: [1],
+        tokenStream: statusOrTokenStream,
+      };
+    } else {
+      status = statusOrTokenStream;
+    }
     const nextToken = status.tokenStream.at(status.dotPosition);
 
     const currentStateNumber = status.parseStack.at(-1);
