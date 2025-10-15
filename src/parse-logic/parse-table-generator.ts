@@ -64,7 +64,10 @@ export default class ParseTableGenerator {
             this.grammarAnalyzer.getFollow(item.production.lhs)
           );
         } else {
-          symbolsToReduceOver = new Set(this.grammar.terminals);
+          symbolsToReduceOver = new Set([
+            ...this.grammar.terminals,
+            this.grammarAnalyzer.endMarker,
+          ]);
         }
 
         symbolsToReduceOver.forEach((terminal) => {
