@@ -3,7 +3,7 @@ import State from './state';
 import { type Transition } from './transition';
 import type { ReadonlyHashSet } from '../util/hashset';
 
-class NumberedState extends State {
+export class NumberedState extends State {
   readonly stateNumber: number;
   constructor(stateNumber: number, state: State) {
     super(
