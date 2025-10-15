@@ -1,15 +1,14 @@
 import type DFA from './dfa';
 import type Grammar from './grammar';
 import type GrammarAnalyzer from './grammar-analyzer';
+import ParseTable from './parse-table';
+import type { ParseTableShape } from './parse-table';
 import type {
   GotoAction,
-  ParseTable,
+  ParserType,
   ReduceAction,
   ShiftAction,
 } from './types';
-
-//TODO: get rid of this piece of shit
-export type ReduceOverType = 'lookahead' | 'follow' | 'terminals';
 
 export default class ParseTableGenerator {
   readonly grammarAnalyzer: GrammarAnalyzer;
@@ -25,8 +24,8 @@ export default class ParseTableGenerator {
     this.dfa = dfa;
   }
 
-  generate(reduceOver: ReduceOverType): ParseTable {
-    const table: ParseTable = {};
+  generate(parserType: ParserType): ParseTable {
+    const table: ParseTableShape = {};
     //shift and goto:
     this.dfa.states.forEach((rowState) => {
       const rowNumber = rowState.stateNumber;
@@ -58,9 +57,9 @@ export default class ParseTableGenerator {
       const rowNumber = state.stateNumber;
       state.reducibleItems.forEach((item) => {
         let symbolsToReduceOver: Set<string>;
-        if (reduceOver === 'lookahead') {
+        if (parserType === 'lalr1' || parserType === 'lr1') {
           symbolsToReduceOver = new Set(item.lookahead || []);
-        } else if (reduceOver === 'follow') {
+        } else if (parserType === 'slr1') {
           symbolsToReduceOver = new Set(
             this.grammarAnalyzer.getFollow(item.production.lhs)
           );
@@ -94,6 +93,6 @@ export default class ParseTableGenerator {
       type: 'accept',
     };
 
-    return table;
+    return new ParseTable(table);
   }
 }

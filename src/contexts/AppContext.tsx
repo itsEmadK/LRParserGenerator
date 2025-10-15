@@ -10,11 +10,9 @@ import Grammar from '../parse-logic/grammar';
 import GrammarAnalyzer from '../parse-logic/grammar-analyzer';
 import type DFA from '../parse-logic/dfa';
 import DfaGenerator from '../parse-logic/dfa-generator';
-import ParseTableGenerator, {
-  type ReduceOverType,
-} from '../parse-logic/parse-table-generator';
-import type { ParserType, ParseTable } from '../parse-logic/types';
-import ParseTableAnalyzer from '../parse-logic/parse-table-analyzer';
+import ParseTableGenerator from '../parse-logic/parse-table-generator';
+import type { ParserType } from '../parse-logic/types';
+import ParseTable from '../parse-logic/parse-table';
 import Parser from '../parse-logic/parser';
 import type {
   ParserBaseStatus,
@@ -30,7 +28,6 @@ import {
   initialParserStatus,
   initialParserType,
   initialParseTable,
-  initialParseTableAnalyzer,
   initialParseTableGenerator,
   initialTokenStream,
 } from '../util/initial-data';
@@ -43,7 +40,6 @@ type AppData = {
   dfaGenerator: DfaGenerator;
   parseTableGenerator: ParseTableGenerator;
   parseTable: ParseTable;
-  parseTableAnalyzer: ParseTableAnalyzer;
   parser: Parser;
   tokenStream: string[];
   parserStatus: ParserStatus;
@@ -100,7 +96,6 @@ const initialData: AppData = {
   dfaGenerator: initialDfaGenerator,
   dfa: initialDfa,
   parseTableGenerator: initialParseTableGenerator,
-  parseTableAnalyzer: initialParseTableAnalyzer,
   parseTable: initialParseTable,
   parser: initialParser,
   tokenStream: initialTokenStream,
@@ -233,18 +228,10 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         newGrammarAnalyzer,
         newDfa
       );
-      const reduceOver = {
-        lalr1: 'lookahead',
-        lr1: 'lookahead',
-        lr0: 'terminals',
-        slr1: 'follow',
-      }[state.parserType] as ReduceOverType;
-      const newParseTable = newParseTableGenerator.generate(reduceOver);
-      const newParseTableAnalyzer = new ParseTableAnalyzer(newParseTable);
-      const newParser = new Parser(
-        newParseTableAnalyzer,
-        newGrammar.productions
+      const newParseTable = newParseTableGenerator.generate(
+        state.parserType
       );
+      const newParser = new Parser(newParseTable, newGrammar.productions);
       return {
         ...state,
         dfa: newDfa,
@@ -254,7 +241,6 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         parser: newParser,
         parseTable: newParseTable,
         parserStatus: createInitialParserStatus(state.tokenStream),
-        parseTableAnalyzer: newParseTableAnalyzer,
         parseTableGenerator: newParseTableGenerator,
       };
     }
@@ -266,16 +252,11 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         state.grammarAnalyzer,
         newDfa
       );
-      const reduceOver = {
-        lalr1: 'lookahead',
-        lr1: 'lookahead',
-        lr0: 'terminals',
-        slr1: 'follow',
-      }[action.newParserType] as ReduceOverType;
-      const newParseTable = newParseTableGenerator.generate(reduceOver);
-      const newParseTableAnalyzer = new ParseTableAnalyzer(newParseTable);
+      const newParseTable = newParseTableGenerator.generate(
+        action.newParserType
+      );
       const newParser = new Parser(
-        newParseTableAnalyzer,
+        newParseTable,
         state.grammar.productions
       );
 
@@ -287,7 +268,6 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         parser: newParser,
         parseTable: newParseTable,
         parserType: action.newParserType,
-        parseTableAnalyzer: newParseTableAnalyzer,
         parseTableGenerator: newParseTableGenerator,
       };
     }

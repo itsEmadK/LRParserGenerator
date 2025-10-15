@@ -1,12 +1,21 @@
-import type {
-  ParseTable,
-  ReadonlyParseTableCell,
-  ReadonlyParseTable,
-} from './types';
+import type { Action } from './types';
 
-export default class ParseTableAnalyzer {
-  private _table: ParseTable;
-  constructor(table: ParseTable) {
+export type ParseTableShape = {
+  [stateNumber: number]: {
+    [symbol: string]: ParseTableCell;
+  };
+};
+export type ParseTableCell = Action | Array<Action> | undefined;
+
+export type ReadonlyParseTable = {
+  readonly [stateNumber: number]: {
+    readonly [symbol: string]: Readonly<ParseTableCell>;
+  };
+};
+
+export default class ParseTable {
+  private _table: ParseTableShape;
+  constructor(table: ParseTableShape) {
     this._table = table;
   }
 
@@ -26,7 +35,7 @@ export default class ParseTableAnalyzer {
     return conflicts;
   }
 
-  get(stateNumber: number, symbol: string): ReadonlyParseTableCell {
+  get(stateNumber: number, symbol: string): Readonly<ParseTableCell> {
     return this.table[stateNumber][symbol];
   }
 

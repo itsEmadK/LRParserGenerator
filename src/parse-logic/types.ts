@@ -25,19 +25,3 @@ export type GotoAction = {
 export type AcceptAction = {
   type: 'accept';
 };
-export type ParseTableCell = Action | Array<Action> | undefined;
-export type ReadonlyParseTableCell =
-  | Readonly<Action>
-  | ReadonlyArray<Readonly<Action>>
-  | undefined;
-
-export type ParseTable = {
-  [stateNumber: number]: {
-    [symbol: string]: ParseTableCell;
-  };
-};
-export type ReadonlyParseTable = {
-  readonly [stateNumber: number]: {
-    readonly [symbol: string]: ReadonlyParseTableCell;
-  };
-};

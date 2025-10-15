@@ -1,5 +1,5 @@
 import type { NumberedProduction } from './grammar';
-import type ParseTableAnalyzer from './parse-table-analyzer';
+import type ParseTable from './parse-table';
 import type { GotoAction, ReduceAction, ShiftAction } from './types';
 
 type LrTable = {
@@ -26,10 +26,10 @@ export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
 
 export default class Parser {
   private _lrTable: LrTable = {};
-  readonly parseTableAnalyzer: ParseTableAnalyzer;
+  readonly parseTableAnalyzer: ParseTable;
 
   constructor(
-    parseTableAnalyzer: ParseTableAnalyzer,
+    parseTableAnalyzer: ParseTable,
     productions: Iterable<NumberedProduction>
   ) {
     this.parseTableAnalyzer = parseTableAnalyzer;
