@@ -19,9 +19,9 @@ import type {
   ParserStatus,
 } from '../parse-logic/parser';
 import {
-  END_MARKER,
   initialDfa,
   initialDfaGenerator,
+  initialEndMarker,
   initialGrammar,
   initialGrammarAnalyzer,
   initialParser,
@@ -44,6 +44,7 @@ type AppData = {
   tokenStream: string[];
   parserStatus: ParserStatus;
   parserType: ParserType;
+  endMarker: string;
 };
 
 type AppApi = {
@@ -101,6 +102,7 @@ const initialData: AppData = {
   tokenStream: initialTokenStream,
   parserStatus: initialParserStatus,
   parserType: initialParserType,
+  endMarker: initialEndMarker,
 };
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -140,6 +142,9 @@ export const useParserType = () => {
 };
 export const useLrTable = () => {
   return useContext(AppDataContext)!.parser.lrTable;
+};
+export const useEndMarker = () => {
+  return useContext(AppDataContext)!.endMarker;
 };
 
 export default function AppProvider({
@@ -222,9 +227,12 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       );
       const newGrammarAnalyzer = new GrammarAnalyzer(
         newGrammar,
-        END_MARKER
+        state.endMarker
       );
-      const newDfaGenerator = new DfaGenerator(newGrammar, END_MARKER);
+      const newDfaGenerator = new DfaGenerator(
+        newGrammar,
+        state.endMarker
+      );
       const newDfa = newDfaGenerator.generate(state.parserType);
       const newParseTableGenerator = new ParseTableGenerator(
         newGrammar,
@@ -248,7 +256,10 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       };
     }
     case 'updateParserType': {
-      const newDfaGenerator = new DfaGenerator(state.grammar, END_MARKER);
+      const newDfaGenerator = new DfaGenerator(
+        state.grammar,
+        state.endMarker
+      );
       const newDfa = newDfaGenerator.generate(action.newParserType);
       const newParseTableGenerator = new ParseTableGenerator(
         state.grammar,

@@ -1,7 +1,6 @@
 import DfaGenerator from '../parse-logic/dfa-generator';
 import Grammar from '../parse-logic/grammar';
 import GrammarAnalyzer from '../parse-logic/grammar-analyzer';
-import ParseTableAnalyzer from '../parse-logic/parse-table-analyzer';
 import ParseTableGenerator from '../parse-logic/parse-table-generator';
 import Parser from '../parse-logic/parser';
 import Production from '../parse-logic/production';
@@ -34,14 +33,13 @@ export const initialParseTableGenerator = new ParseTableGenerator(
   initialDfa
 );
 export const initialParseTable =
-  initialParseTableGenerator.generate('lookahead');
-export const initialParseTableAnalyzer = new ParseTableAnalyzer(
-  initialParseTable
-);
+  initialParseTableGenerator.generate(initialParserType);
 export const initialParser = new Parser(
-  initialParseTableAnalyzer,
+  initialParseTable,
   initialGrammar.productions
 );
+
+export const initialEndMarker = '$';
 export const initialTokenStream = ['id', '+', 'id', '*', 'id'];
 
 export const initialParserStatus = initialParser.parse(initialTokenStream);
