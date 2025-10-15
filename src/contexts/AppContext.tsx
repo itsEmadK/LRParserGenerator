@@ -135,6 +135,9 @@ export const useParserStatus = () => {
 export const useParseTable = () => {
   return useContext(AppDataContext)!.parseTable;
 };
+export const useParserType = () => {
+  return useContext(AppDataContext)!.parserType;
+};
 export const useLrTable = () => {
   return useContext(AppDataContext)!.parser.lrTable;
 };
