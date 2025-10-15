@@ -1,17 +1,17 @@
-import type Grammar from './grammar';
+import type Grammar from '../grammar/grammar';
 import {
   type Transition,
   GotoTransition,
   ShiftTransition,
 } from './transition';
-import HashSet from './hashset';
+import HashSet from '../util/hashset';
 import Item from './item';
-import Production from './production';
+import Production from '../grammar/production';
 import State from './state';
 import StateGenerator from './state-generator';
 import DFA from './dfa';
-import type { ParserType } from './types';
-import { NumberedProduction } from './grammar';
+import type { ParserType } from '../util/types';
+import { NumberedProduction } from '../grammar/grammar';
 
 const acceptAction = { type: 'accept' as const, hash: () => 'accept' };
 type Accept = typeof acceptAction;

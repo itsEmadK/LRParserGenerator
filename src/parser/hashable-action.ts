@@ -1,4 +1,4 @@
-import { type Hashable } from './types';
+import { type Hashable } from '../util/types';
 
 export interface GotoAction {
   type: 'goto';

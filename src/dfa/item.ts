@@ -1,5 +1,5 @@
-import type { NumberedProduction } from './grammar';
-import { type Hashable } from './types';
+import type { NumberedProduction } from '../grammar/grammar';
+import { type Hashable } from '../util/types';
 
 export default class Item implements Hashable {
   readonly production: NumberedProduction;

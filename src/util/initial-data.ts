@@ -1,9 +1,9 @@
-import DfaGenerator from '../parse-logic/dfa-generator';
-import Grammar from '../parse-logic/grammar';
-import GrammarAnalyzer from '../parse-logic/grammar-analyzer';
-import ParseTableGenerator from '../parse-logic/parse-table-generator';
-import Parser from '../parse-logic/parser';
-import Production from '../parse-logic/production';
+import DfaGenerator from '../dfa/dfa-generator';
+import Grammar from '../grammar/grammar';
+import GrammarAnalyzer from '../grammar/grammar-analyzer';
+import ParseTableGenerator from '../parser/parse-table-generator';
+import Parser from '../parser/parser';
+import Production from '../grammar/production';
 
 export const END_MARKER = '$';
 const initialProductions = [

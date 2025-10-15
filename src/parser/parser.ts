@@ -1,6 +1,6 @@
-import type { NumberedProduction } from './grammar';
+import type { NumberedProduction } from '../grammar/grammar';
 import type ParseTable from './parse-table';
-import type { GotoAction, ReduceAction, ShiftAction } from './types';
+import type { GotoAction, ReduceAction, ShiftAction } from '../util/types';
 
 type LrTable = {
   [productionNumber: number]: {

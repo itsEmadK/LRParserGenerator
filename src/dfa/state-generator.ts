@@ -1,6 +1,6 @@
-import Grammar from './grammar';
-import GrammarAnalyzer from './grammar-analyzer';
-import HashSet from './hashset';
+import Grammar from '../grammar/grammar';
+import GrammarAnalyzer from '../grammar/grammar-analyzer';
+import HashSet from '../util/hashset';
 import Item from './item';
 import State from './state';
 

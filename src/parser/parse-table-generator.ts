@@ -1,6 +1,6 @@
-import type DFA from './dfa';
-import type Grammar from './grammar';
-import type GrammarAnalyzer from './grammar-analyzer';
+import type DFA from '../dfa/dfa';
+import type Grammar from '../grammar/grammar';
+import type GrammarAnalyzer from '../grammar/grammar-analyzer';
 import ParseTable from './parse-table';
 import type { ParseTableShape } from './parse-table';
 import type {
@@ -8,7 +8,7 @@ import type {
   ParserType,
   ReduceAction,
   ShiftAction,
-} from './types';
+} from '../util/types';
 
 export default class ParseTableGenerator {
   readonly grammarAnalyzer: GrammarAnalyzer;

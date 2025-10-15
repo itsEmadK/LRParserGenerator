@@ -1,7 +1,7 @@
-import HashSet from './hashset';
+import HashSet from '../util/hashset';
 import type Item from './item';
 import State from './state';
-import type { Hashable } from './types';
+import type { Hashable } from '../util/types';
 
 export type Transition = GotoTransition | ShiftTransition;
 export class GotoTransition implements Hashable {

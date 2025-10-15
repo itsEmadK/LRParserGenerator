@@ -1,4 +1,4 @@
-import type { Hashable } from './types';
+import type { Hashable } from '../util/types';
 
 export default class Production implements Hashable {
   readonly lhs: string;

@@ -1,6 +1,6 @@
-import HashSet, { type ReadonlyHashSet } from './hashset';
+import HashSet, { type ReadonlyHashSet } from '../util/hashset';
 import Item from './item';
-import { type Hashable } from './types';
+import { type Hashable } from '../util/types';
 
 export default class State implements Hashable {
   private _baseItems: HashSet<Item>;

@@ -1,4 +1,4 @@
-import HashSet, { type ReadonlyHashSet } from './hashset';
+import HashSet, { type ReadonlyHashSet } from '../util/hashset';
 import Production from './production';
 
 export class NumberedProduction extends Production {

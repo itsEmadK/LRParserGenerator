@@ -1,7 +1,7 @@
-import HashSet from './hashset';
+import HashSet from '../util/hashset';
 import State from './state';
 import { type Transition } from './transition';
-import type { ReadonlyHashSet } from './hashset';
+import type { ReadonlyHashSet } from '../util/hashset';
 
 class NumberedState extends State {
   readonly stateNumber: number;
