@@ -7,20 +7,14 @@ export type ParseTableShape = {
 };
 export type ParseTableCell = Action | Array<Action> | undefined;
 
-export type ReadonlyParseTable = {
-  readonly [stateNumber: number]: {
-    readonly [symbol: string]: Readonly<ParseTableCell>;
-  };
-};
-
 export default class ParseTable {
   private _table: ParseTableShape;
   constructor(table: ParseTableShape) {
     this._table = table;
   }
 
-  get table(): ReadonlyParseTable {
-    return this._table as ReadonlyParseTable;
+  get table(): ParseTableShape {
+    return this._table as ParseTableShape;
   }
 
   get conflicts(): Array<{ stateNumber: number; symbol: string }> {
@@ -35,7 +29,7 @@ export default class ParseTable {
     return conflicts;
   }
 
-  get(stateNumber: number, symbol: string): Readonly<ParseTableCell> {
+  get(stateNumber: number, symbol: string): ParseTableCell {
     return this.table[stateNumber][symbol];
   }
 
