@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import type { NumberedState } from '../dfa/dfa';
 import styles from '../styles/state.module.css';
 import LrItem from './Item';
@@ -8,7 +7,6 @@ type StateProps = {
 };
 
 export default function State({ state }: StateProps) {
-  const ref = useRef(null);
   const baseItems = [...state.baseItems].map((baseItem, index) => {
     return (
       <li key={index}>
@@ -26,7 +24,7 @@ export default function State({ state }: StateProps) {
     }
   );
   return (
-    <div ref={ref} className={styles['state']}>
+    <div className={styles['state']}>
       <ul
         className={`${styles['base-items']} ${derivedItems.length > 0 ? styles['bottom-border'] : ''}`}
       >
