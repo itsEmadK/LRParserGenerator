@@ -6,6 +6,15 @@
   gap: 12px;
 }
 
+.base-items {
+  padding-bottom: 4px;
+  padding-right: 28px;
+}
+
+.bottom-border {
+  border-bottom: 2px solid black;
+}
+
 .state {
   border: 2px solid black;
   padding: 4px;
@@ -15,4 +24,13 @@
   gap: 12px;
   min-width: max-content;
   max-width: max-content;
+  position: relative;
+}
+
+.state-number {
+  font-weight: bold;
+  font-size: 16px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
 }
