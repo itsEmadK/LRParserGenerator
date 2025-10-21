@@ -122,6 +122,15 @@ export default class DFA {
     return statePools;
   }
 
+  getStateOutwardTransitions(
+    stateNumber: number
+  ): ReadonlyArray<Transition> {
+    return [...this.transitions].filter(
+      (transition) =>
+        stateNumber === this.getStateNumber(transition.source)
+    );
+  }
+
   private getStateNumber(state: State): number {
     return (
       this.states.values.find((s) => state.hash() === s.hash())

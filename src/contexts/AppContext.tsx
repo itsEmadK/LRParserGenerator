@@ -8,7 +8,7 @@ import {
 } from 'react';
 import Grammar from '../grammar/grammar';
 import GrammarAnalyzer from '../grammar/grammar-analyzer';
-import type DFA from '../dfa/dfa';
+import DFA from '../dfa/dfa';
 import DfaGenerator from '../dfa/dfa-generator';
 import ParseTableGenerator from '../parser/parse-table-generator';
 import type { ParserType } from '../util/types';
@@ -142,6 +142,10 @@ export const useLrTable = () => {
 };
 export const useEndMarker = () => {
   return useContext(AppDataContext)!.endMarker;
+};
+export const useStateOutwardTransitions = (stateNumber: number) => {
+  const { dfa } = useContext(AppDataContext)!;
+  return dfa.getStateOutwardTransitions(stateNumber);
 };
 
 export default function AppProvider({
