@@ -6,18 +6,15 @@ import {
   useReducer,
   type ReactNode,
 } from 'react';
-import Grammar from '../parse-logic/grammar';
-import GrammarAnalyzer from '../parse-logic/grammar-analyzer';
-import type DFA from '../parse-logic/dfa';
-import DfaGenerator from '../parse-logic/dfa-generator';
-import ParseTableGenerator from '../parse-logic/parse-table-generator';
-import type { ParserType } from '../parse-logic/types';
-import ParseTable from '../parse-logic/parse-table';
-import Parser from '../parse-logic/parser';
-import type {
-  ParserBaseStatus,
-  ParserStatus,
-} from '../parse-logic/parser';
+import Grammar from '../grammar/grammar';
+import GrammarAnalyzer from '../grammar/grammar-analyzer';
+import type DFA from '../dfa/dfa';
+import DfaGenerator from '../dfa/dfa-generator';
+import ParseTableGenerator from '../parser/parse-table-generator';
+import type { ParserType } from '../util/types';
+import ParseTable from '../parser/parse-table';
+import Parser from '../parser/parser';
+import type { ParserBaseStatus, ParserStatus } from '../parser/parser';
 import {
   initialDfa,
   initialDfaGenerator,
@@ -31,7 +28,7 @@ import {
   initialParseTableGenerator,
   initialTokenStream,
 } from '../util/initial-data';
-import type Production from '../parse-logic/production';
+import type Production from '../grammar/production';
 
 type AppData = {
   grammar: Grammar;
