@@ -87,6 +87,11 @@ export default class DFA {
     );
   }
 
+  findStateNumber(state: State): number {
+    const found = [...this._states].find((s) => s.hash() === state.hash());
+    return found ? found.stateNumber : -1;
+  }
+
   findStatesWithSimilarItems(): HashSet<State>[] {
     const visited: Set<number> = new Set();
     const pools: Set<number>[] = [];

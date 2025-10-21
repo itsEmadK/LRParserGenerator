@@ -29,6 +29,7 @@ import {
   initialTokenStream,
 } from '../util/initial-data';
 import type Production from '../grammar/production';
+import type State from '../dfa/state';
 
 type AppData = {
   grammar: Grammar;
@@ -146,6 +147,10 @@ export const useEndMarker = () => {
 export const useStateOutwardTransitions = (stateNumber: number) => {
   const { dfa } = useContext(AppDataContext)!;
   return dfa.getStateOutwardTransitions(stateNumber);
+};
+export const useStateNumber = (state: State) => {
+  const { dfa } = useContext(AppDataContext)!;
+  return dfa.findStateNumber(state);
 };
 
 export default function AppProvider({
