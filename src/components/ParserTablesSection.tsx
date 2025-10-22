@@ -1,6 +1,6 @@
 import styles from '../styles/parser-tables-section.module.css';
-import type { Action, ParserType } from '../parse-logic/types';
-import type { NumberedProduction } from '../parse-logic/grammar';
+import type { Action, ParserType } from '../util/types';
+import type { NumberedProduction } from '../grammar/grammar';
 import {
   useAppApi,
   useEndMarker,
@@ -10,9 +10,9 @@ import {
   useProductions,
   useTerminals,
 } from '../contexts/AppContext';
-import type ParseTable from '../parse-logic/parse-table';
+import type ParseTable from '../parser/parse-table';
 import type { ChangeEvent } from 'react';
-import type { ParseTableCell } from '../parse-logic/parse-table';
+import type { ParseTableCell } from '../parser/parse-table';
 
 type LrParseTableProps = {
   terminals: string[];
