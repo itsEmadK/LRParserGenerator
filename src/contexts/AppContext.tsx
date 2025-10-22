@@ -204,7 +204,7 @@ export default function AppProvider({
 function reducerFn(state: AppData, action: ReducerAction): AppData {
   function createInitialParserStatus(tokenStream: string[]): ParserStatus {
     const progress = tokenStream.slice();
-    progress.splice(state.parserStatus.dotPosition, 0, '•');
+    progress.splice(0, 0, '•');
     const nextToken = tokenStream[0];
     return {
       dotPosition: 0,
