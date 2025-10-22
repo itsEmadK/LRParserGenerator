@@ -4,16 +4,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
+
 .container {
   display: flex;
-  /* max-height: min-content;
-  justify-content: center;
-  align-items: start; */
 }
 
 .container .forward-transitions,
 .container .backward-transitions {
+  width: 100px; /*just here for align centering the states in their box*/
   max-width: 100px;
   display: flex;
   flex-direction: column;

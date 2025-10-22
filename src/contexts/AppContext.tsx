@@ -152,6 +152,9 @@ export const useStateNumber = (state: State) => {
   const { dfa } = useContext(AppDataContext)!;
   return dfa.findStateNumber(state);
 };
+export const useDfa = () => {
+  return useContext(AppDataContext)!.dfa;
+};
 
 export default function AppProvider({
   children,
