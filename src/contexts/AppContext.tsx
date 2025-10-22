@@ -21,12 +21,12 @@ import {
   initialEndMarker,
   initialGrammar,
   initialGrammarAnalyzer,
+  initialInput,
   initialParser,
   initialParserStatus,
   initialParserType,
   initialParseTable,
   initialParseTableGenerator,
-  initialTokenStream,
 } from '../util/initial-data';
 import type Production from '../grammar/production';
 import type State from '../dfa/state';
@@ -39,7 +39,7 @@ type AppData = {
   parseTableGenerator: ParseTableGenerator;
   parseTable: ParseTable;
   parser: Parser;
-  tokenStream: string[];
+  input: string;
   parserStatus: ParserStatus;
   parserType: ParserType;
   endMarker: string;
@@ -50,10 +50,10 @@ type AppApi = {
     newProductions: Production[],
     newStartSymbol: string
   ) => void;
-  stepParser: (previousStatus: ParserBaseStatus) => void;
+  stepParser: (previousStatus?: ParserBaseStatus) => void;
   parse: (previousStatus?: ParserBaseStatus) => void;
   resetParser: () => void;
-  updateTokenStream: (newStream: string[]) => void;
+  updateTokenStream: (newInput: string) => void;
   updateParserType: (newType: ParserType) => void;
 };
 type ParserStepAction = {
@@ -78,7 +78,7 @@ type ParserTypeUpdateAction = {
 };
 type UpdateTokenStreamAction = {
   type: 'updateTokenStream';
-  newStream: string[];
+  newInput: string;
 };
 
 type ReducerAction =
@@ -97,7 +97,7 @@ const initialData: AppData = {
   parseTableGenerator: initialParseTableGenerator,
   parseTable: initialParseTable,
   parser: initialParser,
-  tokenStream: initialTokenStream,
+  input: initialInput,
   parserStatus: initialParserStatus,
   parserType: initialParserType,
   endMarker: initialEndMarker,
@@ -155,6 +155,9 @@ export const useStateNumber = (state: State) => {
 export const useDfa = () => {
   return useContext(AppDataContext)!.dfa;
 };
+export const useInput = () => {
+  return useContext(AppDataContext)!.input;
+};
 
 export default function AppProvider({
   children,
@@ -185,7 +188,7 @@ export default function AppProvider({
         dispatch({ type: 'updateParserType', newParserType });
       },
       updateTokenStream(newStream) {
-        dispatch({ type: 'updateTokenStream', newStream });
+        dispatch({ type: 'updateTokenStream', newInput: newStream });
       },
     };
   }, []);
@@ -222,7 +225,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
     case 'reset': {
       return {
         ...state,
-        parserStatus: createInitialParserStatus(state.tokenStream),
+        parserStatus: createInitialParserStatus(state.input.split(' ')),
       };
     }
     case 'step': {
@@ -260,7 +263,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         grammarAnalyzer: newGrammarAnalyzer,
         parser: newParser,
         parseTable: newParseTable,
-        parserStatus: createInitialParserStatus(state.tokenStream),
+        parserStatus: createInitialParserStatus(state.input.split(' ')),
         parseTableGenerator: newParseTableGenerator,
       };
     }
@@ -287,7 +290,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         ...state,
         dfa: newDfa,
         dfaGenerator: newDfaGenerator,
-        parserStatus: createInitialParserStatus(state.tokenStream),
+        parserStatus: createInitialParserStatus(state.input.split(' ')),
         parser: newParser,
         parseTable: newParseTable,
         parserType: action.newParserType,
@@ -297,8 +300,10 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
     case 'updateTokenStream': {
       return {
         ...state,
-        tokenStream: action.newStream,
-        parserStatus: createInitialParserStatus(action.newStream),
+        input: action.newInput,
+        parserStatus: createInitialParserStatus(
+          action.newInput.split(' ')
+        ),
       };
     }
     default:

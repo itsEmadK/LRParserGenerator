@@ -40,6 +40,8 @@ export const initialParser = new Parser(
 );
 
 export const initialEndMarker = '$';
-export const initialTokenStream = ['id', '+', 'id', '*', 'id'];
+export const initialInput = ['id', '+', 'id', '*', 'id', '$'].join(' ');
 
-export const initialParserStatus = initialParser.parse(initialTokenStream);
+export const initialParserStatus = initialParser.parse(
+  initialInput.split(' ')
+);
