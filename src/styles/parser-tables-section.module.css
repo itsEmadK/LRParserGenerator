@@ -26,6 +26,15 @@
   padding: 0.25rem;
 }
 
+.conflict {
+  background-color: rgb(249, 153, 153);
+}
+
+.accept {
+  background-color: rgb(154, 248, 154);
+  font-weight: bold;
+}
+
 @media screen and (width <750px) {
   .tables {
     font-size: 1.25rem;
