@@ -4,19 +4,23 @@ import { type Hashable } from '../util/types';
 export default class Item implements Hashable {
   readonly production: NumberedProduction;
   readonly dotPosition: number;
-  readonly lookahead?: ReadonlySet<string>;
+  readonly lookahead: ReadonlySet<string> | null;
 
   constructor(
     production: NumberedProduction,
     dotPosition: number,
-    lookahead?: Iterable<string>
+    lookahead: Iterable<string> | null
   ) {
     this.production = production;
     this.dotPosition = dotPosition;
     if (dotPosition > production.rhs.length || dotPosition < 0) {
       throw new Error(`invalid dot position(${dotPosition}).`);
     }
-    this.lookahead = new Set(lookahead);
+    if (lookahead) {
+      this.lookahead = new Set(lookahead);
+    } else {
+      this.lookahead = lookahead;
+    }
   }
 
   hash(): string {
@@ -30,7 +34,7 @@ export default class Item implements Hashable {
   }
 
   withoutLookahead(): Item {
-    return new Item(this.production, this.dotPosition);
+    return new Item(this.production, this.dotPosition, null);
   }
 
   isReducible(): boolean {

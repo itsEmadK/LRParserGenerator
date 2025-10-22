@@ -24,7 +24,7 @@ export default class StateGenerator {
             const productions =
               this.grammar.getProductionsForNonTerminal(symbol);
             productions.forEach((prod) => {
-              const newItem = new Item(prod, 0);
+              const newItem = new Item(prod, 0, []);
               derivedItems.add(newItem);
             });
           }
@@ -80,7 +80,8 @@ export default class StateGenerator {
           } else {
             derivedItems[i] = new Item(
               derivedItems[i].production,
-              derivedItems[i].dotPosition
+              derivedItems[i].dotPosition,
+              null
             );
           }
         }
@@ -129,7 +130,8 @@ export default class StateGenerator {
           } else {
             const newBaseItem = new Item(
               outerItem.production,
-              outerItem.dotPosition
+              outerItem.dotPosition,
+              []
             );
             mergedBaseItems.add(newBaseItem);
           }

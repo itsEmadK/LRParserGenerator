@@ -18,10 +18,10 @@ export default class State implements Hashable {
   withoutLookaheads(): State {
     return new State(
       this.baseItems.values.map(
-        (item) => new Item(item.production, item.dotPosition)
+        (item) => new Item(item.production, item.dotPosition, null)
       ),
       this.derivedItems.values.map(
-        (item) => new Item(item.production, item.dotPosition)
+        (item) => new Item(item.production, item.dotPosition, null)
       )
     );
   }

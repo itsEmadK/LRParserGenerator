@@ -15,8 +15,8 @@ export default function LrItem({ item }: LrItemProps) {
         <p className={styles['arrow']}>{' -> '}</p>
         <p className={styles['rhs']}>{dottedRhs.join(' ')}</p>
         <p className={styles['lookahead']}>
-          {(item.lookahead ?? { size: 0 }).size > 0 && ' ,'}
-          {`{${[...(item.lookahead ?? [])].join(', ')}}`}
+          {item.lookahead &&
+            `,{${[...(item.lookahead ?? [])].join(', ')}}`}
         </p>
       </div>
     </div>
