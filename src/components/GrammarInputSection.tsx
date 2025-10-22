@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from '../styles/grammar-input-section.module.css';
 import { useAppApi, useProductions } from '../contexts/AppContext';
-import Production from '../parse-logic/production';
+import Production from '../grammar/production';
 
 const formattingInstructions = (
   <ul>

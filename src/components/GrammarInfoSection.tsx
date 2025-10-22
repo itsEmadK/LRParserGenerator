@@ -6,7 +6,7 @@ import {
   useProductions,
   useTerminals,
 } from '../contexts/AppContext';
-import type { NumberedProduction } from '../parse-logic/grammar';
+import type { NumberedProduction } from '../grammar/grammar';
 import styles from '../styles/grammar-info-section.module.css';
 
 const CHECKMARK = '✔';
