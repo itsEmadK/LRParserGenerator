@@ -1,9 +1,5 @@
 import type Grammar from '../grammar/grammar';
-import {
-  type Transition,
-  GotoTransition,
-  ShiftTransition,
-} from './transition';
+import { Transition } from './transition';
 import HashSet from '../util/hashset';
 import Item from './item';
 import Production from '../grammar/production';
@@ -72,19 +68,13 @@ export default class DfaGenerator {
       );
 
       const isGoto = this.grammar.isNonTerminal(symbol);
-      const transition = isGoto
-        ? new GotoTransition(
-            state,
-            destinationState,
-            symbol,
-            correspondingItems
-          )
-        : new ShiftTransition(
-            state,
-            destinationState,
-            symbol,
-            correspondingItems
-          );
+      const transition = new Transition(
+        isGoto ? 'goto' : 'shift',
+        state,
+        destinationState,
+        symbol,
+        correspondingItems
+      );
       transitions.add(transition);
     });
 
@@ -125,20 +115,14 @@ export default class DfaGenerator {
           state.withoutLookaheads().hash() ===
           transition.destination.withoutLookaheads().hash()
       );
-      const newTransition =
-        transition.type === 'goto'
-          ? new GotoTransition(
-              source!,
-              destination!,
-              transition.nonTerminal,
-              transition.originatingItems
-            )
-          : new ShiftTransition(
-              source!,
-              destination!,
-              transition.terminal,
-              transition.originatingItems
-            );
+      const newTransition = new Transition(
+        transition.type,
+        source!,
+        destination!,
+        transition.symbol,
+        transition.originatingItems
+      );
+
       return newTransition;
     });
 
@@ -155,21 +139,13 @@ export default class DfaGenerator {
       state.withoutLookaheads()
     );
     const slr1Transitions = dfa.transitions.values.map((transition) => {
-      if (transition.type === 'goto') {
-        return new GotoTransition(
-          transition.source.withoutLookaheads(),
-          transition.destination.withoutLookaheads(),
-          transition.nonTerminal,
-          transition.originatingItems
-        );
-      } else {
-        return new ShiftTransition(
-          transition.source.withoutLookaheads(),
-          transition.destination.withoutLookaheads(),
-          transition.terminal,
-          transition.originatingItems
-        );
-      }
+      return new Transition(
+        transition.type,
+        transition.source.withoutLookaheads(),
+        transition.destination.withoutLookaheads(),
+        transition.symbol,
+        transition.originatingItems
+      );
     });
     const slr1Dfa = new DFA(
       slr1States,

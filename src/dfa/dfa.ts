@@ -1,7 +1,7 @@
 import HashSet from '../util/hashset';
 import State from './state';
-import { type Transition } from './transition';
 import type { ReadonlyHashSet } from '../util/hashset';
+import { Transition } from './transition';
 
 export class NumberedState extends State {
   readonly stateNumber: number;
@@ -11,6 +11,29 @@ export class NumberedState extends State {
       new HashSet([...state.derivedItems])
     );
     this.stateNumber = stateNumber;
+  }
+}
+
+export class TransitionWithNumberedState extends Transition {
+  source: NumberedState;
+  destination: NumberedState;
+  constructor(
+    transition: Transition,
+    sourceNumber: number,
+    destinationNumber: number
+  ) {
+    super(
+      transition.type,
+      transition.source,
+      transition.destination,
+      transition.symbol,
+      transition.originatingItems
+    );
+    this.source = new NumberedState(sourceNumber, transition.source);
+    this.destination = new NumberedState(
+      destinationNumber,
+      transition.destination
+    );
   }
 }
 
@@ -39,7 +62,7 @@ type ReadonlyTransitionTable = {
 export default class DFA {
   private _states: HashSet<NumberedState>;
   readonly initialState: NumberedState;
-  private _transitions: HashSet<Transition>;
+  private _transitions: HashSet<TransitionWithNumberedState>;
   readonly acceptState: NumberedState;
   private index: number = 2;
   private _transitionTable: TransitionTable = {};
@@ -62,7 +85,19 @@ export default class DFA {
     this.initialState = this._states.values.find(
       (state) => state.hash() === initialState.hash()
     )!;
-    this._transitions = new HashSet(transitions);
+    this._transitions = new HashSet(
+      [...transitions].map((transition) => {
+        const sourceNumber = this.getStateNumber(transition.source);
+        const destinationNumber = this.getStateNumber(
+          transition.destination
+        );
+        return new TransitionWithNumberedState(
+          transition,
+          sourceNumber,
+          destinationNumber
+        );
+      })
+    );
     this.acceptState = this._states.values.find(
       (state) => state.hash() === acceptState.hash()
     )!;
@@ -73,7 +108,7 @@ export default class DFA {
     return this._states;
   }
 
-  get transitions(): ReadonlyHashSet<Transition> {
+  get transitions(): ReadonlyHashSet<TransitionWithNumberedState> {
     return this._transitions;
   }
 
@@ -129,10 +164,9 @@ export default class DFA {
 
   getStateOutwardTransitions(
     stateNumber: number
-  ): ReadonlyArray<Transition> {
+  ): ReadonlyArray<TransitionWithNumberedState> {
     return [...this.transitions].filter(
-      (transition) =>
-        stateNumber === this.getStateNumber(transition.source)
+      (transition) => stateNumber === transition.source.stateNumber
     );
   }
 
@@ -152,33 +186,14 @@ export default class DFA {
     }
 
     this._transitions.forEach((transition) => {
-      switch (transition.type) {
-        case 'goto': {
-          const sourceNumber = this.getStateNumber(transition.source);
-          const destinationNumber = this.getStateNumber(
-            transition.destination
-          );
-          this._transitionTable[sourceNumber][destinationNumber] = {
-            type: 'goto',
-            symbol: transition.nonTerminal,
-          };
-          break;
-        }
-        case 'shift': {
-          const sourceNumber = this.getStateNumber(transition.source);
-          const destinationNumber = this.getStateNumber(
-            transition.destination
-          );
-          this._transitionTable[sourceNumber][destinationNumber] = {
-            type: 'shift',
-            symbol: transition.terminal,
-          };
-          break;
-        }
-        default: {
-          break;
-        }
-      }
+      const sourceNumber = this.getStateNumber(transition.source);
+      const destinationNumber = this.getStateNumber(
+        transition.destination
+      );
+      this._transitionTable[sourceNumber][destinationNumber] = {
+        type: transition.type,
+        symbol: transition.symbol,
+      };
     });
   }
 }
