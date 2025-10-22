@@ -23,6 +23,9 @@ export default function AutomataSection() {
               transitions={[
                 ...dfa.getStateOutwardTransitions(state.stateNumber),
               ]}
+              isAcceptState={
+                state.stateNumber === dfa.acceptState.stateNumber
+              }
             />
           );
         })}

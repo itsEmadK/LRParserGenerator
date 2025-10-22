@@ -5,15 +5,18 @@ import type {
 } from '../dfa/dfa';
 import styles from '../styles/state-with-transitions.module.css';
 import State from './State';
+import { useEndMarker } from '../contexts/AppContext';
 
 type StateWithTransitionsProps = {
   state: NumberedState;
   transitions: TransitionWithNumberedState[];
+  isAcceptState: boolean;
 };
 
 export default function StateWithTransitions({
   state,
   transitions,
+  isAcceptState,
 }: StateWithTransitionsProps) {
   const forwardTransitions = useMemo(() => {
     return transitions.filter(
@@ -51,6 +54,7 @@ export default function StateWithTransitions({
         </div>
         <State state={state} />
         <div className={styles['forward-transitions']}>
+          {isAcceptState && <AcceptTransition />}
           {forwardTransitions.map((transition, index) => {
             return (
               <Transition
@@ -77,7 +81,7 @@ type TransitionProps = {
   destinationNumber: number;
   direction: 'forward' | 'backward';
 };
-export function Transition({
+function Transition({
   symbol,
   destinationNumber,
   direction,
@@ -88,6 +92,20 @@ export function Transition({
         <div className={styles['symbol']}>{symbol}</div>
       </div>
       <div className={styles['destination']}>{destinationNumber}</div>
+    </div>
+  );
+}
+
+function AcceptTransition() {
+  const endMarker = useEndMarker();
+  return (
+    <div className={`${styles['transition']} ${styles['forward']}`}>
+      <div className={styles['arrow-out']}>
+        <div className={styles['symbol']}>{endMarker}</div>
+      </div>
+      <div className={`${styles['destination']} ${styles['accept']}`}>
+        A
+      </div>
     </div>
   );
 }

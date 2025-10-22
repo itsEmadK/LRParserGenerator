@@ -95,3 +95,7 @@
   clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
   transform: rotate(-90deg);
 }
+
+.accept {
+  background-color: rgb(154, 248, 154);
+}
