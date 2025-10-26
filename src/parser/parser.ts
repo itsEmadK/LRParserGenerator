@@ -10,9 +10,10 @@ type LrTable = {
   };
 };
 
-type ParseTreeNode = {
+export type ParseTreeNode = {
   symbol: string;
   children: ParseTreeNode[] | null;
+  isLambda: boolean;
 };
 
 export type ParserBaseStatus = {
@@ -148,6 +149,7 @@ export default class Parser {
       const treeNode: ParseTreeNode = {
         children: null,
         symbol: nextToken,
+        isLambda: false,
       };
       const newTreeStack = status.treeStack.slice();
       newTreeStack.push(treeNode);
@@ -174,12 +176,14 @@ export default class Parser {
       const newStateNumber = newParseStack.at(-1);
 
       const newTreeStack = status.treeStack.slice();
+      const treeNodeChildren =
+        rhsl === 0
+          ? [{ symbol: LAMBDA_SIGN, children: null, isLambda: true }]
+          : newTreeStack.splice(-rhsl);
       const treeNode: ParseTreeNode = {
         symbol: lhs,
-        children:
-          rhsl === 0
-            ? [{ symbol: LAMBDA_SIGN, children: null }]
-            : newTreeStack.splice(-rhsl),
+        children: treeNodeChildren,
+        isLambda: false,
       };
       newTreeStack.push(treeNode);
 

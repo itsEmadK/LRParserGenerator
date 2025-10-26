@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import LR1DFA from '../parse-logic/lr1dfa';
-import StateGraph from './StateGraph';
+import LR1DFA from '../parser/0-lr1dfa';
+import StateGraph from './0-StateGraph';
 import styles from '../styles/automata-section.module.css';
 import State from './State';
 

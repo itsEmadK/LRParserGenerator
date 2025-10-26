@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from '../styles/grammar-input-section.module.css';
-import Production from '../parse-logic/prod';
+import Production from '../parser/0-prod';
 
 export default function GrammarInputSection({ onSubmit, initialRules }) {
   const [input, setInput] = useState(initialRules);

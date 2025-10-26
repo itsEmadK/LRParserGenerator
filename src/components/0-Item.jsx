@@ -1,4 +1,4 @@
-import LRItem from '../parse-logic/lritem';
+import LRItem from '../parser/0-lritem';
 import styles from '../styles/item.module.css';
 /**
  *

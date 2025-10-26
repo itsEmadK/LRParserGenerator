@@ -1,6 +1,6 @@
 import styles from '../styles/state.module.css';
-import LRState from '../parse-logic/lrstate.js';
-import Item from './Item.jsx';
+import LRState from '../parser/0-lrstate.js';
+import Item from './Item.js';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 

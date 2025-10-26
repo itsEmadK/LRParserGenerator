@@ -1,5 +1,5 @@
 import styles from '../styles/state-graph.module.css';
-import LRState from '../parse-logic/lrstate';
+import LRState from '../parser/0-lrstate';
 import State from './State';
 import { Fragment, useState } from 'react';
 

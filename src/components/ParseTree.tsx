@@ -1,4 +1,6 @@
 import React from 'react';
+import type { ParseTreeNode } from '../parser/parser';
+import styles from '../styles/parser-section.module.css';
 
 const NODE_WIDTH = 30;
 const NODE_HEIGHT = NODE_WIDTH;
@@ -10,7 +12,7 @@ const VERTICAL_SPACING = 60;
  * Recursive function to calculate subtree width.
  * This is needed for positioning children.
  */
-function calculateSubtreeWidth(node) {
+function calculateSubtreeWidth(node: ParseTreeNode): number {
   if (!node.children || node.children.length === 0) {
     return NODE_WIDTH;
   }
@@ -23,7 +25,7 @@ function calculateSubtreeWidth(node) {
   );
 }
 
-function calculateMaxDepth(node) {
+function calculateMaxDepth(node: ParseTreeNode): number {
   if (!node.children || node.children.length === 0) {
     return 1;
   }
@@ -32,14 +34,13 @@ function calculateMaxDepth(node) {
   );
 }
 
-/**
- * Recursive component to render each tree node and its children
- * @param {Object} props
- * @param {Object} props.node - The tree node {symbol, children}
- * @param {number} props.x - x position of the node's center
- * @param {number} props.y - y position of the node's top
- */
-function TreeNodeSVG({ node, x, y, hideLambdaNodes }) {
+type TreeNodeSVGProps = {
+  node: ParseTreeNode;
+  x: number;
+  y: number;
+  hideLambdaNodes: boolean;
+};
+function TreeNodeSVG({ node, x, y, hideLambdaNodes }: TreeNodeSVGProps) {
   if (node.isLambda && hideLambdaNodes) {
     return null;
   }
@@ -117,15 +118,15 @@ function TreeNodeSVG({ node, x, y, hideLambdaNodes }) {
     </>
   );
 }
-/**
- * The main component to render the full forest (treeStack)
- * @param {{ treeStack: array }} props
- */
+
+type ParseTreeProps = {
+  treeStack: ParseTreeNode[];
+  hideLambdaNodes: boolean;
+};
 export default function ParseTree({
   treeStack,
-  parseTreeClassName,
   hideLambdaNodes,
-}) {
+}: ParseTreeProps) {
   // Calculate total width for all trees side-by-side
   const forestWidth =
     treeStack.reduce((sum, tree) => sum + calculateSubtreeWidth(tree), 0) +
@@ -141,7 +142,7 @@ export default function ParseTree({
 
   return (
     <svg
-      className={parseTreeClassName}
+      className={styles['parse-tree']}
       width={forestWidth + 40}
       height={forestHeight}
     >

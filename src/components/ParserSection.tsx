@@ -5,6 +5,7 @@ import {
   useParserStatus,
 } from '../contexts/AppContext';
 import styles from '../styles/parser-section.module.css';
+import ParseTree from './ParseTree';
 
 export default function ParserSection() {
   const api = useAppApi();
@@ -89,7 +90,7 @@ export default function ParserSection() {
             <p>{parserStatus.errorCode}</p>
           </div>
         )}
-        {/* <div
+        <div
           className={
             styles['parse-tree-container'] +
             (parserStatus.treeStack.length === 0
@@ -100,14 +101,13 @@ export default function ParserSection() {
           <h4>Parse tree:</h4>
           {parserStatus.treeStack.length > 0 ? (
             <ParseTree
-              parseTreeClassName={styles['parse-tree']}
               hideLambdaNodes={false}
               treeStack={parserStatus.treeStack}
             />
           ) : (
             <p>No trees yet.</p>
           )}
-        </div> */}
+        </div>
       </div>
     </section>
   );
