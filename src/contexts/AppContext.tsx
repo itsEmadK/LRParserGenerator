@@ -214,6 +214,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       progress,
       nextToken,
       stateNumber: 1,
+      treeStack: [],
     };
   }
 

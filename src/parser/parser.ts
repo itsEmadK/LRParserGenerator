@@ -1,6 +1,7 @@
 import type { NumberedProduction } from '../grammar/grammar';
 import type ParseTable from './parse-table';
 import type { GotoAction, ReduceAction, ShiftAction } from '../util/types';
+import { LAMBDA_SIGN } from '../components/GrammarInfoSection';
 
 type LrTable = {
   [productionNumber: number]: {
@@ -9,11 +10,17 @@ type LrTable = {
   };
 };
 
+type ParseTreeNode = {
+  symbol: string;
+  children: ParseTreeNode[] | null;
+};
+
 export type ParserBaseStatus = {
   dotPosition: number;
   tokenStream: string[];
   parseStack: number[];
   errorCode?: ParserErrorCodes;
+  treeStack: ParseTreeNode[];
 };
 type ParserDerivedStatus = {
   stateNumber: number;
@@ -57,6 +64,7 @@ export default class Parser {
         dotPosition: 0,
         parseStack: [1],
         tokenStream: tokenStream,
+        treeStack: [],
       };
     } else {
       status = tokenStreamOrParserStatus;
@@ -85,6 +93,7 @@ export default class Parser {
         dotPosition: 0,
         parseStack: [1],
         tokenStream: statusOrTokenStream,
+        treeStack: [],
       };
     } else {
       status = statusOrTokenStream;
@@ -136,12 +145,19 @@ export default class Parser {
         shiftAction.destination,
       ];
       const newDotPosition = status.dotPosition + 1;
+      const treeNode: ParseTreeNode = {
+        children: null,
+        symbol: nextToken,
+      };
+      const newTreeStack = status.treeStack.slice();
+      newTreeStack.push(treeNode);
 
       status = {
         ...status,
         parseStack: newParseStack,
         dotPosition: newDotPosition,
         errorCode: undefined,
+        treeStack: newTreeStack,
       };
     } else if (
       this.parseTableAnalyzer.isReduce(currentStateNumber, nextToken)
@@ -157,16 +173,28 @@ export default class Parser {
       }
       const newStateNumber = newParseStack.at(-1);
 
+      const newTreeStack = status.treeStack.slice();
+      const treeNode: ParseTreeNode = {
+        symbol: lhs,
+        children:
+          rhsl === 0
+            ? [{ symbol: LAMBDA_SIGN, children: null }]
+            : newTreeStack.splice(-rhsl),
+      };
+      newTreeStack.push(treeNode);
+
       if (!newStateNumber) {
         status = {
           ...status,
           errorCode: ParserErrorCodes.EMPTY_PARSE_STACK_AFTER_REDUCING,
+          treeStack: newTreeStack,
         };
       } else {
         if (!this.parseTableAnalyzer.isGoto(newStateNumber, lhs)) {
           status = {
             ...status,
             errorCode: ParserErrorCodes.NO_WHERE_TO_GOTO,
+            treeStack: newTreeStack,
           };
         } else {
           const gotoAction = this.parseTableAnalyzer.get(
@@ -179,6 +207,7 @@ export default class Parser {
           status = {
             ...status,
             parseStack: newParseStack,
+            treeStack: newTreeStack,
             errorCode: undefined,
           };
         }

@@ -11,8 +11,8 @@ import styles from '../styles/grammar-info-section.module.css';
 
 const CHECKMARK = '✔';
 const CROSS = '✖';
-const SPACED_ARROW = ' -> ';
-const LAMBDA_SIGN = 'λ';
+export const SPACED_ARROW = ' -> ';
+export const LAMBDA_SIGN = 'λ';
 
 type ProductionsTableProps = {
   productions: NumberedProduction[];
