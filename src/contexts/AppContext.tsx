@@ -303,7 +303,10 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         ...state,
         input: action.newInput,
         parserStatus: createInitialParserStatus(
-          action.newInput.split(' ')
+          action.newInput
+            .trim()
+            .split(' ')
+            .filter((token) => token.length > 0)
         ),
       };
     }
