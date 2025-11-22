@@ -21,6 +21,10 @@ This web application was developed to make learning the process of bottom-up par
 - **Automata Visualization**: Visualize DFA states and transitions.
 - **Parsing Simulation**: Step through the parsing process or run it entirely to see the parse tree and stack changes.
 
+## Live Demo
+
+A live demo of the LR Parser Generator is available [here](https://itsemadk.github.io/LRParserGenerator/). This demo allows you to explore the application's features without needing to install it locally. You can input grammars, generate parse tables, and visualize parsing processes directly in your browser.
+
 ## Technologies Used
 
 - **Frontend**: React, TypeScript
