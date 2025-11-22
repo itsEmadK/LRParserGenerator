@@ -63,7 +63,7 @@ src/
 - Node.js (>= 16.x)
 - npm (>= 8.x)
 
-### Installation
+### Local Installation
 
 1. Clone the repository:
    ```bash
@@ -74,24 +74,11 @@ src/
    ```bash
    npm install
    ```
-
-### Development
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Open your browser and navigate to `http://localhost:5173`.
-
-### Build
-
-To create a production build:
-
-```bash
-npm run build
-```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   Open your browser and navigate to `http://localhost:5173`.
 
 ## Usage
 
