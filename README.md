@@ -51,7 +51,7 @@ src/
   dfa/              # DFA generation and related logic
   grammar/          # Grammar analysis and production handling
   hooks/            # Custom React hooks
-  parser/           # Parsing logic (LL(1), LR(1), etc.)
+  parser/           # Parsing logic (LALR(1), LR(1), etc.)
   styles/           # CSS Modules for styling
   util/             # Utility functions and initial data
 ```
