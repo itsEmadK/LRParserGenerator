@@ -16,10 +16,12 @@
   margin-bottom: 2rem;
   align-items: center;
 }
+
 .parser-type-container h3 {
   margin-left: 0.5rem;
   font-weight: 600;
 }
+
 .parser-type-container select {
   font-size: 1rem;
   font-weight: 600;
@@ -31,7 +33,7 @@
 }
 
 .accept {
-  background-color: rgb(154, 248, 154);
+  background-color: rgb(154, 248, 154) !important;
   font-weight: bold;
 }
 
@@ -39,4 +41,55 @@
   .tables {
     font-size: 1.25rem;
   }
+}
+
+.display-inline {
+  display: inline-block !important;
+}
+
+.optimization-btn {
+  margin: 10px;
+  float: right !important;
+  background-color: rgb(50, 195, 50);
+  color: white;
+  appearance: none;
+  border: none;
+  border-radius: 4px;
+  align-self: stretch;
+  font-weight: bold;
+  min-width: 140px;
+}
+
+.optimization-btn:hover {
+  background-color: rgb(30, 175, 30);
+}
+
+.optimization-btn:active {
+  background-color: rgb(39, 138, 39);
+}
+
+.shift_reduce {
+  background-color: rgb(11, 200, 224) !important;
+}
+
+.table-override td {
+  position: relative;
+  min-width: 38px;
+
+  padding: 0;
+}
+
+.input-override {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  text-align: center;
+  box-sizing: border-box;
+  background: transparent;
+  font-size: 1rem;
 }

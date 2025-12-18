@@ -13,6 +13,11 @@ export default function PageHeader() {
             Semnan University
           </p>
           <p>
+            Forked and modified by{' '}
+            <a className={styles['name']} href='https://navidpy.ir/'>Navid Nematzadeh</a> at
+            Semnan University
+          </p>
+          <p>
             Inspired by{' '}
             <a href="https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/">
               Princeton University&apos;s LL1 Parser Visualizer
