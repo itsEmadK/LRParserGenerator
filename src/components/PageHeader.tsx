@@ -18,7 +18,10 @@ export default function PageHeader() {
           </p>
           <p>
             Inspired by{' '}
-            <a href="https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/">
+            <a
+              href="https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/"
+              target="blank"
+            >
               Princeton University&apos;s LL1 Parser Visualizer
             </a>
           </p>
