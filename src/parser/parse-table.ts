@@ -34,13 +34,7 @@ export default class ParseTable {
   }
 
   hasConflict() {
-    Object.keys(this._table).forEach((stateNumber) => {
-      Object.keys(this._table[+stateNumber]).forEach((symbol) => {
-        if (this.isConflict(+stateNumber, symbol)) {
-          return true;
-        }
-      });
-    });
+    return this.conflicts.length > 0;
   }
 
   isConflict(stateNumber: number, symbol: string): boolean {
