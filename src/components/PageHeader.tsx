@@ -9,8 +9,12 @@ export default function PageHeader() {
           <h3>Enter your context-free grammar to generate the parser</h3>
           <p>
             Created by{' '}
-            <span className={styles['name']}>Emad Kheyroddin</span> at
-            Semnan University
+            <span className={styles['name']}>
+              <a href="https://github.com/itsEmadK" target="blank">
+                Emad Kheyroddin
+              </a>
+            </span>{' '}
+            at Semnan University
           </p>
           <p>
             Inspired by{' '}
