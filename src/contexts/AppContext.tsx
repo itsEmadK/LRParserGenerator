@@ -158,6 +158,34 @@ export const useDfa = () => {
 export const useInput = () => {
   return useContext(AppDataContext)!.input;
 };
+export const useCompatibleParserTypes: () => Array<ParserType> = () => {
+  const state = useContext(AppDataContext);
+  const parseTableGenerator = new ParseTableGenerator(
+    state!.grammar,
+    state!.grammarAnalyzer,
+    state!.dfa
+  );
+  const lr0ParseTable = parseTableGenerator.generate('lr0');
+  const slr1ParseTable = parseTableGenerator.generate('slr1');
+  const lalr1ParseTable = parseTableGenerator.generate('lalr1');
+  const lr1ParseTable = parseTableGenerator.generate('lr1');
+
+  const compatibles: Array<ParserType> = [];
+  if (!lr0ParseTable.hasConflict()) {
+    compatibles.push('lr0');
+  }
+  if (!slr1ParseTable.hasConflict()) {
+    compatibles.push('slr1');
+  }
+  if (!lalr1ParseTable.hasConflict()) {
+    compatibles.push('lalr1');
+  }
+  if (!lr1ParseTable.hasConflict()) {
+    compatibles.push('lr1');
+  }
+
+  return compatibles;
+};
 
 export default function AppProvider({
   children,
