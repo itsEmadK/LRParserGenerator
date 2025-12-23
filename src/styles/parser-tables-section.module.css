@@ -40,3 +40,25 @@
     font-size: 1.25rem;
   }
 }
+
+.optimization-btn {
+  margin: 10px;
+  float: right !important;
+  background-color: rgb(0, 145, 255);
+  color: white;
+  appearance: none;
+  border: none;
+  border-radius: 4px;
+  align-self: stretch;
+  font-weight: bold;
+  min-width: 140px;
+}
+
+.optimization-btn:hover {
+  background-color: rgb(0, 60, 255);
+}
+
+.optimization-btn:active {
+  background-color: rgb(36, 151, 239);
+  color: white !important;
+}

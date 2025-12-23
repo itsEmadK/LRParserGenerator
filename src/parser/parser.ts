@@ -31,11 +31,11 @@ type ParserDerivedStatus = {
 };
 
 export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
-
+export type ParserHistory = ParserStatus;
 export default class Parser {
   private _lrTable: LrTable = {};
   readonly parseTableAnalyzer: ParseTable;
-
+  public history: ParserHistory[] = [];
   constructor(
     parseTableAnalyzer: ParseTable,
     productions: Iterable<NumberedProduction>
@@ -229,15 +229,17 @@ export default class Parser {
       0,
       '•'
     );
-    return {
-      ...status,
-      progress,
-      isAccepted,
-      stateNumber: newStateNumber,
-      nextToken: isAccepted ? undefined : newNextToken,
-    };
+    const parserStatus: ParserStatus = { ...status, progress, isAccepted, stateNumber: newStateNumber, nextToken: isAccepted ? undefined : newNextToken };
+    const last = this.history[this.history.length - 1];
+    if (!last || last.stateNumber !== parserStatus.stateNumber || last.dotPosition !== parserStatus.dotPosition) {
+      this.history.push(parserStatus);
+    } return parserStatus;
   }
-
+  back(): ParserStatus | undefined {
+    if (this.history.length <= 1) return undefined;
+    this.history.pop();
+    return this.history[this.history.length - 1];
+  }
   get lrTable(): Readonly<LrTable> {
     return this._lrTable;
   }
