@@ -9,6 +9,7 @@ import {
   useParseTable,
   useProductions,
   useTerminals,
+  useIsOptimization,
 } from '../contexts/AppContext';
 import type ParseTable from '../parser/parse-table';
 import type { ChangeEvent } from 'react';
@@ -38,13 +39,19 @@ export default function ParserTablesSection() {
   const endMarker = useEndMarker();
   const parserType = useParserType();
   const api = useAppApi();
-
+  const is_optimization = useIsOptimization();
   function handleParserTypeChange(e: ChangeEvent<HTMLSelectElement>) {
     api!.updateParserType(e.target.value.toLowerCase() as ParserType);
   }
+  const handleParserTablesOptimization = () => {
+    api?.ParserTablesOptimization();
+  };
   return (
     <section className={styles['parser-tables']}>
       <h2>Parser Tables:</h2>
+      <button className={styles['optimization-btn']} onClick={handleParserTablesOptimization}>
+        {is_optimization ? 'Normal' : 'Optimization'}
+      </button>
       <div className={styles['parser-type-container']}>
         <h3>Parser Type:</h3>
         <select value={parserType} onChange={handleParserTypeChange}>
@@ -167,6 +174,9 @@ function TableCell({ parseTableCell }: TableCellProps) {
       }
       case 'reduce': {
         return 'R' + action.ruleNumber;
+      }
+      case 'shift_reduce': {
+        return 'SR' + action.destination;
       }
     }
   }

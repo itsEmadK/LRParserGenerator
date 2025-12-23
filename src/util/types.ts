@@ -8,6 +8,7 @@ export type Action =
   | ReduceAction
   | GotoAction
   | ShiftAction
+  | ShiftReduceAction
   | AcceptAction;
 
 export type ReduceAction = {
@@ -24,4 +25,8 @@ export type GotoAction = {
 };
 export type AcceptAction = {
   type: 'accept';
+};
+export type ShiftReduceAction = {
+  type: 'shift_reduce';
+  destination: number;
 };

@@ -3,14 +3,19 @@ import {
   useAppApi,
   useInput,
   useParserStatus,
+  useParseTable,
+  useProductions,
 } from '../contexts/AppContext';
 import styles from '../styles/parser-section.module.css';
 import ParseTree from './ParseTree';
+import parserTemplate from '../parser/parser_download.py?raw';
 
 export default function ParserSection() {
   const api = useAppApi();
   const parserStatus = useParserStatus();
   const input = useInput();
+  const parseTable = useParseTable();
+  const productions = useProductions();
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     api?.updateTokenStream(e.target.value);
   };
@@ -23,10 +28,43 @@ export default function ParserSection() {
   const handleReset = () => {
     api?.resetParser();
   };
-
+  const handleBack = () => {
+    api?.backParser();
+  };
+  const downloadFile = () => {
+    const blob = new Blob([parserTemplate], { type: 'text/x-python' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parser.py';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const downloadJson = () => {
+    var data = {
+      parseTable: { ...parseTable },
+      productions: [...productions]
+    };
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      { type: 'application/json' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parse-table.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   return (
     <section className={styles['parser']}>
       <h2>Parsing:</h2>
+      <button onClick={() => downloadFile()} className={styles['export']}>
+        Export Python File
+      </button>
+      <button onClick={() => downloadJson()} className={styles['export']}>
+        Export Json File
+      </button>
       <div className={styles['input']}>
         <label>
           <h4> Token stream separated by spaces:</h4>
@@ -35,6 +73,9 @@ export default function ParserSection() {
         <div className={styles['buttons']}>
           <button onClick={handleStep} className={styles['step']}>
             Step
+          </button>
+          <button onClick={handleBack} className={styles['back']}>
+            Back
           </button>
           <button onClick={handleRun} className={styles['run']}>
             Run

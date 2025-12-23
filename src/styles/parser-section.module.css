@@ -180,3 +180,16 @@ section.parser h2 {
     font-size: 1.3rem;
   }
 }
+.back{
+  background-color: purple;
+  color: white;
+}
+button{
+  border-radius: 20px !important;
+}
+button:hover{
+  opacity: 0.5;
+}
+button:active{
+  color: yellow;
+}
