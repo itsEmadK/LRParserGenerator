@@ -180,3 +180,21 @@ section.parser h2 {
     font-size: 1.3rem;
   }
 }
+.div-btn{
+  text-align: center;
+  gap: 5px;
+}
+.downloadJson{
+  margin-right: 10px;
+}
+.back{
+  background-color: rgb(253, 165, 63);
+}
+.div-btn button{
+  background-color: rgb(13, 117, 135);
+  color: white;
+  border-radius: 20px;
+}
+.div-btn button:hover{
+  background-color: rgb(16, 104, 23);
+}
