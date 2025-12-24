@@ -35,7 +35,7 @@ export const initialParseTableGenerator = new ParseTableGenerator(
 export const initialParseTable =
   initialParseTableGenerator.generate(initialParserType);
 export const initialParser = new Parser(
-  initialParseTable,
+  initialParseTable,{},
   initialGrammar.productions
 );
 

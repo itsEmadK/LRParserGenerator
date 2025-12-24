@@ -3,14 +3,19 @@ import {
   useAppApi,
   useInput,
   useParserStatus,
+  useProductions,
+  useParseTable,
 } from '../contexts/AppContext';
 import styles from '../styles/parser-section.module.css';
 import ParseTree from './ParseTree';
+import parserTemplate from '../parser/pa-temp.py?raw';
 
 export default function ParserSection() {
   const api = useAppApi();
   const parserStatus = useParserStatus();
   const input = useInput();
+  const productions = useProductions();
+  const parseTable = useParseTable();
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     api?.updateTokenStream(e.target.value);
   };
@@ -23,7 +28,34 @@ export default function ParserSection() {
   const handleReset = () => {
     api?.resetParser();
   };
-
+  const handleBack = () => {
+    api?.backParser();
+  };
+  const downloadJson = () => {
+    var data = {
+      parseTable: { ...parseTable },
+      productions: [...productions]
+    };
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      { type: 'application/json' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parse-table.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const downloadPythonFile = () => {
+    const blob = new Blob([parserTemplate], { type: 'text/x-python' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parser.py';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   return (
     <section className={styles['parser']}>
       <h2>Parsing:</h2>
@@ -35,6 +67,9 @@ export default function ParserSection() {
         <div className={styles['buttons']}>
           <button onClick={handleStep} className={styles['step']}>
             Step
+          </button>
+          <button onClick={handleBack} className={styles['back']}>
+            Back
           </button>
           <button onClick={handleRun} className={styles['run']}>
             Run
@@ -61,6 +96,15 @@ export default function ParserSection() {
             className={styles['progress']}
           />
         </div>
+        <div className={styles['div-btn']}>
+          <button onClick={downloadJson} className={styles['downloadJson']}>
+            Parse Table (JSON)
+          </button>
+
+          <button onClick={downloadPythonFile} className={styles['downloadPythonFile']}>
+            LR Parser (Python)
+          </button>
+        </div>
         <div className={styles['flex']}>
           <div className={styles['current-state-container']}>
             <h4>Current state:</h4>
@@ -73,8 +117,8 @@ export default function ParserSection() {
               {parserStatus.isAccepted
                 ? 'Accept'
                 : parserStatus.parseStack[
-                    parserStatus.parseStack.length - 1
-                  ]}
+                parserStatus.parseStack.length - 1
+                ]}
             </div>
           </div>
           <div className={styles['next-token-container']}>
