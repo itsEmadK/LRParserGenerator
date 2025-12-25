@@ -180,3 +180,11 @@ section.parser h2 {
     font-size: 1.3rem;
   }
 }
+
+.back-step {
+  background-color: rgb(255, 193, 7);
+  max-width: 60px;
+  border-radius: 10px;
+  border: 1px solid yellow;
+  color: white;
+}

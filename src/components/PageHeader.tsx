@@ -9,7 +9,9 @@ export default function PageHeader() {
           <h3>Enter your context-free grammar to generate the parser</h3>
           <p>
             Created by{' '}
-            <span className={styles['name']}>Emad Kheyroddin</span> at
+            <span className={styles['name']}>Emad Kheyroddin</span>
+            {' '}— Modified by{' '}
+            <span className={styles['name']}>Behrad Farzmahdi & Arian Soori</span> at
             Semnan University
           </p>
           <p>
