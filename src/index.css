@@ -6,6 +6,29 @@
   box-sizing: border-box;
   font-family: jbmono;
 }
+/* html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+} */
+:root {
+  --bg: #f8fafc;
+  --card: rgba(255, 255, 255, 0.75);
+  --text: #0f172a;
+  --accent: #f8fafc;
+  --border-radius:black;
+  --btn-color:rgb(31, 155, 31);
+  --color-table:#41644A;
+}
+
+[data-theme='dark'] {
+  --bg: #132545;
+  --card: rgba(30, 41, 59, 0.6);
+  --text: #e5e7eb;
+  --accent: rgba(0,0,0,0.5);
+  --btn-color: rgb(31, 155, 31);
+  --color-table: linear-gradient(135deg, var(--accent), rgba(99, 102, 241, 0.6));
+}
 
 body {
   display: grid;

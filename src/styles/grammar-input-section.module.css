@@ -11,59 +11,119 @@ section.grammar {
 
 .heading {
   grid-area: heading;
-  font-weight: 600;
-  font-size: 1.75rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 20px;
+  color: var(--text);
+  position: relative;
+  top: 1.5rem;
+  left: 5rem;
+}
+
+.grammar {
+  margin-top: 48px;
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--bg);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  color: var(--text);
 }
 
 .grammar-box {
   grid-area: input;
-  padding: 0.5rem 0.25rem;
+  padding: 2rem 2rem;
   font-size: 1.25rem;
-  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
   height: max-content;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  outline: none;
+  resize: vertical;
+  border-radius: 16px;
+  background: var(--accent);
+  color: var(--text);
+  box-shadow: 6px 5px 2px rgba(0, 0, 0, 0.25);
+  position: relative;
+  left: 4rem;
+  top: 4rem;
 }
+
 .grammar-box:focus {
   outline: none;
-  border: 2px solid black;
-  border-radius: var(--border-radius) var(--border-radius) 0px 0px;
+  border-radius: 16px;
+  box-shadow: 4px 3px 2px rgba(0, 0, 0, 0.25);
 }
+
 .instructions {
   grid-area: instructions;
+  margin-bottom: 2rem;
+  position: relative;
+  bottom: 3rem;
+  left: 1rem;
+  font-weight: 700;
+  border-left: 2px solid var(--text);
+  border-radius: 2px;
+  padding-left: 30px;
 }
 
 .instructions ul {
   list-style-position: inside;
   padding: 0.75rem 1rem;
+  padding-left: 20px;
 }
-.instructions ul > li {
+
+.instructions ul>li {
   max-width: 55ch;
   line-height: 1.5;
   margin-bottom: 0.75rem;
 }
 
 .instructions h3 {
-  font-weight: 600;
+  font-weight: 800;
+  margin-top: 0px;
+  color: var(--text);
+}
+
+.instructions li {
+  line-height: 1.6;
 }
 
 .grammar-box-container {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.heading,
+.instructions,
+.instructions h3,
+.instructions li {
+  color: var(--grammar-text);
 }
 
 .gen-btn {
-  background-color: rgb(31, 155, 31);
+  background-color: var(--btn-color);
   color: white;
   font-weight: 700;
+  position: relative;
+  left: 4rem;
+  top: 5em;
   font-size: 1rem;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   border-radius: 0px 0px var(--border-radius) var(--border-radius);
+  padding: 15px 22px;
+  border-radius: 999px;
   border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .gen-btn:hover {
   background-color: rgb(24, 140, 24);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(99, 102, 241, 0.45);
 }
+
 .gen-btn:active {
   background-color: rgb(18, 120, 18);
 }
@@ -74,12 +134,15 @@ section.grammar {
     grid-template-columns: 1fr;
     grid-template-areas: 'heading' 'input' 'instructions';
   }
+
   .grammar-box {
     font-size: 2rem;
   }
+
   .gen-btn {
     font-size: 2rem;
   }
+
   .instructions {
     font-size: 1.25rem;
   }
