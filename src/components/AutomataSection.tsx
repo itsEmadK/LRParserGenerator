@@ -7,7 +7,7 @@ export default function AutomataSection() {
 
   return (
     <section className={styles['automata']}>
-      <h2>Handle Finding Automata States:</h2>
+      <h2>Handle Finding Automata States</h2>
       {/* <ul className={styles['tips']}>
         <li>
           * Click on a circle to scroll into its corresponding state.
