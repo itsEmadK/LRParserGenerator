@@ -180,3 +180,7 @@ section.parser h2 {
     font-size: 1.3rem;
   }
 }
+.btns button{
+  margin: 4px;
+  border-radius: 5px;
+}
