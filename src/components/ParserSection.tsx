@@ -200,41 +200,67 @@ export default function ParserSection() {
                 </svg>
               </button>
             </div>
-            <p>
-              You can download the parse table as a JSON file or the Python LR parser script.
-              The parse table contains all the information the parser needs, and the parser code is fixed.
-            </p>
+           <p>
+            You can download the parse table as a JSON file or the C++ LR parser source code.
+            The parse table contains all the information the parser needs, and the parser implementation is fixed.
+          </p>
 
-            <p>
-              To run the downloaded Python parser, open a terminal and run:
-            </p>
+          <p>
+            <strong>Step 1:</strong> Download the generated files (<code>parser.cpp</code> and
+            <code> parse-table.json</code>) and place them in the same directory on your system.
+          </p>
 
-            <div className={styles['box-command']}>
-              <pre>
-                python parser.py parse-table.json "{input.slice(0, -2)}"
-              </pre>
-              <button onClick={copyCommand} className={styles['copy-command']}>
-                Copy
-              </button>
-            </div>
-            <p>or with override table:</p>
-            <div className={styles['box-command']}>
-              <pre>
-                python parser.py parse-table.json "{input.slice(0, -2)}" override.json
-              </pre>
-              <button onClick={copyCommandOverride} className={styles['copy-command']}>
-                Copy
-              </button>
-            </div>
-            <p>
-              Make sure you have Python installed on your system.
-              Replace <code>"{input.slice(0, -2)}"</code> with your own sequence of tokens.
-            </p>
+          <p>
+            <strong>Step 2:</strong> Open a terminal (Command Prompt, PowerShell, or Terminal)
+            in that directory and compile the C++ parser using a C++ compiler.
+          </p>
 
-            <p>
-              If the input is valid according to the grammar, you will see <strong>Input Accepted</strong>.
-              If there is a syntax error, the parser will display the current state, unexpected token, and its position.
-            </p>
+          <div className={styles['box-command']}>
+            <pre>
+              g++ parser.cpp -o parser
+            </pre>
+            <button onClick={copyCommand} className={styles['copy-command']}>
+              Copy
+            </button>
+          </div>
+                      
+          <p>
+            <strong>Step 3:</strong> After successful compilation, run the generated executable
+            and provide the parse table and input tokens as arguments.
+          </p>
+                      
+          <div className={styles['box-command']}>
+            <pre>
+              ./parser parse-table.json "{input.slice(0, -2)}"
+            </pre>
+            <button onClick={copyCommand} className={styles['copy-command']}>
+              Copy
+            </button>
+          </div>
+                      
+          <p>or with override table:</p>
+                      
+          <div className={styles['box-command']}>
+            <pre>
+              ./parser parse-table.json "{input.slice(0, -2)}" override.json
+            </pre>
+            <button onClick={copyCommandOverride} className={styles['copy-command']}>
+              Copy
+            </button>
+          </div>
+                      
+          <p>
+            Make sure you have a C++ compiler (such as <code>g++</code>) installed on your system.
+            Replace <code>"{input.slice(0, -2)}"</code> with your own sequence of tokens.
+          </p>
+                      
+          <p>
+            If the input is valid according to the grammar, you will see <strong>Input Accepted</strong>.
+            If there is a syntax error, the parser will display the current state, unexpected token,
+            and its position.
+          </p>
+
+
             <br />
             <h5>Download Options:</h5>
             <div className={styles['modal-buttons']}>
