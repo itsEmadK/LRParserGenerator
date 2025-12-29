@@ -36,7 +36,8 @@ export const initialParseTable =
   initialParseTableGenerator.generate(initialParserType);
 export const initialParser = new Parser(
   initialParseTable,
-  initialGrammar.productions
+  {},
+  initialGrammar.productions,
 );
 
 export const initialEndMarker = '$';

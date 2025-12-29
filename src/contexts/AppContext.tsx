@@ -43,6 +43,8 @@ type AppData = {
   parserStatus: ParserStatus;
   parserType: ParserType;
   endMarker: string;
+  is_optimization: boolean,
+  parseTableOverride: Object
 };
 
 type AppApi = {
@@ -51,13 +53,20 @@ type AppApi = {
     newStartSymbol: string
   ) => void;
   stepParser: (previousStatus?: ParserBaseStatus) => void;
+  backParser: (previousStatus?: ParserBaseStatus) => void;
   parse: (previousStatus?: ParserBaseStatus) => void;
   resetParser: () => void;
+  ParserTablesOptimization: () => void;
   updateTokenStream: (newInput: string) => void;
   updateParserType: (newType: ParserType) => void;
+  updateParserOverride: (state: any, symbol: any, action: any) => void;
 };
 type ParserStepAction = {
   type: 'step';
+  previousStatus?: ParserBaseStatus;
+};
+type ParserBackAction = {
+  type: 'back';
   previousStatus?: ParserBaseStatus;
 };
 type ParserParseAction = {
@@ -80,13 +89,24 @@ type UpdateTokenStreamAction = {
   type: 'updateTokenStream';
   newInput: string;
 };
-
+type updateParserOverride = {
+  type: 'updateParserOverride';
+  state: any,
+  symbol: any,
+  action: any
+};
+type ParserTablesOptimization = {
+  type: 'ParserTablesOptimization';
+};
 type ReducerAction =
   | ParserStepAction
+  | ParserBackAction
   | ParserParseAction
   | ParserResetAction
   | GrammarUpdateAction
   | ParserTypeUpdateAction
+  | ParserTablesOptimization
+  | updateParserOverride
   | UpdateTokenStreamAction;
 
 const initialData: AppData = {
@@ -101,6 +121,8 @@ const initialData: AppData = {
   parserStatus: initialParserStatus,
   parserType: initialParserType,
   endMarker: initialEndMarker,
+  is_optimization: false,
+  parseTableOverride: {},
 };
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -115,6 +137,9 @@ export const useTerminals = () => {
 };
 export const useNonTerminals = () => {
   return useContext(AppDataContext)!.grammar.nonTerminals;
+};
+export const useStartSymbol = () => {
+  return useContext(AppDataContext)!.grammar.startSymbol;
 };
 export const useFirst = (nonTerminal: string) => {
   return useContext(AppDataContext)!.grammarAnalyzer.getFirst(nonTerminal);
@@ -135,6 +160,9 @@ export const useParserStatus = () => {
 export const useParseTable = () => {
   return useContext(AppDataContext)!.parseTable;
 };
+export const useParserOverride = () => {
+  return useContext(AppDataContext)!.parseTableOverride;
+};
 export const useParserType = () => {
   return useContext(AppDataContext)!.parserType;
 };
@@ -143,6 +171,9 @@ export const useLrTable = () => {
 };
 export const useEndMarker = () => {
   return useContext(AppDataContext)!.endMarker;
+};
+export const useIsOptimization = () => {
+  return useContext(AppDataContext)!.is_optimization;
 };
 export const useStateOutwardTransitions = (stateNumber: number) => {
   const { dfa } = useContext(AppDataContext)!;
@@ -158,34 +189,7 @@ export const useDfa = () => {
 export const useInput = () => {
   return useContext(AppDataContext)!.input;
 };
-export const useCompatibleParserTypes: () => Array<ParserType> = () => {
-  const state = useContext(AppDataContext);
-  const parseTableGenerator = new ParseTableGenerator(
-    state!.grammar,
-    state!.grammarAnalyzer,
-    state!.dfa
-  );
-  const lr0ParseTable = parseTableGenerator.generate('lr0');
-  const slr1ParseTable = parseTableGenerator.generate('slr1');
-  const lalr1ParseTable = parseTableGenerator.generate('lalr1');
-  const lr1ParseTable = parseTableGenerator.generate('lr1');
 
-  const compatibles: Array<ParserType> = [];
-  if (!lr0ParseTable.hasConflict()) {
-    compatibles.push('lr0');
-  }
-  if (!slr1ParseTable.hasConflict()) {
-    compatibles.push('slr1');
-  }
-  if (!lalr1ParseTable.hasConflict()) {
-    compatibles.push('lalr1');
-  }
-  if (!lr1ParseTable.hasConflict()) {
-    compatibles.push('lr1');
-  }
-
-  return compatibles;
-};
 
 export default function AppProvider({
   children,
@@ -205,6 +209,9 @@ export default function AppProvider({
       stepParser(previousStatus?) {
         dispatch({ type: 'step', previousStatus });
       },
+      backParser(previousStatus?) {
+        dispatch({ type: 'back', previousStatus });
+      },
       updateGrammarProductions(newProductions, newStartSymbol) {
         dispatch({
           type: 'updateGrammarProductions',
@@ -215,8 +222,14 @@ export default function AppProvider({
       updateParserType(newParserType) {
         dispatch({ type: 'updateParserType', newParserType });
       },
+      ParserTablesOptimization() {
+        dispatch({ type: 'ParserTablesOptimization' });
+      },
       updateTokenStream(newStream) {
         dispatch({ type: 'updateTokenStream', newInput: newStream });
+      },
+      updateParserOverride(state: any, symbol: any, action: any) {
+        dispatch({ type: 'updateParserOverride', state, symbol, action });
       },
     };
   }, []);
@@ -234,6 +247,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
     const progress = tokenStream.slice();
     progress.splice(0, 0, '•');
     const nextToken = tokenStream[0];
+    state.parser.history = [];
     return {
       dotPosition: 0,
       isAccepted: false,
@@ -261,6 +275,19 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       const newParserStatus = state.parser.step(state.parserStatus);
       return { ...state, parserStatus: newParserStatus };
     }
+    case 'back': {
+      const previousParserStatus = state.parser.back();
+      if (previousParserStatus) {
+        return previousParserStatus
+          ? { ...state, parserStatus: previousParserStatus }
+          : state;
+      } else {
+        return {
+          ...state,
+          parserStatus: createInitialParserStatus(state.input.split(' ')),
+        };
+      }
+    }
     case 'updateGrammarProductions': {
       const newGrammar = new Grammar(
         action.newProductions,
@@ -283,7 +310,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       const newParseTable = newParseTableGenerator.generate(
         state.parserType
       );
-      const newParser = new Parser(newParseTable, newGrammar.productions);
+      const newParser = new Parser(newParseTable, {}, newGrammar.productions);
       return {
         ...state,
         dfa: newDfa,
@@ -294,6 +321,56 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         parseTable: newParseTable,
         parserStatus: createInitialParserStatus(state.input.split(' ')),
         parseTableGenerator: newParseTableGenerator,
+        is_optimization: false,
+        parseTableOverride: {}
+      };
+    }
+    case 'updateParserOverride': {
+      var overrideTable: any = state.parseTableOverride
+      if (!action.action) {
+        if (overrideTable[action.state]) {
+          delete overrideTable[action.state][action.symbol];
+          if (Object.keys(overrideTable[action.state]).length === 0) delete overrideTable[action.state];
+          return {
+            ...state,
+            parseTableOverride: overrideTable
+          };
+        } else {
+          return {
+            ...state,
+            parseTableOverride: overrideTable
+          };
+        }
+      }
+      overrideTable[action.state] ??= {};
+      overrideTable[action.state][action.symbol] = action.action;
+      const newDfaGenerator = new DfaGenerator(
+        state.grammar,
+        state.endMarker
+      );
+      const newDfa = newDfaGenerator.generate(state.parserType);
+      const newParseTableGenerator = new ParseTableGenerator(
+        state.grammar,
+        state.grammarAnalyzer,
+        newDfa
+      );
+      const newParseTable = newParseTableGenerator.generate(
+        state.parserType
+      );
+      const newParser = new Parser(
+        newParseTable,
+        overrideTable,
+        state.grammar.productions
+      );
+      return {
+        ...state,
+        dfa: newDfa,
+        dfaGenerator: newDfaGenerator,
+        parserStatus: createInitialParserStatus(state.input.split(' ')),
+        parser: newParser,
+        parseTable: newParseTable,
+        parseTableGenerator: newParseTableGenerator,
+        parseTableOverride: overrideTable
       };
     }
     case 'updateParserType': {
@@ -312,9 +389,10 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       );
       const newParser = new Parser(
         newParseTable,
+        {},
         state.grammar.productions
       );
-
+      
       return {
         ...state,
         dfa: newDfa,
@@ -324,6 +402,78 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         parseTable: newParseTable,
         parserType: action.newParserType,
         parseTableGenerator: newParseTableGenerator,
+        is_optimization: false,
+        parseTableOverride: {}
+      };
+    }
+    case 'ParserTablesOptimization': {
+      const newDfaGenerator = new DfaGenerator(
+        state.grammar,
+        state.endMarker
+      );
+      const newDfa = newDfaGenerator.generate(state.parserType);
+      const newParseTableGenerator = new ParseTableGenerator(
+        state.grammar,
+        state.grammarAnalyzer,
+        newDfa
+      );
+      var newParseTable = newParseTableGenerator.generate(
+        state.parserType
+      ).table;
+      //  && state.parserType == 'lalr1'
+      if (!state.is_optimization) {
+        for (const _ in newParseTable) {
+          for (const row in newParseTable) {
+            var is_all_reduce = true
+            var num_reduce = 0
+            for (const cell in newParseTable[row]) {
+              const action: any = newParseTable[row][cell];
+              if (!action) continue;
+              num_reduce = action.ruleNumber
+              if (action.type != 'reduce') {
+                is_all_reduce = false
+                break
+              }
+            }
+            var has_goto;
+            if (is_all_reduce) {
+              has_goto = false
+              for (const row_in in newParseTable) {
+                for (const cell_in in newParseTable[row_in]) {
+                  const action_in: any = newParseTable[row_in][cell_in];
+                  if (!action_in) continue;
+                  if (action_in.type == 'goto') {
+                    if (action_in.destination == row) {
+                      has_goto = true
+                      break
+                    }
+                  }
+                }
+              }
+              if (has_goto == false) {
+                delete newParseTable[row];
+                for (const row_SR in newParseTable) {
+                  for (const cell_SR in newParseTable[row_SR]) {
+                    var action_SR: any = newParseTable[row_SR][cell_SR];
+                    if (!action_SR) continue;
+                    if (action_SR.type == 'shift') {
+                      if (action_SR.destination == row) {
+                        action_SR.type = 'shift_reduce'
+                        action_SR.destination = num_reduce
+                      }
+                    }
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
+      }
+      return {
+        ...state,
+        parseTable: new ParseTable(newParseTable),
+        is_optimization: !state.is_optimization,
       };
     }
     case 'updateTokenStream': {
