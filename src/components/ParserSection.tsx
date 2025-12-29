@@ -17,6 +17,9 @@ export default function ParserSection() {
   const handleStep = () => {
     api?.stepParser();
   };
+  const Support_back = () => {
+    api?.back_parser_table();
+  };
   const handleRun = () => {
     api?.parse();
   };
@@ -98,6 +101,9 @@ export default function ParserSection() {
               : '')
           }
         >
+           <button onClick={Support_back} className={styles['back-button']}>
+            Back
+          </button>
           <h4>Parse tree:</h4>
           {parserStatus.treeStack.length > 0 ? (
             <ParseTree

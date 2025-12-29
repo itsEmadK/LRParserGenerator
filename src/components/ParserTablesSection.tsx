@@ -9,6 +9,7 @@ import {
   useParseTable,
   useProductions,
   useTerminals,
+  useIsOptimize,
 } from '../contexts/AppContext';
 import type ParseTable from '../parser/parse-table';
 import type { ChangeEvent } from 'react';
@@ -33,6 +34,7 @@ type TableCellProps = {
 export default function ParserTablesSection() {
   const productions = useProductions();
   const terminals = useTerminals();
+  const is_optimize = useIsOptimize();
   const nonTerminals = useNonTerminals();
   const parseTable = useParseTable();
   const endMarker = useEndMarker();
@@ -42,9 +44,15 @@ export default function ParserTablesSection() {
   function handleParserTypeChange(e: ChangeEvent<HTMLSelectElement>) {
     api!.updateParserType(e.target.value.toLowerCase() as ParserType);
   }
+  const OptimizeHandleParserTables = () => {
+    api?.OptimizeParserTables();
+  };
   return (
     <section className={styles['parser-tables']}>
       <h2>Parser Tables:</h2>
+      <button className={styles['optimization-btn']} onClick={OptimizeHandleParserTables}>
+      {is_optimize ? 'Normal' : 'Optimization'}
+      </button>
       <div className={styles['parser-type-container']}>
         <h3>Parser Type:</h3>
         <select value={parserType} onChange={handleParserTypeChange}>
@@ -167,6 +175,9 @@ function TableCell({ parseTableCell }: TableCellProps) {
       }
       case 'reduce': {
         return 'R' + action.ruleNumber;
+      }
+      case 'shift_reduce': {
+        return 'SR' + action.destination;
       }
     }
   }
