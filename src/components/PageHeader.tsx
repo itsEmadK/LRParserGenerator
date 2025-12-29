@@ -9,19 +9,17 @@ export default function PageHeader() {
           <h3>Enter your context-free grammar to generate the parser</h3>
           <p>
             Created by{' '}
-            <span className={styles['name']}>
-              <a href="https://github.com/itsEmadK" target="blank">
-                Emad Kheyroddin
-              </a>
-            </span>{' '}
-            at Semnan University
+            <span className={styles['name']}>Emad Kheyroddin</span> at
+            Semnan University
+          </p>
+          <p>
+            Forked and modified by{' '}
+            <a className={styles['name']}>Hesam Peyvandi & Amirali Perej</a> at
+            Semnan University
           </p>
           <p>
             Inspired by{' '}
-            <a
-              href="https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/"
-              target="blank"
-            >
+            <a href="https://www.cs.princeton.edu/courses/archive/spring20/cos320/LL1/">
               Princeton University&apos;s LL1 Parser Visualizer
             </a>
           </p>

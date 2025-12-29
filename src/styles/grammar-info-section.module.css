@@ -1,13 +1,49 @@
+/* ===============================
+   Color Palette (Shared)
+================================ */
+:root {
+  --dark-blue: #213555;
+  --mid-blue: #3E5879;
+  --beige: #D8C4B6;
+  --off-white: #F5EFE7;
+}
+
+/* ===============================
+   Section Heading
+================================ */
 .heading {
   font-weight: 600;
   font-size: 1.75rem;
   margin-bottom: 2rem;
+  color: var(--dark-blue);
 }
 
+/* ===============================
+   Tables Container
+================================ */
 .tables {
   display: flex;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
   gap: 3rem;
   flex-wrap: wrap;
+
+  background-color: var(--off-white);
+  padding: 2rem;
+  border-radius: 16px;
 }
+
+/* Optional: subtle separation line */
+.tables::before {
+  content: "";
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--mid-blue),
+    transparent
+  );
+  margin-bottom: 2rem;
+}
+
