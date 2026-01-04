@@ -73,8 +73,8 @@ export default function ParserSection() {
               {parserStatus.isAccepted
                 ? 'Accept'
                 : parserStatus.parseStack[
-                    parserStatus.parseStack.length - 1
-                  ]}
+                parserStatus.parseStack.length - 1
+                ]}
             </div>
           </div>
           <div className={styles['next-token-container']}>
@@ -107,6 +107,29 @@ export default function ParserSection() {
           ) : (
             <p>No trees yet.</p>
           )}
+        </div>
+      </div>
+      <div className={styles['history-container']} style={{ marginTop: '20px' }}>
+        <h4>Parse History:</h4>
+        <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
+          <table style={{ width: '100%', textAlign: 'left', fontSize: '14px' }}>
+            <thead>
+              <tr>
+                <th>Step</th>
+                <th>Stack</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {parserStatus.history?.map((entry, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>[{entry.stack.join(', ')}]</td>
+                  <td>{entry.actionTaken}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>

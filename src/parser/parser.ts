@@ -10,6 +10,13 @@ type LrTable = {
   };
 };
 
+export type ParseHistoryEntry = {
+  stack: number[];
+  dotPosition: number;
+  actionTaken: string;
+  errorCode?: string;
+};
+
 export type ParseTreeNode = {
   symbol: string;
   children: ParseTreeNode[] | null;
@@ -30,7 +37,9 @@ type ParserDerivedStatus = {
   isAccepted: boolean;
 };
 
-export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
+export type ParserStatus = ParserBaseStatus & ParserDerivedStatus & {
+  history?: ParseHistoryEntry[];
+};
 
 export default class Parser {
   private _lrTable: LrTable = {};
@@ -71,18 +80,28 @@ export default class Parser {
       status = tokenStreamOrParserStatus;
     }
 
-    let newStatus;
+    const history: ParseHistoryEntry[] = [];
+    let newStatus: ParserStatus;
+    let currentInput: ParserBaseStatus = status;
+    
     while (true) {
-      newStatus = this.step(newStatus || status);
+      newStatus = this.step(currentInput);
+      history.push({
+      stack: [...newStatus.parseStack],
+      dotPosition: newStatus.dotPosition,
+      actionTaken: newStatus.isAccepted ? 'Accept' : (newStatus.errorCode ? 'Error' : 'Step'),
+      errorCode: newStatus.errorCode
+      });
       if (newStatus.isAccepted) {
         break;
       }
       if (newStatus.errorCode) {
         break;
       }
+      currentInput = newStatus;
     }
-
-    return newStatus;
+    console.log("Parse History:", history);
+    return {...newStatus,history,};
   }
 
   step(tokenStream: string[]): ParserStatus;
@@ -229,12 +248,20 @@ export default class Parser {
       0,
       '•'
     );
+    const currentHistoryEntry: ParseHistoryEntry = {
+    stack: [...status.parseStack],
+    dotPosition: status.dotPosition,
+    actionTaken: isAccepted ? 'Accept' : (status.errorCode ? 'Error' : 'Step'),
+    errorCode: status.errorCode,
+    };
+
     return {
-      ...status,
-      progress,
-      isAccepted,
-      stateNumber: newStateNumber,
-      nextToken: isAccepted ? undefined : newNextToken,
+    ...status,
+    progress,
+    isAccepted,
+    stateNumber: newStateNumber,
+    nextToken: isAccepted ? undefined : newNextToken,
+    history: [currentHistoryEntry] 
     };
   }
 
