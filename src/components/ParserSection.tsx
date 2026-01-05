@@ -1,21 +1,39 @@
-import { type ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import {
   useAppApi,
   useInput,
   useParserStatus,
+  useParseTable,
+  useTerminals,
+  useNonTerminals,
+  useProductions,
+  useStartSymbol,
+  useParserOverride,
 } from '../contexts/AppContext';
 import styles from '../styles/parser-section.module.css';
 import ParseTree from './ParseTree';
+import parserTemplate from '../parser/parser_template.py?raw';
 
 export default function ParserSection() {
   const api = useAppApi();
   const parserStatus = useParserStatus();
+  const parseTable = useParseTable();
+  const terminals = useTerminals();
+  const nonTerminals = useNonTerminals();
+  const startSymbol = useStartSymbol();
+  const productions = useProductions();
+  const ParserOverride = useParserOverride();
   const input = useInput();
+  const [showModal, setShowModal] = useState(false);
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     api?.updateTokenStream(e.target.value);
   };
   const handleStep = () => {
     api?.stepParser();
+  };
+  const handleBack = () => {
+
+    api?.backParser();
   };
   const handleRun = () => {
     api?.parse();
@@ -23,10 +41,68 @@ export default function ParserSection() {
   const handleReset = () => {
     api?.resetParser();
   };
+  const downloadJson = () => {
+    var data = {
+      startSymbol: startSymbol,
+      terminals: [...terminals],
+      nonTerminals: [...nonTerminals],
+      parseTable: { ...parseTable },
+      productions: [...productions]
+    };
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      { type: 'application/json' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parse-table.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const downloadJsonOverride = () => {
+    var data = { ...ParserOverride };
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      { type: 'application/json' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'override.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const downloadPythonFile = () => {
+    const blob = new Blob([parserTemplate], { type: 'text/x-python' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parser.py';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const copyCommand = () => {
+    navigator.clipboard.writeText(`python parser.py parse-table.json "${input.slice(0, -2)}"`)
+  };
+  const copyCommandOverride = () => {
+    navigator.clipboard.writeText(`python parser.py parse-table.json "${input.slice(0, -2)}" override.json`)
+  };
 
   return (
     <section className={styles['parser']}>
-      <h2>Parsing:</h2>
+      <h2 className={styles['display-inline']}>Parsing:</h2>
+              <button onClick={downloadJson}>
+                Parse Table (JSON)
+              </button>
+
+              <button onClick={downloadPythonFile}>
+                LR Parser (Python)
+              </button>
+
+              <button onClick={downloadJsonOverride}>
+                Override Table (JSON)
+              </button>
       <div className={styles['input']}>
         <label>
           <h4> Token stream separated by spaces:</h4>
@@ -35,6 +111,9 @@ export default function ParserSection() {
         <div className={styles['buttons']}>
           <button onClick={handleStep} className={styles['step']}>
             Step
+          </button>
+          <button onClick={handleBack} className={styles['back']}>
+            Back
           </button>
           <button onClick={handleRun} className={styles['run']}>
             Run
@@ -107,29 +186,6 @@ export default function ParserSection() {
           ) : (
             <p>No trees yet.</p>
           )}
-        </div>
-      </div>
-      <div className={styles['history-container']} style={{ marginTop: '20px' }}>
-        <h4>Parse History:</h4>
-        <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
-          <table style={{ width: '100%', textAlign: 'left', fontSize: '14px' }}>
-            <thead>
-              <tr>
-                <th>Step</th>
-                <th>Stack</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {parserStatus.history?.map((entry, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>[{entry.stack.join(', ')}]</td>
-                  <td>{entry.actionTaken}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
     </section>

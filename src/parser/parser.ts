@@ -10,13 +10,6 @@ type LrTable = {
   };
 };
 
-export type ParseHistoryEntry = {
-  stack: number[];
-  dotPosition: number;
-  actionTaken: string;
-  errorCode?: string;
-};
-
 export type ParseTreeNode = {
   symbol: string;
   children: ParseTreeNode[] | null;
@@ -36,20 +29,27 @@ type ParserDerivedStatus = {
   nextToken?: string;
   isAccepted: boolean;
 };
-
-export type ParserStatus = ParserBaseStatus & ParserDerivedStatus & {
-  history?: ParseHistoryEntry[];
+type ParseTableOverride = {
+  [state: number]: {
+    [symbol: string]: any;
+  };
 };
+export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
+
+export type ParserStepHistoryItem = ParserStatus;
 
 export default class Parser {
   private _lrTable: LrTable = {};
   readonly parseTableAnalyzer: ParseTable;
-
+  readonly parseTableOverrideAnalyzer: ParseTableOverride;
+  public history: ParserStepHistoryItem[] = [];
   constructor(
     parseTableAnalyzer: ParseTable,
-    productions: Iterable<NumberedProduction>
+    parseTableOverrideAnalyzer: ParseTableOverride,
+    productions: Iterable<NumberedProduction>,
   ) {
     this.parseTableAnalyzer = parseTableAnalyzer;
+    this.parseTableOverrideAnalyzer = parseTableOverrideAnalyzer;
     this.constructLrTable(productions);
   }
 
@@ -80,28 +80,18 @@ export default class Parser {
       status = tokenStreamOrParserStatus;
     }
 
-    const history: ParseHistoryEntry[] = [];
-    let newStatus: ParserStatus;
-    let currentInput: ParserBaseStatus = status;
-    
+    let newStatus;
     while (true) {
-      newStatus = this.step(currentInput);
-      history.push({
-      stack: [...newStatus.parseStack],
-      dotPosition: newStatus.dotPosition,
-      actionTaken: newStatus.isAccepted ? 'Accept' : (newStatus.errorCode ? 'Error' : 'Step'),
-      errorCode: newStatus.errorCode
-      });
+      newStatus = this.step(newStatus || status);
       if (newStatus.isAccepted) {
         break;
       }
       if (newStatus.errorCode) {
         break;
       }
-      currentInput = newStatus;
     }
-    console.log("Parse History:", history);
-    return {...newStatus,history,};
+
+    return newStatus;
   }
 
   step(tokenStream: string[]): ParserStatus;
@@ -133,6 +123,117 @@ export default class Parser {
         errorCode: ParserErrorCodes.NO_MORE_TOKENS,
       };
     } else if (
+      this.parseTableOverrideAnalyzer?.[currentStateNumber]?.[nextToken]
+    ) {
+      const overrideAction =
+        this.parseTableOverrideAnalyzer[currentStateNumber][nextToken];
+
+      if (overrideAction.type === 'accept') {
+        status = {
+          ...status,
+          errorCode: undefined,
+        };
+
+      } else if (overrideAction.type === 'shift') {
+        const newParseStack = [
+          ...status.parseStack,
+          overrideAction.destination,
+        ];
+
+        const treeNode: ParseTreeNode = {
+          symbol: nextToken,
+          children: null,
+          isLambda: false,
+        };
+
+        const newTreeStack = status.treeStack.slice();
+        newTreeStack.push(treeNode);
+
+        status = {
+          ...status,
+          parseStack: newParseStack,
+          dotPosition: status.dotPosition + 1,
+          treeStack: newTreeStack,
+          errorCode: undefined,
+        };
+
+      } else if (overrideAction.type === 'reduce') {
+        const { lhs, rhsl } = this._lrTable[overrideAction.ruleNumber];
+
+        const newParseStack = status.parseStack.slice();
+        if (rhsl > 0) {
+          newParseStack.splice(-rhsl);
+        }
+
+        const newStateNumber = newParseStack.at(-1);
+
+        const newTreeStack = status.treeStack.slice();
+        const treeNodeChildren =
+          rhsl === 0
+            ? [{ symbol: LAMBDA_SIGN, children: null, isLambda: true }]
+            : newTreeStack.splice(-rhsl);
+
+        const treeNode: ParseTreeNode = {
+          symbol: lhs,
+          children: treeNodeChildren,
+          isLambda: false,
+        };
+
+        newTreeStack.push(treeNode);
+
+        if (!newStateNumber) {
+          status = {
+            ...status,
+            errorCode: ParserErrorCodes.EMPTY_PARSE_STACK_AFTER_REDUCING,
+            treeStack: newTreeStack,
+          };
+        } else if (!this.parseTableAnalyzer.isGoto(newStateNumber, lhs)) {
+          status = {
+            ...status,
+            errorCode: ParserErrorCodes.NO_WHERE_TO_GOTO,
+            treeStack: newTreeStack,
+          };
+        } else {
+          const gotoAction = this.parseTableAnalyzer.get(
+            newStateNumber,
+            lhs
+          ) as GotoAction;
+
+          newParseStack.push(gotoAction.destination);
+
+          status = {
+            ...status,
+            parseStack: newParseStack,
+            treeStack: newTreeStack,
+            errorCode: undefined,
+          };
+        }
+
+      } else if (overrideAction.type === 'shift_reduce') {
+        const newParseStack = [
+          ...status.parseStack,
+          overrideAction.destination,
+        ];
+
+        const treeNode: ParseTreeNode = {
+          symbol: nextToken,
+          children: null,
+          isLambda: false,
+        };
+
+        const newTreeStack = status.treeStack.slice();
+        newTreeStack.push(treeNode);
+
+        status = {
+          ...status,
+          parseStack: newParseStack,
+          dotPosition: status.dotPosition + 1,
+          treeStack: newTreeStack,
+          errorCode: undefined,
+        };
+      }
+    }
+    else if (
       this.parseTableAnalyzer.isError(currentStateNumber, nextToken)
     ) {
       status = {
@@ -248,23 +349,18 @@ export default class Parser {
       0,
       '•'
     );
-    const currentHistoryEntry: ParseHistoryEntry = {
-    stack: [...status.parseStack],
-    dotPosition: status.dotPosition,
-    actionTaken: isAccepted ? 'Accept' : (status.errorCode ? 'Error' : 'Step'),
-    errorCode: status.errorCode,
-    };
-
-    return {
-    ...status,
-    progress,
-    isAccepted,
-    stateNumber: newStateNumber,
-    nextToken: isAccepted ? undefined : newNextToken,
-    history: [currentHistoryEntry] 
-    };
+    const parserStatus: ParserStatus = { ...status, progress, isAccepted, stateNumber: newStateNumber, nextToken: isAccepted ? undefined : newNextToken };
+    const last = this.history[this.history.length - 1];
+    if (!last || last.stateNumber !== parserStatus.stateNumber || last.dotPosition !== parserStatus.dotPosition) {
+      this.history.push(parserStatus);
+    } return parserStatus;
   }
 
+  back(): ParserStatus | undefined {
+    if (this.history.length <= 1) return undefined;
+    this.history.pop();
+    return this.history[this.history.length - 1];
+  }
   get lrTable(): Readonly<LrTable> {
     return this._lrTable;
   }
