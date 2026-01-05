@@ -12,7 +12,7 @@ import {
 } from '../contexts/AppContext';
 import styles from '../styles/parser-section.module.css';
 import ParseTree from './ParseTree';
-import parserTemplate from '../parser/parser_template.py?raw';
+import parserTemplate from '../parser/temp-parser.py?raw';
 
 export default function ParserSection() {
   const api = useAppApi();
