@@ -16,6 +16,12 @@ export type ParseTreeNode = {
   isLambda: boolean;
 };
 
+type ParseTableOverride = {
+  [state: number]: {
+    [symbol: string]: any;
+  };
+};
+
 export type ParserBaseStatus = {
   dotPosition: number;
   tokenStream: string[];
@@ -29,11 +35,7 @@ type ParserDerivedStatus = {
   nextToken?: string;
   isAccepted: boolean;
 };
-type ParseTableOverride = {
-  [state: number]: {
-    [symbol: string]: any;
-  };
-};
+
 export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
 
 export type ParserStepHistoryItem = ParserStatus;
