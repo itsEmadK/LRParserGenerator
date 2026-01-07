@@ -52,10 +52,21 @@ export default function GrammarInputSection() {
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const productions = input
-      .split('\n')
-      .map((str) => Production.fromString(str));
-    api?.updateGrammarProductions(productions, productions[0].lhs);
+    try {
+      const productions = input
+        .split('\n')
+        .filter((str) => str.trim().length > 0)
+        .map((str) => Production.fromString(str.trim()));
+      
+      if (productions.length === 0) {
+        alert('Please enter at least one production rule.');
+        return;
+      }
+      
+      api?.updateGrammarProductions(productions, productions[0].lhs);
+    } catch (error) {
+      alert(`Error parsing grammar: ${error instanceof Error ? error.message : String(error)}\n\nPlease check the format:\n- Use "->" to separate LHS and RHS\n- Separate symbols with spaces\n- One rule per line`);
+    }
   };
 
   return (

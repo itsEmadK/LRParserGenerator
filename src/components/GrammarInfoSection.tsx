@@ -1,5 +1,4 @@
 import {
-  useCompatibleParserTypes,
   useFirst,
   useFollow,
   useIsNullable,
@@ -9,7 +8,6 @@ import {
 } from '../contexts/AppContext';
 import type { NumberedProduction } from '../grammar/grammar';
 import styles from '../styles/grammar-info-section.module.css';
-import type { ParserType } from '../util/types';
 
 const CHECKMARK = '✔';
 const CROSS = '✖';
@@ -28,9 +26,6 @@ type NonTerminalsTableProps = {
 type TerminalsTableProps = {
   terminals: string[];
 };
-type CompatibilityTableProps = {
-  compatibles: ParserType[];
-};
 
 export default function GrammarInfoSection() {
   const productions = useProductions();
@@ -39,7 +34,6 @@ export default function GrammarInfoSection() {
   const getFirst = useFirst;
   const getFollow = useFollow;
   const isNullable = useIsNullable;
-  const compatibleTypes = useCompatibleParserTypes();
 
   return (
     <section className={styles['grammar-info-section']}>
@@ -53,7 +47,6 @@ export default function GrammarInfoSection() {
           isNullable={isNullable}
           nonTerminals={[...nonTerminals]}
         />
-        <CompatibilityTable compatibles={compatibleTypes} />
       </div>
     </section>
   );
@@ -138,34 +131,6 @@ function TerminalsTable({ terminals }: TerminalsTableProps) {
         {terminals.map((terminal, index) => (
           <tr key={index}>
             <td>{terminal}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function CompatibilityTable({ compatibles }: CompatibilityTableProps) {
-  return (
-    <table className={styles['compatibles']}>
-      <thead>
-        <tr>
-          <th colSpan={2}>Compatibility</th>
-        </tr>
-        <tr>
-          <th>Parser</th>
-          <th>Supported</th>
-        </tr>
-      </thead>
-      <tbody>
-        {['lr0', 'slr1', 'lalr1', 'lr1'].map((parserType) => (
-          <tr key={parserType}>
-            <td>{parserType.toUpperCase()}</td>
-            <td>
-              {compatibles.includes(parserType as ParserType)
-                ? CHECKMARK
-                : CROSS}
-            </td>
           </tr>
         ))}
       </tbody>
