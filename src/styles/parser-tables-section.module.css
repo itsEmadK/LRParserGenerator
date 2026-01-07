@@ -26,6 +26,68 @@
   padding: 0.25rem;
 }
 
+.optimize-button {
+  appearance: none;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: rgb(70, 188, 221);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.optimize-button:hover {
+  background-color: rgb(57, 171, 202);
+}
+
+.optimize-button:active {
+  background-color: rgb(34, 155, 188);
+}
+
+.optimization-info {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: rgb(240, 248, 255);
+  border: 2px solid rgb(70, 188, 221);
+  border-radius: 4px;
+}
+
+.optimization-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: rgb(34, 155, 188);
+  font-size: 1.1rem;
+}
+
+.optimization-info p {
+  margin: 0.5rem 0;
+  font-weight: 500;
+}
+
+.optimization-info details {
+  margin-top: 0.5rem;
+}
+
+.optimization-info summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: rgb(34, 155, 188);
+  margin-bottom: 0.5rem;
+}
+
+.optimization-info ul {
+  margin: 0.5rem 0 0 1.5rem;
+  padding: 0;
+}
+
+.optimization-info li {
+  margin: 0.25rem 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
 .conflict {
   background-color: rgb(249, 153, 153);
 }

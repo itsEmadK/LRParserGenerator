@@ -3,6 +3,7 @@ import Grammar from '../grammar/grammar';
 import GrammarAnalyzer from '../grammar/grammar-analyzer';
 import ParseTableGenerator from '../parser/parse-table-generator';
 import Parser from '../parser/parser';
+import type { ParserStatus } from '../parser/parser';
 import Production from '../grammar/production';
 
 export const END_MARKER = '$';
@@ -42,6 +43,18 @@ export const initialParser = new Parser(
 export const initialEndMarker = '$';
 export const initialInput = ['id', '+', 'id', '*', 'id', '$'].join(' ');
 
-export const initialParserStatus = initialParser.parse(
-  initialInput.split(' ')
-);
+// Create initial parser status without parsing (to avoid pre-parsing)
+const initialTokenStream = initialInput.split(' ');
+const initialProgress = initialTokenStream.slice();
+initialProgress.splice(0, 0, '•');
+const initialNextToken = initialTokenStream[0];
+export const initialParserStatus: ParserStatus = {
+  dotPosition: 0,
+  isAccepted: false,
+  parseStack: [1],
+  tokenStream: initialTokenStream,
+  progress: initialProgress,
+  nextToken: initialNextToken,
+  stateNumber: 1,
+  treeStack: [],
+};

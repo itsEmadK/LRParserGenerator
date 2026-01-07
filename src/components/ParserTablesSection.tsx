@@ -5,6 +5,7 @@ import {
   useAppApi,
   useEndMarker,
   useNonTerminals,
+  useOptimizationResult,
   useParserType,
   useParseTable,
   useProductions,
@@ -37,11 +38,24 @@ export default function ParserTablesSection() {
   const parseTable = useParseTable();
   const endMarker = useEndMarker();
   const parserType = useParserType();
+  const optimizationResult = useOptimizationResult();
   const api = useAppApi();
 
   function handleParserTypeChange(e: ChangeEvent<HTMLSelectElement>) {
     api!.updateParserType(e.target.value.toLowerCase() as ParserType);
   }
+
+  function handleOptimize() {
+    api!.optimizeParseTable();
+  }
+
+  const displayTable = optimizationResult?.optimizedTable || parseTable;
+  const originalStateCount = Object.keys(parseTable.table).length;
+  const optimizedStateCount = optimizationResult 
+    ? Object.keys(optimizationResult.optimizedTable.table).length 
+    : originalStateCount;
+  const removedCount = originalStateCount - optimizedStateCount;
+
   return (
     <section className={styles['parser-tables']}>
       <h2>Parser Tables:</h2>
@@ -53,10 +67,35 @@ export default function ParserTablesSection() {
           <option value="lalr1">LALR1</option>
           <option value="lr1">LR1</option>
         </select>
+        <button 
+          onClick={handleOptimize} 
+          className={styles['optimize-button']}
+        >
+          Optimize Table
+        </button>
       </div>
+      {optimizationResult && (
+        <div className={styles['optimization-info']}>
+          <h4>Optimization Results:</h4>
+          <p>
+            Original states: {originalStateCount} → Optimized: {optimizedStateCount} 
+            ({removedCount} redundant {removedCount === 1 ? 'state' : 'states'} removed)
+          </p>
+          {optimizationResult.removedStates.length > 0 && (
+            <details>
+              <summary>State Mapping (removed → kept)</summary>
+              <ul>
+                {Array.from(optimizationResult.stateMapping.entries()).map(([removed, kept]) => (
+                  <li key={removed}>State {removed} → State {kept}</li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      )}
       <div className={styles['tables']}>
         <LrParseTable
-          parseTable={parseTable}
+          parseTable={displayTable}
           endMarker={endMarker}
           parserType={parserType}
           nonTerminals={[...nonTerminals]}

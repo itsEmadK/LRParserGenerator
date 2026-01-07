@@ -3,13 +3,16 @@ import {
   useAppApi,
   useInput,
   useParserStatus,
+  useParsingHistory,
 } from '../contexts/AppContext';
 import styles from '../styles/parser-section.module.css';
 import ParseTree from './ParseTree';
+import ParsingHistory from './ParsingHistory';
 
 export default function ParserSection() {
   const api = useAppApi();
   const parserStatus = useParserStatus();
+  const parsingHistory = useParsingHistory();
   const input = useInput();
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     api?.updateTokenStream(e.target.value);
@@ -22,6 +25,9 @@ export default function ParserSection() {
   };
   const handleReset = () => {
     api?.resetParser();
+  };
+  const handleUndo = () => {
+    api?.undoParser();
   };
 
   return (
@@ -38,6 +44,13 @@ export default function ParserSection() {
           </button>
           <button onClick={handleRun} className={styles['run']}>
             Run
+          </button>
+          <button 
+            onClick={handleUndo} 
+            className={styles['undo']}
+            disabled={parsingHistory.length === 0}
+          >
+            Undo
           </button>
           <button onClick={handleReset} className={styles['reset']}>
             Reset
@@ -108,6 +121,7 @@ export default function ParserSection() {
             <p>No trees yet.</p>
           )}
         </div>
+        <ParsingHistory history={parsingHistory} />
       </div>
     </section>
   );
