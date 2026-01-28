@@ -29,19 +29,27 @@ type ParserDerivedStatus = {
   nextToken?: string;
   isAccepted: boolean;
 };
+type ParseTableOverride = {
+  [state: number]: {
+    [symbol: string]: any;
+  };
+};
 
 export type ParserStatus = ParserBaseStatus & ParserDerivedStatus;
 export type ParserHistory = ParserStatus;
 export default class Parser {
   private _lrTable: LrTable = {};
+  readonly parseTableOverrideAnalyzer: ParseTableOverride;
   readonly parseTableAnalyzer: ParseTable;
   public history: ParserHistory[] = [];
   constructor(
     parseTableAnalyzer: ParseTable,
+    parseTableOverrideAnalyzer: ParseTableOverride,
     productions: Iterable<NumberedProduction>
   ) {
     this.parseTableAnalyzer = parseTableAnalyzer;
     this.constructLrTable(productions);
+    this.parseTableOverrideAnalyzer = parseTableOverrideAnalyzer
   }
 
   private constructLrTable(productions: Iterable<NumberedProduction>) {
@@ -114,6 +122,118 @@ export default class Parser {
         errorCode: ParserErrorCodes.NO_MORE_TOKENS,
       };
     } else if (
+      this.parseTableOverrideAnalyzer?.[currentStateNumber]?.[nextToken]
+    ) {
+      const overrideAction =
+        this.parseTableOverrideAnalyzer[currentStateNumber][nextToken];
+
+      if (overrideAction.type === 'accept') {
+        status = {
+          ...status,
+          errorCode: undefined,
+        };
+
+      } else if (overrideAction.type === 'shift') {
+        const newParseStack = [
+          ...status.parseStack,
+          overrideAction.destination,
+        ];
+
+        const treeNode: ParseTreeNode = {
+          symbol: nextToken,
+          children: null,
+          isLambda: false,
+        };
+
+        const newTreeStack = status.treeStack.slice();
+        newTreeStack.push(treeNode);
+
+        status = {
+          ...status,
+          parseStack: newParseStack,
+          dotPosition: status.dotPosition + 1,
+          treeStack: newTreeStack,
+          errorCode: undefined,
+        };
+
+      } else if (overrideAction.type === 'reduce') {
+        const { lhs, rhsl } = this._lrTable[overrideAction.ruleNumber];
+
+        const newParseStack = status.parseStack.slice();
+        if (rhsl > 0) {
+          newParseStack.splice(-rhsl);
+        }
+
+        const newStateNumber = newParseStack.at(-1);
+
+        const newTreeStack = status.treeStack.slice();
+        const treeNodeChildren =
+          rhsl === 0
+            ? [{ symbol: LAMBDA_SIGN, children: null, isLambda: true }]
+            : newTreeStack.splice(-rhsl);
+
+        const treeNode: ParseTreeNode = {
+          symbol: lhs,
+          children: treeNodeChildren,
+          isLambda: false,
+        };
+
+        newTreeStack.push(treeNode);
+
+        if (!newStateNumber) {
+          status = {
+            ...status,
+            errorCode: ParserErrorCodes.EMPTY_PARSE_STACK_AFTER_REDUCING,
+            treeStack: newTreeStack,
+          };
+        } else if (!this.parseTableAnalyzer.isGoto(newStateNumber, lhs)) {
+          status = {
+            ...status,
+            errorCode: ParserErrorCodes.NO_WHERE_TO_GOTO,
+            treeStack: newTreeStack,
+          };
+        } else {
+          const gotoAction = this.parseTableAnalyzer.get(
+            newStateNumber,
+            lhs
+          ) as GotoAction;
+
+          newParseStack.push(gotoAction.destination);
+
+          status = {
+            ...status,
+            parseStack: newParseStack,
+            treeStack: newTreeStack,
+            errorCode: undefined,
+          };
+        }
+
+      } else if (overrideAction.type === 'shift_reduce') {
+        
+        const newParseStack = [
+          ...status.parseStack,
+          overrideAction.destination,
+        ];
+
+        const treeNode: ParseTreeNode = {
+          symbol: nextToken,
+          children: null,
+          isLambda: false,
+        };
+
+        const newTreeStack = status.treeStack.slice();
+        newTreeStack.push(treeNode);
+
+        status = {
+          ...status,
+          parseStack: newParseStack,
+          dotPosition: status.dotPosition + 1,
+          treeStack: newTreeStack,
+          errorCode: undefined,
+        };
+      }
+    }
+    else if (
       this.parseTableAnalyzer.isError(currentStateNumber, nextToken)
     ) {
       status = {

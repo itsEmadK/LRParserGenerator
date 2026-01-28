@@ -51,6 +51,7 @@ section.parser h2 {
 .input .run {
   background-color: rgb(50, 195, 50);
 }
+
 .input .run:hover {
   background-color: rgb(50, 171, 50);
 }
@@ -187,4 +188,63 @@ section.parser h2 {
   border-radius: 10px;
   border: 1px solid yellow;
   color: white;
+}
+
+.display-inline {
+  display: inline-block !important;
+}
+
+.export {
+  float: right !important;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px !important;
+  line-height: 25px;
+  text-align: justify;
+}
+
+.modal-buttons {
+  display: inline-flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+.header-modal{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.close {
+  float: right;
+  background:none;
+  border: none;
+  padding: 5px;
+}
+
+.modal pre {
+  background: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px 0 0 5px;
+  font-family: monospace;
+  width: 100%;
+  font-size: 14px;
+}
+
+.box-command {
+  display: flex;
+  margin: 10px 0;
 }

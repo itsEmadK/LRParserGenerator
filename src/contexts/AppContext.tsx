@@ -44,6 +44,7 @@ type AppData = {
   parserType: ParserType;
   endMarker: string;
   is_optimized: boolean;
+  parseTableOverride: Object
 };
 
 type AppApi = {
@@ -58,7 +59,16 @@ type AppApi = {
   ParserTablesOptimization: () => void;
   updateTokenStream: (newInput: string) => void;
   updateParserType: (newType: ParserType) => void;
+  updateParserOverride: (state: any, symbol: any, action: any) => void;
 };
+type updateParserOverride = {
+  type: 'updateParserOverride';
+  state: any,
+  symbol: any,
+  action: any
+};
+
+
 type ParserStepAction = {
   type: 'step';
   previousStatus?: ParserBaseStatus;
@@ -93,6 +103,7 @@ type ParserTablesOptimizationAction = {
 };
 
 type ReducerAction =
+  | updateParserOverride
   | ParserStepAction
   | parser_back_action
   | ParserParseAction
@@ -115,6 +126,7 @@ const initialData: AppData = {
   parserType: initialParserType,
   endMarker: initialEndMarker,
   is_optimized: false,
+  parseTableOverride: {},
 };
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -175,6 +187,12 @@ export const useDfa = () => {
 export const useInput = () => {
   return useContext(AppDataContext)!.input;
 };
+export const useStartSymbol = () => {
+  return useContext(AppDataContext)!.grammar.startSymbol;
+};
+export const useParserOverride = () => {
+  return useContext(AppDataContext)!.parseTableOverride;
+};
 export const useCompatibleParserTypes: () => Array<ParserType> = () => {
   const state = useContext(AppDataContext);
   const parseTableGenerator = new ParseTableGenerator(
@@ -203,6 +221,7 @@ export const useCompatibleParserTypes: () => Array<ParserType> = () => {
 
   return compatibles;
 };
+
 
 export default function AppProvider({
   children,
@@ -241,6 +260,9 @@ export default function AppProvider({
       updateTokenStream(newStream) {
         dispatch({ type: 'updateTokenStream', newInput: newStream });
       },
+      updateParserOverride(state: any, symbol: any, action: any) {
+        dispatch({ type: 'updateParserOverride', state, symbol, action });
+      },
     };
   }, []);
   return (
@@ -256,6 +278,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
   function createInitialParserStatus(tokenStream: string[]): ParserStatus {
     const progress = tokenStream.slice();
     progress.splice(0, 0, '•');
+     state.parser.history = [];
     const nextToken = tokenStream[0];
     return {
       dotPosition: 0,
@@ -319,7 +342,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       const newParseTable = newParseTableGenerator.generate(
         state.parserType
       );
-      const newParser = new Parser(newParseTable, newGrammar.productions);
+      const newParser = new Parser(newParseTable, {}, newGrammar.productions);
       return {
         ...state,
         dfa: newDfa,
@@ -330,6 +353,88 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         parseTable: newParseTable,
         parserStatus: createInitialParserStatus(state.input.split(' ')),
         parseTableGenerator: newParseTableGenerator,
+        is_optimized: false,
+        parseTableOverride: {}
+      };
+    }
+    case 'updateParserOverride': {
+      var overrideTable: any = state.parseTableOverride
+      if (!action.action) {
+        if (overrideTable[action.state]) {
+          delete overrideTable[action.state][action.symbol];
+          if (Object.keys(overrideTable[action.state]).length === 0) delete overrideTable[action.state];
+          return {
+            ...state,
+            parseTableOverride: overrideTable
+          };
+        } else {
+          return {
+            ...state,
+            parseTableOverride: overrideTable
+          };
+        }
+      }
+      overrideTable[action.state] ??= {};
+      overrideTable[action.state][action.symbol] = action.action;
+      const newDfaGenerator = new DfaGenerator(
+        state.grammar,
+        state.endMarker
+      );
+      const newDfa = newDfaGenerator.generate(state.parserType);
+      const newParseTableGenerator = new ParseTableGenerator(
+        state.grammar,
+        state.grammarAnalyzer,
+        newDfa
+      );
+      const newParseTable = newParseTableGenerator.generate(
+        state.parserType
+      );
+      const newParser = new Parser(
+        newParseTable,
+        overrideTable,
+        state.grammar.productions
+      );
+      return {
+        ...state,
+        dfa: newDfa,
+        dfaGenerator: newDfaGenerator,
+        parserStatus: createInitialParserStatus(state.input.split(' ')),
+        parser: newParser,
+        parseTable: newParseTable,
+        parseTableGenerator: newParseTableGenerator,
+        parseTableOverride: overrideTable
+      };
+    }
+    case 'updateParserType': {
+      const newDfaGenerator = new DfaGenerator(
+        state.grammar,
+        state.endMarker
+      );
+      const newDfa = newDfaGenerator.generate(action.newParserType);
+      const newParseTableGenerator = new ParseTableGenerator(
+        state.grammar,
+        state.grammarAnalyzer,
+        newDfa
+      );
+      const newParseTable = newParseTableGenerator.generate(
+        action.newParserType
+      );
+      const newParser = new Parser(
+        newParseTable,
+        {},
+        state.grammar.productions
+      );
+      return {
+        ...state,
+        dfa: newDfa,
+        dfaGenerator: newDfaGenerator,
+        parserStatus: createInitialParserStatus(state.input.split(' ')),
+        parser: newParser,
+        parseTable: newParseTable,
+        parserType: action.newParserType,
+        parseTableGenerator: newParseTableGenerator,
+        is_optimized: false,
+        parseTableOverride: {}
       };
     }
     case 'ParserTablesOptimization': {
@@ -346,7 +451,7 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       var newParseTable = newParseTableGenerator.generate(
         state.parserType
       ).table;
-      
+      //  && state.parserType == 'lalr1'
       if (!state.is_optimized) {
         for (const _ in newParseTable) {
           for (const row in newParseTable) {
@@ -402,36 +507,6 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
         is_optimized: !state.is_optimized,
       };
     }
-    case 'updateParserType': {
-      const newDfaGenerator = new DfaGenerator(
-        state.grammar,
-        state.endMarker
-      );
-      const newDfa = newDfaGenerator.generate(action.newParserType);
-      const newParseTableGenerator = new ParseTableGenerator(
-        state.grammar,
-        state.grammarAnalyzer,
-        newDfa
-      );
-      const newParseTable = newParseTableGenerator.generate(
-        action.newParserType
-      );
-      const newParser = new Parser(
-        newParseTable,
-        state.grammar.productions
-      );
-
-      return {
-        ...state,
-        dfa: newDfa,
-        dfaGenerator: newDfaGenerator,
-        parserStatus: createInitialParserStatus(state.input.split(' ')),
-        parser: newParser,
-        parseTable: newParseTable,
-        parserType: action.newParserType,
-        parseTableGenerator: newParseTableGenerator,
-      };
-    }
     case 'updateTokenStream': {
       return {
         ...state,
@@ -449,3 +524,4 @@ function reducerFn(state: AppData, action: ReducerAction): AppData {
       throw new Error(`Unsupported action type: ${(action as any).type}`);
   }
 }
+
