@@ -36,6 +36,7 @@ export const initialParseTable =
   initialParseTableGenerator.generate(initialParserType);
 export const initialParser = new Parser(
   initialParseTable,
+  {}, // override table
   initialGrammar.productions
 );
 

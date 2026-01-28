@@ -14,7 +14,8 @@ import {
   
 } from '../contexts/AppContext';
 import type ParseTable from '../parser/parse-table';
-import { useState, type ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
+import { type ChangeEvent } from 'react';
 import type { ParseTableCell } from '../parser/parse-table';
 
 type LrParseTableProps = {
@@ -297,84 +298,83 @@ function parseInputToAction(input: string, num: number | null) {
   return null;
 }
 
-function OverrideInput({
-  parseTable,
-  productions,
-  state,
-  symbol,
-  parseTableCell
-}: any) {
+function OverrideInput({ parseTable, productions, state, symbol, parseTableCell }: any) {
+  const api = useAppApi();
+
+  function getCellContentForAction(action: Action): string {
+  switch (action.type) {
+    case 'accept':
+      return 'A';
+    case 'shift':
+      return 'S' + action.destination;
+    case 'reduce':
+      return 'R' + action.ruleNumber;
+    case 'shift_reduce':
+      return 'SR' + action.destination;
+    default:
+      return '';
+  }
+}
+
+
   const [value, setValue] = useState('');
+
+  // ✅ sync with external override changes
+  useEffect(() => {
+    if (parseTableCell) setValue(getCellContentForAction(parseTableCell));
+    else setValue('');
+  }, [parseTableCell]);
+
   const stateCount = Object.keys(parseTable['_table']).length;
   const productionCount = productions.length;
-  const api = useAppApi();
-  function getCellContentForAction(action: Action) {
-    switch (action.type) {
-      case 'accept': {
-        return 'A';
-      }
-      case 'shift': {
-        return 'S' + action.destination;
-      }
-      case 'reduce': {
-        return 'R' + action.ruleNumber;
-      }
-      case 'shift_reduce': {
-        return 'SR' + action.destination;
-      }
-    }
-  }
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setValue(e.target.value.toUpperCase());
   }
 
   function handleBlur() {
-    if (value === '') {
+    const trimmed = value.trim().toUpperCase();
+
+    if (trimmed === '') {
       api!.updateParserOverride(state, symbol, null);
       return;
     }
-    const match = value.toUpperCase().match(/^(S|A|R|SR)?(\d+)?$/);
+
+    // ✅ SR باید قبل از S بیاد
+    const match = trimmed.match(/^(SR|S|A|R)?(\d+)?$/);
     if (!match) {
       setValue('');
       return;
     }
+
     const prefix = match[1] || '';
     const num = match[2] ? parseInt(match[2], 10) : null;
-    if (
-      (prefix === 'S' || prefix === 'SR') &&
-      (num === null || num <= 0 || num > stateCount)
-    ) {
-      setValue('');
-      return;
-    } else if (prefix === 'R' && (num === null || num <= 0 || num > productionCount)) {
-      setValue('');
-      return;
-    } else if (prefix === '' && value.toUpperCase() !== 'A') {
+
+    if ((prefix === 'S' || prefix === 'SR') && (num === null || num <= 0 || num > stateCount)) {
       setValue('');
       return;
     }
+    if (prefix === 'R' && (num === null || num <= 0 || num > productionCount)) {
+      setValue('');
+      return;
+    }
+    if (prefix === '' && trimmed !== 'A') {
+      setValue('');
+      return;
+    }
+
     const action = parseInputToAction(prefix, num);
     api!.updateParserOverride(state, symbol, action);
   }
-  if (!parseTableCell) {
-    return (
-      <input
-        type="text"
-        className={styles['input-override']}
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-    );
-  } else {
-    return (
-      <input
-        type="text"
-        className={`${styles['input-override']} ${styles[parseTableCell.type]}`}
-        value={getCellContentForAction(parseTableCell)}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-    );
-  }
+
+  return (
+    <input
+      type="text"
+      className={`${styles['input-override']} ${parseTableCell ? styles[parseTableCell.type] : ''}`}
+      value={value}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    />
+  );
 }
+
